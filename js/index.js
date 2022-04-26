@@ -1,5 +1,27 @@
 const NUMS = ".0123456789";
-const OPERATORS = "+-*/=Enter";
+const OPERATORS = "+-xX*/=Enter";
+const KEY_NAMES = {
+  1: "one",
+  2: "two",
+  3: "three",
+  4: "four",
+  5: "five",
+  6: "six",
+  7: "seven",
+  8: "eight",
+  9: "nine",
+  0: "zero",
+  "*": "multiply",
+  x: "multiply",
+  X: "multiply",
+  "/": "divide",
+  "+": "plus",
+  "-": "minus",
+  "=": "equals",
+  Enter: "equals",
+  ".": "decimal",
+  Escape: "clear",
+};
 const clearButton = document.getElementById("clear");
 const numberButtons = document.querySelectorAll(".btn__num");
 const operatorButtons = document.querySelectorAll(".btn__operator");
@@ -16,6 +38,7 @@ numberButtons.forEach((button) => {
   button.addEventListener("click", (e) => {
     currentNum += e.target.innerText;
     updateDisplay(currentNum);
+    buttonAnimation(button);
   });
 });
 
@@ -27,12 +50,14 @@ operatorButtons.forEach((button) => {
   button.addEventListener("click", (e) => {
     updateDisplay(calculate());
     previousOperator = e.target.innerText;
+    buttonAnimation(button);
   });
 });
 
 /// keydown event listeners
 
 document.addEventListener("keydown", (e) => {
+  buttonAnimation(document.getElementById(KEY_NAMES[e.key]));
   if (NUMS.includes(e.key)) {
     currentNum += e.key;
     updateDisplay(currentNum);
@@ -89,4 +114,11 @@ function calculate() {
     currentNum = "";
   }
   return answer;
+}
+
+function buttonAnimation(button) {
+  button.classList.add("key-pressed");
+  setTimeout(() => {
+    button.classList.remove("key-pressed");
+  }, 150);
 }
