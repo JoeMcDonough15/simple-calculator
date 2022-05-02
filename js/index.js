@@ -42,8 +42,9 @@ numberButtons.forEach((button) => {
   });
 });
 
-clearButton.addEventListener("click", () => {
+clearButton.addEventListener("click", (e) => {
   clear();
+  buttonAnimation(e.target);
 });
 
 operatorButtons.forEach((button) => {
