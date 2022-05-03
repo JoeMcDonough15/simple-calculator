@@ -58,15 +58,17 @@ operatorButtons.forEach((button) => {
 /// keydown event listeners
 
 document.addEventListener("keydown", (e) => {
-  buttonAnimation(document.getElementById(KEY_NAMES[e.key]));
-  if (NUMS.includes(e.key)) {
-    currentNum += e.key;
-    updateDisplay(currentNum);
-  } else if (OPERATORS.includes(e.key)) {
-    updateDisplay(calculate());
-    previousOperator = e.key;
-  } else if (e.key === "Escape") {
-    clear();
+  if (KEY_NAMES.hasOwnProperty(e.key)) {
+    buttonAnimation(document.getElementById(KEY_NAMES[e.key]));
+    if (NUMS.includes(e.key)) {
+      currentNum += e.key;
+      updateDisplay(currentNum);
+    } else if (OPERATORS.includes(e.key)) {
+      updateDisplay(calculate());
+      previousOperator = e.key;
+    } else if (e.key === "Escape") {
+      clear();
+    }
   }
 });
 
@@ -81,7 +83,7 @@ function clear() {
 }
 
 function updateDisplay(num) {
-  displayNum.innerText = num.toString();
+  displayNum.setAttribute("value", num.toString());
 }
 
 function calculate() {
@@ -110,7 +112,7 @@ function calculate() {
         answer /= Number(currentNum);
         break;
       default:
-        console.log("default");
+        break;
     }
     currentNum = "";
   }

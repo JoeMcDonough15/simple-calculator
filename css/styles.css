@@ -26,7 +26,7 @@ body {
 
 .calculator-shell {
   background-color: #b2b1b9;
-  border-radius: 1em;
+  border-radius: 1rem;
   box-shadow: 0 0 1.5em #000;
   max-width: 300px;
 }
@@ -59,11 +59,14 @@ body {
   opacity: 0.6;
   overflow: scroll;
   padding: 28px 3.2px 3.2px;
-  text-align: right;
 }
 
 .display-text {
+  background-color: inherit;
+  border: none;
+  font-family: inherit;
   font-size: 3em;
+  text-align: right;
   width: 100%;
 }
 
