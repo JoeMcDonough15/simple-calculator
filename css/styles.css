@@ -9,26 +9,71 @@
 }
 
 body {
+  background: linear-gradient(45deg, #eee, #548ca8, #476072, #334257);
   font-family: "Digital-7", sans-serif;
   font-size: 1.5rem;
+  min-height: 100vh;
+}
+
+/* typography */
+
+.btn__num,
+.btn__operator,
+.btn__clear {
+  font-size: 2.5rem;
+}
+
+.btn__operator {
+  color: #fff;
+  font-family: "Roboto", sans-serif;
+  font-weight: 900;
+}
+
+.row__two div:nth-child(4) {
+  /* minus sign button */
+  border-radius: 0.15em;
+  font-size: 4.5rem;
+}
+
+.btn__equals {
+  color: blue;
+}
+
+.btn__text,
+.btn__exponent {
+  font-family: "Oranienbaum", serif;
+  font-size: 1.5rem;
+}
+
+.btn__exponent,
+.btn__special-text {
+  font-style: italic;
+}
+
+.exponent__text {
+  font-size: 0.75rem;
 }
 
 /* containers */
 
 .main-container {
   align-items: center;
-  background: linear-gradient(45deg, #eee, #548ca8, #476072, #334257);
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  justify-content: center;
+  margin-top: 5%;
 }
 
-.calculator-shell {
+.calculator-shell,
+.expandable-keypad-shell {
   background-color: #b2b1b9;
   border-radius: 1rem;
   box-shadow: 0 0 1.5em #000;
+}
+
+.calculator-shell {
+  box-shadow: 0 0 1.5em #000;
   max-width: 300px;
+  position: relative;
 }
 
 .col {
@@ -38,13 +83,11 @@ body {
 
 .row {
   display: flex;
-  gap: 10px;
   justify-content: space-between;
   margin-bottom: 0.25em;
 }
 
 .row__final {
-  justify-content: flex-end;
   margin-bottom: 0;
 }
 
@@ -70,23 +113,47 @@ body {
   width: 100%;
 }
 
-.keypad {
+.keypad,
+.expandable-keypad-shell {
   padding: 0.5em;
 }
 
+.straight-bottom-left-border {
+  border-bottom-left-radius: 0;
+  transition: border-bottom-left-radius, 500ms;
+}
+
+.expandable-keypad-shell {
+  border-top-right-radius: 0;
+  bottom: 0%;
+  height: 80%;
+  justify-content: center;
+  padding: 0.5em;
+  position: absolute;
+  transition: all, ease-in-out, 500ms;
+  right: 0;
+  width: 80%;
+  z-index: -1;
+}
+
+.expanded-shell {
+  border-bottom-right-radius: 0;
+  transform: translateX(-125%);
+}
+
+.higher-stacking-index {
+  z-index: 1;
+}
 .btn {
   align-items: center;
   background-color: #fff;
   border: 1px solid #ff7600;
   border-radius: 0.3em;
   display: flex;
+  height: 75px;
   justify-content: center;
-  padding: 0.7em 0.9em;
-  width: 25%;
-}
-
-.btn__num {
-  padding-top: 0.9em;
+  padding: 0.4em;
+  width: 75px;
 }
 
 .btn__operator {
@@ -109,5 +176,26 @@ body {
 
 .btn__operator.key-pressed {
   background-color: #fff;
+  color: #ff7600;
   opacity: 1;
+}
+
+.btn__equals {
+  color: blue;
+}
+
+.btn__exponent {
+  position: relative;
+}
+
+.exponent__text {
+  position: absolute;
+  top: 30%;
+  right: 28%;
+}
+
+@media (min-width: 400px) {
+  .calculator-shell {
+    max-width: 350px;
+  }
 }
