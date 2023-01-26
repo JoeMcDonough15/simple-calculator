@@ -32,12 +32,12 @@ const expandableKeypadShell = document.getElementById(
   "expandable-keypad-shell"
 );
 const expandKeypadButton = document.getElementById("expand-keypad");
-const clearButton = document.getElementById("clear"); // clear once clears currentNumString, A/C or clear a second time (change text on button for user to A/C) clears the equationStack back to ['+0'] and sets calculateHasRun back to false
+const clearButtons = document.querySelectorAll(".btn__clear");
 const numberButtons = document.querySelectorAll(".btn__num");
 const operatorButtons = document.querySelectorAll(".btn__operator");
-const openParenthesis = document.getElementById("open-parenthesis");
-const closeParenthesis = document.getElementById("close-parenthesis");
-const posOrNeg = document.getElementById("toggle-negative");
+const openParenthesisButtons = document.querySelectorAll(".open-parenthesis");
+const closeParenthesisButtons = document.querySelectorAll(".close-parenthesis");
+const posOrNegButtons = document.querySelectorAll(".toggle-negative");
 const displayNum = document.getElementById("display-text");
 const equationStack = ["+0"];
 const operatorStack = [];
@@ -54,7 +54,9 @@ numberButtons.forEach((button) => {
   button.addEventListener("click", handleNums);
 });
 
-posOrNeg.addEventListener("click", makePosOrNeg);
+posOrNegButtons.forEach((button) => {
+  button.addEventListener("click", makePosOrNeg);
+});
 
 // operator buttons //
 
@@ -64,11 +66,17 @@ operatorButtons.forEach((button) => {
 
 // text buttons //
 
-openParenthesis.addEventListener("click", handleOpenParenthesis);
+openParenthesisButtons.forEach((button) => {
+  button.addEventListener("click", handleOpenParenthesis);
+});
 
-closeParenthesis.addEventListener("click", handleCloseParenthesis);
+closeParenthesisButtons.forEach((button) => {
+  button.addEventListener("click", handleCloseParenthesis);
+});
 
-clearButton.addEventListener("click", clear);
+clearButtons.forEach((button) => {
+  button.addEventListener("click", clear);
+});
 
 // expandable keypad console
 
@@ -111,10 +119,8 @@ function collapseKeypadShell(event) {
 ////// Call Back Functions for Numbers and Operators //////
 
 function handleNums(e) {
-  clearButton.removeEventListener("click", allClear);
-  clearButton.addEventListener("click", clear);
-  clearButton.innerText = "C";
   buttonAnimation(e.target);
+  switchToClear();
   currentNumString += e.target.innerText;
   updateDisplay(currentNumString);
 }
@@ -145,7 +151,8 @@ function handleOperators(e) {
 
 //////  Call Back Functions for Parentheses  //////
 
-function handleOpenParenthesis() {
+function handleOpenParenthesis(e) {
+  buttonAnimation(e.target);
   if (lastParenthesisSolution) {
     calculate(
       equationStack[equationStack.length - 1], // last string from the stack
@@ -166,7 +173,8 @@ function handleOpenParenthesis() {
   calculateHasRun = false;
 }
 
-function handleCloseParenthesis() {
+function handleCloseParenthesis(e) {
+  buttonAnimation(e.target);
   if (lastParenthesisSolution) {
     // if we close a set of parenthesis and have a set unaccounted for (lastParenthesisSolution), then that means we are closing two sets of parenthesis in a row.  The inner set has already been solved for and that's what's sitting in lastParenthesisSolution.  This current set now is closing and so we want to remove it from the equationStack and store it with its appropriate operator in lastParenthesisSolution
     calculate(
@@ -198,7 +206,8 @@ function handleCloseParenthesis() {
 
 //////  Call Back Function to handle Positive/Negative Numbers  //////
 
-function makePosOrNeg() {
+function makePosOrNeg(e) {
+  buttonAnimation(e.target);
   currentNumString = giveDefaultOperator(currentNumString);
   if (currentNumString[1] === "-") {
     currentNumString = `${currentNumString.slice(0, 1)}${currentNumString.slice(
@@ -292,25 +301,37 @@ function solve(num1, num2, currentOperator) {
   return answer;
 }
 
-function clear(event) {
+function clear() {
   currentNumString = "";
   updateDisplay("+0");
   if (equationStack.length === 1 && equationStack[0] === "+0") {
     return;
   }
-  clearButton.innerText = "A/C";
-  event.target.removeEventListener("click", clear);
-  event.target.addEventListener("click", allClear);
+  switchToAllClear();
 }
 
-function allClear(event) {
+function switchToAllClear() {
+  clearButtons.forEach((button) => {
+    button.innerText = "A/C";
+    button.removeEventListener("click", clear);
+    button.addEventListener("click", allClear);
+  });
+}
+
+function switchToClear() {
+  clearButtons.forEach((button) => {
+    button.innerText = "C";
+    button.removeEventListener("click", allClear);
+    button.addEventListener("click", clear);
+  });
+}
+
+function allClear() {
   currentNumString = "";
   equationStack.length = 0;
   equationStack.push("+0");
   updateDisplay(currentNumString);
-  clearButton.innerText = "C";
-  event.target.removeEventListener("click", allClear);
-  event.target.addEventListener("click", clear);
+  switchToClear();
   calculateHasRun = false; // so if new parenthesis are opened immediately after this button is pressed, their value is added to zero not multiplied by it. i.e. (3 + 4) (5 - 2) === +0+7 *3 not +0*7 *3
 }
 

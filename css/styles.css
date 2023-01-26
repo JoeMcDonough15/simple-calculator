@@ -59,8 +59,9 @@ body {
 .main-container {
   align-items: center;
   display: flex;
+  height: 100vh;
   flex-direction: column;
-  margin-top: 5%;
+  justify-content: center;
 }
 
 .calculator-shell,
@@ -72,7 +73,7 @@ body {
 
 .calculator-shell {
   box-shadow: 0 0 1.5em #000;
-  max-width: 300px;
+  max-width: 350px;
   position: relative;
 }
 
@@ -118,6 +119,10 @@ body {
   padding: 0.5em;
 }
 
+.keypad-landscape-tablet {
+  display: none;
+}
+
 .straight-bottom-left-border {
   border-bottom-left-radius: 0;
   transition: border-bottom-left-radius, 500ms;
@@ -125,9 +130,9 @@ body {
 
 .expandable-keypad-shell {
   border-top-right-radius: 0;
-  bottom: 0%;
-  height: 80%;
-  justify-content: center;
+  bottom: 0;
+  height: 83.65%;
+  justify-content: flex-end; /* it is a flex parent due to .col class being applied to the same element */
   padding: 0.5em;
   position: absolute;
   transition: all, ease-in-out, 500ms;
@@ -144,6 +149,7 @@ body {
 .higher-stacking-index {
   z-index: 1;
 }
+
 .btn {
   align-items: center;
   background-color: #fff;
@@ -169,15 +175,14 @@ body {
 }
 
 .btn__num.key-pressed,
-.btn__clear.key-pressed {
+.btn__clear.key-pressed,
+.btn__text.key-pressed {
   background-color: #ff7600;
-  opacity: 1;
 }
 
 .btn__operator.key-pressed {
   background-color: #fff;
   color: #ff7600;
-  opacity: 1;
 }
 
 .btn__equals {
@@ -194,8 +199,76 @@ body {
   right: 28%;
 }
 
-@media (min-width: 400px) {
+.btn__inverse {
+  font-size: 1rem;
+}
+
+.mobile-percentage-button {
+  display: none;
+}
+
+/* Landscape mode mobile and tablet styles */
+
+@media (max-width: 820px) {
   .calculator-shell {
-    max-width: 350px;
+    max-width: 500px;
+  }
+
+  .expandable-keypad-shell,
+  .expand-button,
+  .keypad-standard {
+    display: none;
+  }
+
+  .keypad-landscape-tablet {
+    display: block; /* .col will make it a flex parent.  this is just to make it appear. */
+  }
+
+  .btn,
+  .row__two div:nth-child(4) {
+    height: 50px;
+    width: 50px;
+  }
+
+  .row__two div:nth-child(4) {
+    border-radius: 0.3em;
+    font-size: 2.5rem;
+  }
+
+  .display-window {
+    padding: 1px;
+  }
+
+  .btn__clear {
+    width: 40%;
+  }
+}
+
+/* Portrait mode mobile styles */
+
+@media (max-width: 450px) {
+  .calculator-shell {
+    max-width: 300px;
+  }
+
+  .keypad-standard,
+  .mobile-percentage-button {
+    display: block;
+  }
+
+  .mobile-percentage-button {
+    text-align: center;
+  }
+
+  .keypad-landscape-tablet {
+    display: none;
+  }
+
+  .display-window {
+    padding: 28px 3.2px 3.2px;
+  }
+
+  .btn__clear {
+    width: 100%;
   }
 }
