@@ -226,8 +226,8 @@ body {
 
   .btn,
   .row__two div:nth-child(4) {
-    height: 50px;
-    width: 50px;
+    height: 42px;
+    width: 60px;
   }
 
   .row__two div:nth-child(4) {
@@ -236,7 +236,7 @@ body {
   }
 
   .display-window {
-    padding: 1px;
+    padding: 5px;
   }
 
   .btn__clear {
@@ -262,10 +262,6 @@ body {
 
   .keypad-landscape-tablet {
     display: none;
-  }
-
-  .display-window {
-    padding: 28px 3.2px 3.2px;
   }
 
   .btn__clear {
