@@ -38,6 +38,7 @@ const operatorButtons = document.querySelectorAll(".btn__operator");
 const openParenthesisButtons = document.querySelectorAll(".open-parenthesis");
 const closeParenthesisButtons = document.querySelectorAll(".close-parenthesis");
 const posOrNegButtons = document.querySelectorAll(".toggle-negative");
+const percentageButtons = document.querySelectorAll(".percentage-button");
 const displayNum = document.getElementById("display-text");
 const equationStack = ["+0"];
 const operatorStack = [];
@@ -64,7 +65,7 @@ operatorButtons.forEach((button) => {
   button.addEventListener("click", handleOperators);
 });
 
-// text buttons //
+// non number/operator buttons //
 
 openParenthesisButtons.forEach((button) => {
   button.addEventListener("click", handleOpenParenthesis);
@@ -76,6 +77,10 @@ closeParenthesisButtons.forEach((button) => {
 
 clearButtons.forEach((button) => {
   button.addEventListener("click", clear);
+});
+
+percentageButtons.forEach((button) => {
+  button.addEventListener("click", handlePercentage);
 });
 
 // expandable keypad console
@@ -120,9 +125,24 @@ function collapseKeypadShell(event) {
 
 function handleNums(e) {
   buttonAnimation(e.target);
-  switchToClear();
-  currentNumString += e.target.innerText;
+  switchToClear(); // switch the clear button back to clear from A/C in the event that was pushed
+  if (e.target.innerText === "0" && !validateZero(currentNumString)) {
+    return;
+  }
+  currentNumString = giveDefaultOperator(currentNumString);
+  if (currentNumString.length === 2 && currentNumString[1] === "0") {
+    currentNumString = e.target.innerText;
+  } else {
+    currentNumString += e.target.innerText;
+  }
   updateDisplay(currentNumString);
+}
+
+function validateZero(numString) {
+  if (numString.includes(".") || numString !== "0") {
+    return true;
+  }
+  return false;
 }
 
 function handleOperators(e) {
@@ -148,6 +168,24 @@ function handleOperators(e) {
   }
   currentNumString = nextOperator;
 }
+
+/// Call Back Functions for non number/operator characters //////
+
+//// Percentage //////
+
+function handlePercentage() {
+  let numToChange = giveDefaultOperator(determineCorrectNumString());
+  let operator = numToChange[0];
+  numToChange /= 100;
+
+  // 1. temporarily remove the operator
+  // 2. update the string
+  // 3. replace numToChange with the new string including the stored operator from step 1.
+}
+
+////
+
+////
 
 //////  Call Back Functions for Parentheses  //////
 
@@ -360,6 +398,22 @@ function updateDisplay(numString) {
 
 // helper functions
 
+function determineCorrectNumString() {
+  // determine the correct numString we are changing, and return a string with its name.  Use that information
+  // inside whatever special button function is calling this and use that to replace the correct numString
+  if (isValidNumString(currentNumString)) {
+    return currentNumString;
+  } else if (lastParenthesisSolution) {
+    return lastParenthesisSolution;
+  } else {
+    return grabLastNum(grabLastStringInStack());
+  }
+}
+
+function grabLastStringInStack() {
+  return equationStack[equationStack.length - 1];
+}
+
 function grabLastNum(equationString) {
   let index = equationString.length - 1;
   let lastNum;
@@ -399,7 +453,7 @@ function isOperator(char) {
 }
 
 function giveDefaultOperator(numString) {
-  if (!isOperator(numString[0])) {
+  if (numString === "" || !isOperator(numString[0])) {
     numString = `+${numString}`;
   }
   return numString;
