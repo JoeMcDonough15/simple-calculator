@@ -126,23 +126,16 @@ function collapseKeypadShell(event) {
 function handleNums(e) {
   buttonAnimation(e.target);
   switchToClear(); // switch the clear button back to clear from A/C in the event that was pushed
-  if (e.target.innerText === "0" && !validateZero(currentNumString)) {
-    return;
-  }
   currentNumString = giveDefaultOperator(currentNumString);
   if (currentNumString.length === 2 && currentNumString[1] === "0") {
+    // disallow leading 0's i.e. 000005 could never happen
     currentNumString = e.target.innerText;
+  } else if (currentNumString.length === 1 && e.target.innerText === ".") {
+    currentNumString = "0.";
   } else {
     currentNumString += e.target.innerText;
   }
   updateDisplay(currentNumString);
-}
-
-function validateZero(numString) {
-  if (numString.includes(".") || numString !== "0") {
-    return true;
-  }
-  return false;
 }
 
 function handleOperators(e) {
@@ -163,6 +156,8 @@ function handleOperators(e) {
     lastParenthesisSolution = "";
   } else if (isValidNumString(currentNumString)) {
     currentNumString = giveDefaultOperator(currentNumString);
+    currentNumString =
+      currentNumString[0] + Number(currentNumString.slice(1)).toString(); // removes any unnecessary trailing 0's after a decimal point i.e. 12.00400 becomes 12.004
     let currentOperator = currentNumString[0];
     calculate(equationString, currentOperator, currentNumString, nextOperator);
   }
