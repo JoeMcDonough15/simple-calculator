@@ -43,7 +43,6 @@ const displayNum = document.getElementById("display-text");
 const equationStack = ["+0"];
 const operatorStack = [];
 let currentNumString = "";
-let nextOperator = "";
 let lastParenthesisSolution = "";
 let calculateHasRun = false;
 
@@ -145,8 +144,8 @@ function handleNums(e) {
 
 function handleOperators(e) {
   buttonAnimation(e.target);
-  let equationString = equationStack[equationStack.length - 1]; // last string in the stack
-  nextOperator = e.target.innerText;
+  const equationString = grabLastStringInStack(equationStack); // last string in the stack
+  const nextOperator = e.target.innerText;
   if (EQUALS_OPERATORS.includes(nextOperator)) {
     // handleEquals(currentNumString);
     return;
@@ -163,7 +162,7 @@ function handleOperators(e) {
     currentNumString = giveDefaultOperator(currentNumString);
     currentNumString =
       currentNumString[0] + Number(currentNumString.slice(1)).toString(); // removes any unnecessary trailing 0's after a decimal point i.e. 12.00400 becomes 12.004
-    let currentOperator = currentNumString[0];
+    const currentOperator = currentNumString[0];
     calculate(equationString, currentOperator, currentNumString, nextOperator);
   }
   currentNumString = nextOperator;
@@ -193,7 +192,7 @@ function handleOpenParenthesis(e) {
   buttonAnimation(e.target);
   if (lastParenthesisSolution) {
     calculate(
-      equationStack[equationStack.length - 1], // last string from the stack
+      grabLastStringInStack(equationStack), // last string from the stack
       lastParenthesisSolution[0], // the operator that went in front of the last set of parentheses (from operatorStack)
       lastParenthesisSolution, // what was solved inside the last set of parentheses
       "=" // = acts as nextOperator because an ( character is not an operator
@@ -204,7 +203,7 @@ function handleOpenParenthesis(e) {
   operatorStack.push(operatorToStore);
   if (isValidNumString(currentNumString)) {
     currentNumString = giveDefaultOperator(currentNumString);
-    equationStack[equationStack.length - 1] += currentNumString;
+    equationStack[equationStack.length - 1] += currentNumString; // store the last num outside the parenthesis in equationStack so we can deal with the parenthesis first
   }
   equationStack.push("+0");
   currentNumString = "";
@@ -230,7 +229,7 @@ function handleCloseParenthesis(e) {
   }
   // now solve what's in the parenthesis that we JUST closed
   // to do that, calculate with what we have for currentNumString, currentOperator, equationStack[lastIndex], and use '=' as nextOperator.
-  const lastEquationString = equationStack[equationStack.length - 1]; // this is what is inside the parenthesis we are closing.
+  const lastEquationString = grabLastStringInStack(equationStack); // this is what is inside the parenthesis we are closing.
   calculate(lastEquationString, currentOperator, currentNumString, "="); // this will update the display to whatever the solution of the parenthesis math was
   const newParenthesisSolution = equationStack.pop(); // We're now storing whatever was just calculated as lastParenthesisSolution so we don't want it in equationStack anymore
   const operatorFromStack = operatorStack.pop(); // make sure we put the operator that was outside the opened parenthesis in front of lastParenthesisSolution.  This will also make sure handleEquals() doesn't run infinitely since we are calling handleCloseParenthesis() on a loop that is based on the length of operatorStack inside handleEquals()
@@ -240,15 +239,6 @@ function handleCloseParenthesis(e) {
   );
   currentNumString = "";
   currentOperator = "";
-}
-
-function fixInvalidNumString(invalidNumString) {
-  const operator = giveDefaultOperator(invalidNumString)[0];
-  if (HIGHER_ORDER_OPERATIONS.includes(operator)) {
-    return `${operator}1`;
-  } else {
-    return `${operator}0`;
-  }
 }
 
 //////  Call Back Function to handle Positive/Negative Numbers  //////
@@ -274,10 +264,8 @@ function makePosOrNeg(e) {
 function handleEquals() {
   // 1. check to see if lastParenthesisSolution.  If so, that has to be sent into calculate() along with whatever is at equationStack[lastIndex].
   // 2. once the stack has been updated to include the lastParenthesisSolution (if it exists), and lastParenthesisSolution === '', we need to check to see if there are any other sets of parenthesis that have not yet closed before = was hit.
-  // To do this, check the operatorStack.  Everytime a set of parenthesis opens, we store the operator to the immediate left of the parenthesis inside operatorStack.  So, build a loop that says while operatorStack.length > 0 { keep calling closeParenthesis(), which will pop the equationStack and operatorStack, set the result of the last parenthesis to lastParenthesisSolution, calculate() with whatever the last set of parenthesis is}
-  // 3.
-  // Build a while loop that continues closing parenthesis
-  // and using the solution of that lastParenthesisSolution as the currentNumString.
+  // To do this, check the operatorStack.  Everytime a set of parenthesis opens, we store the operator to the immediate left of the parenthesis inside operatorStack.  So, build a loop that says while operatorStack.length > 0 { keep calling closeParenthesis(), which will pop the equationStack and operatorStack inside its definition, set the result of the last parenthesis to lastParenthesisSolution, calculate() with whatever the last set of parenthesis is}
+  // 3.  Since handleCloseParenthesis() will set the last set of parenthetical math to lastParenthesisSolution, we need to check for one lastParenthesisSolution after the loop on step 2 runs.
   // the equationStack has a length greater than 1.
   // currentOperator = operatorStack.pop();
   // currentNumString = equationStack.pop();
@@ -401,7 +389,7 @@ function isValidNumString(localNumString) {
 
 function updateDisplay(numString) {
   if (numString.length === 0) {
-    numString = grabLastNum(equationStack[equationStack.length - 1]);
+    numString = grabLastNum(grabLastStringInStack(equationStack));
   }
   const firstChar = numString[0];
   if (isOperator(firstChar)) {
@@ -424,8 +412,17 @@ function determineCorrectNumString() {
   }
 }
 
-function grabLastStringInStack() {
-  return equationStack[equationStack.length - 1];
+function grabLastStringInStack(givenEquationStack) {
+  return givenEquationStack[givenEquationStack.length - 1];
+}
+
+function fixInvalidNumString(invalidNumString) {
+  const operator = giveDefaultOperator(invalidNumString)[0];
+  if (HIGHER_ORDER_OPERATIONS.includes(operator)) {
+    return `${operator}1`;
+  } else {
+    return `${operator}0`;
+  }
 }
 
 function grabLastNum(equationString) {
