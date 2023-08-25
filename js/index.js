@@ -127,11 +127,16 @@ function handleNums(e) {
   buttonAnimation(e.target);
   switchToClear(); // switch the clear button back to clear from A/C in the event that was pushed
   currentNumString = giveDefaultOperator(currentNumString);
-  if (currentNumString.length === 2 && currentNumString[1] === "0") {
+  if (
+    (currentNumString.length === 2 &&
+      currentNumString[1] === "0" &&
+      e.target.innerText === ".") ||
+    (currentNumString.length === 1 && e.target.innerText === ".")
+  ) {
+    currentNumString = `${currentNumString[0]}0.`;
+  } else if (currentNumString.length === 2 && currentNumString[1] === "0") {
     // disallow leading 0's i.e. 000005 could never happen
     currentNumString = e.target.innerText;
-  } else if (currentNumString.length === 1 && e.target.innerText === ".") {
-    currentNumString = "0.";
   } else {
     currentNumString += e.target.innerText;
   }
@@ -207,6 +212,9 @@ function handleOpenParenthesis(e) {
 }
 
 function handleCloseParenthesis(e) {
+  if (operatorStack.length === 0) {
+    return;
+  }
   buttonAnimation(e.target);
   if (lastParenthesisSolution) {
     // if we close a set of parenthesis and have a set unaccounted for (lastParenthesisSolution), then that means we are closing two sets of parenthesis in a row.  The inner set has already been solved for and that's what's sitting in lastParenthesisSolution.  This current set now is closing and so we want to remove it from the equationStack and store it with its appropriate operator in lastParenthesisSolution
@@ -214,7 +222,7 @@ function handleCloseParenthesis(e) {
       equationStack[equationStack.length - 1], // last string from the stack
       lastParenthesisSolution[0], // the operator that went in front of the last set of parentheses (from operatorStack)
       lastParenthesisSolution, // what was solved inside the last set of parentheses
-      "=" // = acts as nextOperator because an ( character is not an operator
+      "=" // = acts as nextOperator because an ) character is not an operator
     );
     lastParenthesisSolution = "";
     lastEquationString = equationStack.pop(); // we're now storing whatever the last equationString was as lastParenthesisSolution so we don't want it in equationStack anymore
@@ -222,16 +230,17 @@ function handleCloseParenthesis(e) {
     lastEquationString = replaceOperator(lastEquationString, operatorFromStack);
     lastParenthesisSolution = lastEquationString;
   } else if (!isValidNumString(currentNumString)) {
-    return;
+    return; // dont return.  instead, do something that allows us to solve what was inside the parenthesis before that last invalid numString was entered and we pushed ).  What if we set the currentNumString to '+0' if previous operator was LOWER_ORDER or '+1' if previous operator was HIGHER_ORDER?
   } else {
     equationString = equationStack[equationStack.length - 1]; // this is what was in the parenthesis so far...
     currentNumString = giveDefaultOperator(currentNumString);
     currentOperator = currentNumString[0];
     calculate(equationString, currentOperator, currentNumString, "="); // this will update the display to whatever the solution of the parenthesis math was
-    operatorFromStack = operatorStack.pop(); // then, these next steps will store the result of what was in the parenthesis to lastParenthesisSolution
-    currentNumString = equationStack.pop();
-    currentNumString = replaceOperator(currentNumString, operatorFromStack);
-    lastParenthesisSolution = currentNumString;
+    operatorFromStack = operatorStack.pop(); // then, these next steps will store the result of what was in the parenthesis to lastParenthesisSolution and reset currentNumString and currentOperator to empty strings.
+    lastParenthesisSolution = replaceOperator(
+      equationStack.pop(),
+      operatorFromStack
+    );
     currentNumString = "";
     currentOperator = "";
   }
@@ -258,7 +267,12 @@ function makePosOrNeg(e) {
 //////  Call Back Function for Equals Sign  //////
 
 function handleEquals() {
-  // the below code should be if = is hit.  Build a while loop that runs as long as
+  // 1. check to see if lastParenthesisSolution.  If so, that has to be sent into calculate() along with whatever is at equationStack[lastIndex].
+  // 2. once the stack has been updated to include the lastParenthesisSolution (if it exists), and lastParenthesisSolution === '', we need to check to see if there are any other sets of parenthesis that have not yet closed before = was hit.
+  // To do this, check the operatorStack.  Everytime a set of parenthesis opens, we store the operator to the immediate left of the parenthesis inside operatorStack.  So, build a loop that says while operatorStack.length > 0 { keep calling closeParenthesis(), which will pop the equationStack and operatorStack, set the result of the last parenthesis to lastParenthesisSolution, calculate() with whatever the last set of parenthesis is}
+  // 3.
+  // Build a while loop that continues closing parenthesis
+  // and using the solution of that lastParenthesisSolution as the currentNumString.
   // the equationStack has a length greater than 1.
   // currentOperator = operatorStack.pop();
   // currentNumString = equationStack.pop();
@@ -368,11 +382,11 @@ function allClear() {
   calculateHasRun = false; // so if new parenthesis are opened immediately after this button is pressed, their value is added to zero not multiplied by it. i.e. (3 + 4) (5 - 2) === +0+7 *3 not +0*7 *3
 }
 
-function isValidNumString(currentNumString) {
+function isValidNumString(localNumString) {
   if (
     !(
-      currentNumString.length === 0 ||
-      (currentNumString.length === 1 && isOperator(currentNumString))
+      localNumString.length === 0 ||
+      (localNumString.length === 1 && isOperator(localNumString))
     )
   ) {
     return true;
@@ -463,9 +477,7 @@ function determineStoredOperator(currentNumString) {
     !isValidNumString(currentNumString)
   ) {
     storedOperator = currentNumString;
-  } else if (
-    isValidNumString(currentNumString || currentNumString.length === 0)
-  ) {
+  } else {
     storedOperator = "*";
   }
   return storedOperator;
