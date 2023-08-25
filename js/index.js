@@ -213,36 +213,41 @@ function handleOpenParenthesis(e) {
 
 function handleCloseParenthesis(e) {
   if (operatorStack.length === 0) {
+    // if there are no open parenthesis, we can't close one
     return;
   }
   buttonAnimation(e.target);
   if (lastParenthesisSolution) {
     // if we close a set of parenthesis and have a set unaccounted for (lastParenthesisSolution), then that means we are closing two sets of parenthesis in a row.  The inner set has already been solved for and that's what's sitting in lastParenthesisSolution.  This current set now is closing and so we want to remove it from the equationStack and store it with its appropriate operator in lastParenthesisSolution
-    calculate(
-      equationStack[equationStack.length - 1], // last string from the stack
-      lastParenthesisSolution[0], // the operator that went in front of the last set of parentheses (from operatorStack)
-      lastParenthesisSolution, // what was solved inside the last set of parentheses
-      "=" // = acts as nextOperator because an ) character is not an operator
-    );
-    lastParenthesisSolution = "";
-    lastEquationString = equationStack.pop(); // we're now storing whatever the last equationString was as lastParenthesisSolution so we don't want it in equationStack anymore
-    operatorFromStack = operatorStack.pop();
-    lastEquationString = replaceOperator(lastEquationString, operatorFromStack);
-    lastParenthesisSolution = lastEquationString;
+    currentNumString = lastParenthesisSolution;
+    currentOperator = lastParenthesisSolution[0];
   } else if (!isValidNumString(currentNumString)) {
-    return; // dont return.  instead, do something that allows us to solve what was inside the parenthesis before that last invalid numString was entered and we pushed ).  What if we set the currentNumString to '+0' if previous operator was LOWER_ORDER or '+1' if previous operator was HIGHER_ORDER?
+    currentNumString = fixInvalidNumString(currentNumString);
+    currentOperator = currentNumString[0];
   } else {
-    equationString = equationStack[equationStack.length - 1]; // this is what was in the parenthesis so far...
     currentNumString = giveDefaultOperator(currentNumString);
     currentOperator = currentNumString[0];
-    calculate(equationString, currentOperator, currentNumString, "="); // this will update the display to whatever the solution of the parenthesis math was
-    operatorFromStack = operatorStack.pop(); // then, these next steps will store the result of what was in the parenthesis to lastParenthesisSolution and reset currentNumString and currentOperator to empty strings.
-    lastParenthesisSolution = replaceOperator(
-      equationStack.pop(),
-      operatorFromStack
-    );
-    currentNumString = "";
-    currentOperator = "";
+  }
+  // now solve what's in the parenthesis that we JUST closed
+  // to do that, calculate with what we have for currentNumString, currentOperator, equationStack[lastIndex], and use '=' as nextOperator.
+  const lastEquationString = equationStack[equationStack.length - 1]; // this is what is inside the parenthesis we are closing.
+  calculate(lastEquationString, currentOperator, currentNumString, "="); // this will update the display to whatever the solution of the parenthesis math was
+  const newParenthesisSolution = equationStack.pop(); // We're now storing whatever was just calculated as lastParenthesisSolution so we don't want it in equationStack anymore
+  const operatorFromStack = operatorStack.pop(); // make sure we put the operator that was outside the opened parenthesis in front of lastParenthesisSolution.  This will also make sure handleEquals() doesn't run infinitely since we are calling handleCloseParenthesis() on a loop that is based on the length of operatorStack inside handleEquals()
+  lastParenthesisSolution = replaceOperator(
+    newParenthesisSolution,
+    operatorFromStack
+  );
+  currentNumString = "";
+  currentOperator = "";
+}
+
+function fixInvalidNumString(invalidNumString) {
+  const operator = giveDefaultOperator(invalidNumString)[0];
+  if (HIGHER_ORDER_OPERATIONS.includes(operator)) {
+    return `${operator}1`;
+  } else {
+    return `${operator}0`;
   }
 }
 
