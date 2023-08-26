@@ -246,6 +246,7 @@ function handleCloseParenthesis(e) {
 function makePosOrNeg(e) {
   currentNumString = giveDefaultOperator(currentNumString);
   if (currentNumString.length < 2) {
+    blinkZero();
     return;
   }
   if (currentNumString[1] === "-") {
@@ -265,15 +266,37 @@ function makePosOrNeg(e) {
 //////  Call Back Function for Equals Sign  //////
 
 function handleEquals() {
-  // 1. check to see if lastParenthesisSolution.  If so, that has to be sent into calculate() along with whatever is at equationStack[lastIndex].
-  // 2. once the stack has been updated to include the lastParenthesisSolution (if it exists), and lastParenthesisSolution === '', we need to check to see if there are any other sets of parenthesis that have not yet closed before = was hit.
-  // To do this, check the operatorStack.  Everytime a set of parenthesis opens, we store the operator to the immediate left of the parenthesis inside operatorStack.  So, build a loop that says while operatorStack.length > 0 { keep calling closeParenthesis(), which will pop the equationStack and operatorStack inside its definition, set the result of the last parenthesis to lastParenthesisSolution, calculate() with whatever the last set of parenthesis is}
-  // 3.  Since handleCloseParenthesis() will set the last set of parenthetical math to lastParenthesisSolution, we need to check for one lastParenthesisSolution after the loop on step 2 runs.
-  // the equationStack has a length greater than 1.
-  // currentOperator = operatorStack.pop();
-  // currentNumString = equationStack.pop();
-  // equationString = equationStack[equationStack.length - 1];
-  // calculate(equationString, currentOperator, currentNumString, "=");
+  // These 3 steps handle parenthesis when equals is pushed.
+  if (lastParenthesisSolution) {
+    // 1. check to see if lastParenthesisSolution.  If so, that has to be sent into calculate() along with whatever is at equationStack[lastIndex]. once the stack has been updated to include the lastParenthesisSolution (if it exists), set lastParenthesisSolution = '' because in the next step, we're going to call handleCloseParenthesis() which will check to see if there's a lastParenthesisSolution and we don't want to aggregate something twice,
+    handleLastParenthesis();
+  }
+  if (equationStack.length > 1) {
+    while (operatorStack.length > 0) {
+      // // 2.  Next, we need to check to see if there are any other sets of parenthesis that have not yet closed before = was hit.
+      // To do this, check the length of the global equationStack, since a new string is pushed for every new set of parenthesis opened. If there are open parenthesis, Inside the loop, keep calling closeParenthesis(), which will pop the equationStack as well as the operatorStack each time it runs, stopping this while loop from running forever.  handleCloseParenthesis() will call calculate() with whatever the last solution of parenthetical math was last saved as lastParenthesisSolution.  Each time, lastParenthesisSolution is set as the currentNumString and whatever the last equationString is from the stack is passed into calculate().
+      handleCloseParenthesis();
+    }
+    handleLastParenthesis(); // 3.  Since handleCloseParenthesis() will set the last set of parenthetical math to lastParenthesisSolution, we need to check for one lastParenthesisSolution after the loop on step 2 runs.
+    // To do that, call calculate(lastParenthesisSolution, grabLastStringFromStack(equationStack) <-- this will be equationStack[0], lastParenthesisSolution[0] <-- this is currentOperator, '=' <-- nextOperator )
+  }
+
+  //
+  //
+  // But after we handle potential parenthesis, we still have to solve for math that is not parenthetical. What if we just have 2 + 2 =
+  // if we have math left over after parenthesis, or math that exists without any parenthesis, it would certainly only exist at equationStack[0].  This is because any set of parenthesis that's opened causes a new string to be pushed to equationStack.
+  // so, we'd have to call calculate() against equationStack[0], which is what we're often doing when we call handleOperators()
+}
+
+function handleLastParenthesis() {
+  const equationString = grabLastStringInStack(equationStack);
+  calculate(
+    equationString,
+    lastParenthesisSolution[0],
+    lastParenthesisSolution,
+    "="
+  );
+  lastParenthesisSolution = "";
 }
 
 //////  Calculator Functionality //////
@@ -345,6 +368,10 @@ function solve(num1, num2, currentOperator) {
 }
 
 function clear() {
+  if (currentNumString.length === 0) {
+    blinkZero();
+    return;
+  }
   currentNumString = "";
   updateDisplay("+0");
   if (equationStack.length === 1 && equationStack[0] === "+0") {
@@ -498,6 +525,13 @@ function buttonAnimation(button) {
   setTimeout(() => {
     button.classList.remove("key-pressed");
   }, 150);
+}
+
+function blinkZero() {
+  updateDisplay(" ");
+  setTimeout(() => {
+    updateDisplay("0");
+  }, 30);
 }
 
 //
