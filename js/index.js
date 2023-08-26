@@ -244,8 +244,10 @@ function handleCloseParenthesis(e) {
 //////  Call Back Function to handle Positive/Negative Numbers  //////
 
 function makePosOrNeg(e) {
-  buttonAnimation(e.target);
   currentNumString = giveDefaultOperator(currentNumString);
+  if (currentNumString.length < 2) {
+    return;
+  }
   if (currentNumString[1] === "-") {
     currentNumString = `${currentNumString.slice(0, 1)}${currentNumString.slice(
       2
@@ -256,6 +258,7 @@ function makePosOrNeg(e) {
       1
     )}-${currentNumString.slice(1)}`;
   }
+  buttonAnimation(e.target);
   updateDisplay(currentNumString);
 }
 
