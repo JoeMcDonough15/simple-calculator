@@ -245,7 +245,10 @@ function handleCloseParenthesis(e) {
 
 function makePosOrNeg(e) {
   currentNumString = giveDefaultOperator(currentNumString);
-  if (currentNumString.length < 2) {
+  if (
+    currentNumString.length < 2 ||
+    (currentNumString.length === 2 && currentNumString[1] === "0")
+  ) {
     blinkZero();
     return;
   }
