@@ -147,7 +147,7 @@ function handleOperators(e) {
   const equationString = grabLastStringInStack(equationStack); // last string in the stack
   const nextOperator = e.target.innerText;
   if (EQUALS_OPERATORS.includes(nextOperator)) {
-    // handleEquals(currentNumString);
+    handleEquals();
     return;
   }
   if (lastParenthesisSolution) {
@@ -215,7 +215,7 @@ function handleCloseParenthesis(e) {
     // if there are no open parenthesis, we can't close one
     return;
   }
-  buttonAnimation(e.target);
+  // buttonAnimation(e.target);
   if (lastParenthesisSolution) {
     // if we close a set of parenthesis and have a set unaccounted for (lastParenthesisSolution), then that means we are closing two sets of parenthesis in a row.  The inner set has already been solved for and that's what's sitting in lastParenthesisSolution.  This current set now is closing and so we want to remove it from the equationStack and store it with its appropriate operator in lastParenthesisSolution
     currentNumString = lastParenthesisSolution;
@@ -266,6 +266,18 @@ function makePosOrNeg(e) {
 //////  Call Back Function for Equals Sign  //////
 
 function handleEquals() {
+  // we can never have a currentNumString AND a lastParenthesisSolution.
+  // this is because everytime we hit an operator after ), that lastParenthesisSolution is compiled
+  // and set back to an empty string.  So if we hit (3 + 4) = we would not have a currentNumString but we would
+  // have a lastParenthesisSolution.  If we hit (3 + 4) * 4 = we would not have a lastParenthesisSolution
+  // but we would have a currentNumString.
+
+  // however, we COULD have a currentNumString AND parenthesis that were left open.  If this is the case,
+  // that currentNumString should be handled inside handleCloseParenthesis()
+
+  // We do need to be concerned with currentNumString if all parenthesis have been closed.  If there are
+  // no parenthesis at all, we can just calculate() the currentNumString against equationStack[0]
+
   // These 3 steps handle parenthesis when equals is pushed.
   if (lastParenthesisSolution) {
     // 1. check to see if lastParenthesisSolution.  If so, that has to be sent into calculate() along with whatever is at equationStack[lastIndex]. once the stack has been updated to include the lastParenthesisSolution (if it exists), set lastParenthesisSolution = '' because in the next step, we're going to call handleCloseParenthesis() which will check to see if there's a lastParenthesisSolution and we don't want to aggregate something twice,
@@ -280,12 +292,22 @@ function handleEquals() {
     handleLastParenthesis(); // 3.  Since handleCloseParenthesis() will set the last set of parenthetical math to lastParenthesisSolution, we need to check for one lastParenthesisSolution after the loop on step 2 runs.
     // To do that, call calculate(lastParenthesisSolution, grabLastStringFromStack(equationStack) <-- this will be equationStack[0], lastParenthesisSolution[0] <-- this is currentOperator, '=' <-- nextOperator )
   }
+  if (!isValidNumString(giveDefaultOperator(currentNumString))) {
+    currentNumString = fixInvalidNumString(currentNumString);
+  }
+
+  calculate(
+    grabLastStringInStack(equationStack),
+    currentNumString[0],
+    currentNumString,
+    "="
+  );
 
   //
   //
   // But after we handle potential parenthesis, we still have to solve for math that is not parenthetical. What if we just have 2 + 2 =
   // if we have math left over after parenthesis, or math that exists without any parenthesis, it would certainly only exist at equationStack[0].  This is because any set of parenthesis that's opened causes a new string to be pushed to equationStack.
-  // so, we'd have to call calculate() against equationStack[0], which is what we're often doing when we call handleOperators()
+  // so, we'd have to call calculate() with whatever numString was passed into handleEquals() against equationStack[0], which is what we're doing when we call handleOperators() unless there are open parenthesis.
 }
 
 function handleLastParenthesis() {
@@ -368,15 +390,16 @@ function solve(num1, num2, currentOperator) {
 }
 
 function clear() {
-  if (currentNumString.length === 0) {
+  if (
+    currentNumString.length === 0 &&
+    equationStack.length === 1 &&
+    equationStack[0] === "+0"
+  ) {
     blinkZero();
     return;
   }
-  currentNumString = "";
-  updateDisplay("+0");
-  if (equationStack.length === 1 && equationStack[0] === "+0") {
-    return;
-  }
+  currentNumString = giveDefaultOperator(currentNumString)[0];
+  updateDisplay("0");
   switchToAllClear();
 }
 
@@ -418,6 +441,12 @@ function isValidNumString(localNumString) {
 }
 
 function updateDisplay(numString) {
+  console.log(
+    "this is the numstring entered into updateDisplay: ",
+    numString,
+    " length of: ",
+    numString.length
+  );
   if (numString.length === 0) {
     numString = grabLastNum(grabLastStringInStack(equationStack));
   }
