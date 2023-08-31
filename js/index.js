@@ -403,7 +403,9 @@ function clear() {
   }
   currentNumString = giveDefaultOperator(currentNumString)[0];
   updateDisplay("0");
-  switchToAllClear();
+  if (equationStack.length > 1 || equationStack[0] !== "+0") {
+    switchToAllClear();
+  }
 }
 
 function switchToAllClear() {
