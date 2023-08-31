@@ -50,18 +50,32 @@ let calculateHasRun = false;
 
 // number buttons //
 
+// numberButtons.forEach((button) => {
+//   button.addEventListener("click", handleNums);
+// });
+
 numberButtons.forEach((button) => {
-  button.addEventListener("click", handleNums);
+  button.addEventListener("click", (e) => {
+    buttonAnimation(e.target);
+    handleNums(e);
+  });
 });
 
 posOrNegButtons.forEach((button) => {
-  button.addEventListener("click", makePosOrNeg);
+  button.addEventListener("click", (e) => {
+    if (makePosOrNeg(e)) {
+      buttonAnimation(e.target);
+    }
+  });
 });
 
 // operator buttons //
 
 operatorButtons.forEach((button) => {
-  button.addEventListener("click", handleOperators);
+  button.addEventListener("click", (e) => {
+    buttonAnimation(e.target);
+    handleOperators(e);
+  });
 });
 
 // non number/operator buttons //
@@ -123,7 +137,7 @@ function collapseKeypadShell(event) {
 ////// Call Back Functions for Numbers and Operators //////
 
 function handleNums(e) {
-  buttonAnimation(e.target);
+  // buttonAnimation(e.target);
   switchToClear(); // switch the clear button back to clear from A/C in the event that was pushed
   currentNumString = giveDefaultOperator(currentNumString);
   if (
@@ -250,7 +264,7 @@ function makePosOrNeg(e) {
     (currentNumString.length === 2 && currentNumString[1] === "0")
   ) {
     blinkZero();
-    return;
+    return false;
   }
   if (currentNumString[1] === "-") {
     currentNumString = `${currentNumString.slice(0, 1)}${currentNumString.slice(
@@ -262,8 +276,8 @@ function makePosOrNeg(e) {
       1
     )}-${currentNumString.slice(1)}`;
   }
-  buttonAnimation(e.target);
   updateDisplay(currentNumString);
+  return true;
 }
 
 //////  Call Back Function for Equals Sign  //////
@@ -305,6 +319,7 @@ function handleEquals() {
     currentNumString,
     "="
   );
+  currentNumString = "";
 
   //
   //
