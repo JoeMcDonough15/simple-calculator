@@ -10,10 +10,13 @@
 }
 
 body {
+  align-items: center;
   background: linear-gradient(45deg, #eee, #548ca8, #476072, #334257);
+  display: flex;
   font-family: "Digital-7", sans-serif;
   font-size: 1.5rem;
-  min-height: 100vh;
+  height: 100vh;
+  justify-content: center;
 }
 
 /* typography */
@@ -68,7 +71,7 @@ body {
 .main-container {
   align-items: center;
   display: flex;
-  height: 100vh;
+  height: 100%;
   flex-direction: column;
   justify-content: center;
 }
@@ -226,8 +229,8 @@ body {
 
   .btn {
     font-size: 1rem;
-    height: 35px;
-    width: 50px;
+    height: 40px;
+    width: 13.2%;
   }
 
   .minus-sign.minus-sign.minus-sign {
@@ -271,6 +274,24 @@ body {
 
   .keypad-landscape-tablet {
     display: none;
+  }
+
+  .display-window {
+    padding: 0.6em 0.25em;
+  }
+
+  .keypad {
+    padding: 1.5em 0.5em;
+  }
+
+  .row {
+    margin-bottom: 0.35em;
+  }
+
+  .btn {
+    font-size: 1rem;
+    height: 45px;
+    width: 22%;
   }
 
   .btn__clear {
