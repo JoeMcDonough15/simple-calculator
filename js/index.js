@@ -50,14 +50,10 @@ let calculateHasRun = false;
 
 // number buttons //
 
-// numberButtons.forEach((button) => {
-//   button.addEventListener("click", handleNums);
-// });
-
 numberButtons.forEach((button) => {
   button.addEventListener("click", (e) => {
-    buttonAnimation(e.target);
     handleNums(e);
+    buttonAnimation(e.target);
   });
 });
 
@@ -73,27 +69,41 @@ posOrNegButtons.forEach((button) => {
 
 operatorButtons.forEach((button) => {
   button.addEventListener("click", (e) => {
-    buttonAnimation(e.target);
     handleOperators(e);
+    buttonAnimation(e.target);
   });
 });
 
 // non number/operator buttons //
 
 openParenthesisButtons.forEach((button) => {
-  button.addEventListener("click", handleOpenParenthesis);
+  button.addEventListener("click", (e) => {
+    handleOpenParenthesis();
+    buttonAnimation(e.target);
+  });
 });
 
 closeParenthesisButtons.forEach((button) => {
-  button.addEventListener("click", handleCloseParenthesis);
+  button.addEventListener("click", (e) => {
+    if (handleCloseParenthesis()) {
+      buttonAnimation(e.target);
+    }
+  });
 });
 
 clearButtons.forEach((button) => {
-  button.addEventListener("click", clear);
+  button.addEventListener("click", (e) => {
+    if (clear()) {
+      buttonAnimation(e.target);
+    }
+  });
 });
 
 percentageButtons.forEach((button) => {
-  button.addEventListener("click", handlePercentage);
+  button.addEventListener("click", (e) => {
+    // handlePercentage();
+    buttonAnimation(e.target);
+  });
 });
 
 // expandable keypad console
@@ -202,8 +212,7 @@ function handlePercentage() {
 
 //////  Call Back Functions for Parentheses  //////
 
-function handleOpenParenthesis(e) {
-  buttonAnimation(e.target);
+function handleOpenParenthesis() {
   if (lastParenthesisSolution) {
     calculate(
       grabLastStringInStack(equationStack), // last string from the stack
@@ -224,12 +233,11 @@ function handleOpenParenthesis(e) {
   calculateHasRun = false;
 }
 
-function handleCloseParenthesis(e) {
+function handleCloseParenthesis() {
   if (operatorStack.length === 0) {
     // if there are no open parenthesis, we can't close one
-    return;
+    return false;
   }
-  // buttonAnimation(e.target);
   if (lastParenthesisSolution) {
     // if we close a set of parenthesis and have a set unaccounted for (lastParenthesisSolution), then that means we are closing two sets of parenthesis in a row.  The inner set has already been solved for and that's what's sitting in lastParenthesisSolution.  This current set now is closing and so we want to remove it from the equationStack and store it with its appropriate operator in lastParenthesisSolution
     currentNumString = lastParenthesisSolution;
@@ -253,6 +261,7 @@ function handleCloseParenthesis(e) {
   );
   currentNumString = "";
   currentOperator = "";
+  return true;
 }
 
 //////  Call Back Function to handle Positive/Negative Numbers  //////
@@ -414,13 +423,14 @@ function clear() {
     equationStack[0] === "+0"
   ) {
     blinkZero();
-    return;
+    return false;
   }
   currentNumString = giveDefaultOperator(currentNumString)[0];
   updateDisplay("0");
   if (equationStack.length > 1 || equationStack[0] !== "+0") {
     switchToAllClear();
   }
+  return true;
 }
 
 function switchToAllClear() {
