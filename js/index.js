@@ -1,36 +1,15 @@
-const NUMS = "0123456789";
+const NUMS = "0123456789.";
 const OPERATORS = "+÷-xX/*=Enter";
 const HIGHER_ORDER_OPERATIONS = "Xx*÷/";
 const LOWER_ORDER_OPERATIONS = "+-";
+const MULTIPLIERS = "Xx*";
+const DIVISION = "/÷";
 const EQUALS_OPERATORS = "=Enter";
-// const KEY_NAMES = {
-//   1: "one",
-//   2: "two",
-//   3: "three",
-//   4: "four",
-//   5: "five",
-//   6: "six",
-//   7: "seven",
-//   8: "eight",
-//   9: "nine",
-//   0: "zero",
-//   "*": "multiply",
-//   x: "multiply",
-//   X: "multiply",
-//   "/": "divide",
-//   "+": "plus",
-//   "-": "minus",
-//   "=": "equals",
-//   "(": "open-parenthesis",
-//   ")": "close-parenthesis",
-//   Enter: "equals",
-//   ".": "decimal",
-//   Escape: "clear",
-// };
 const calculatorShell = document.getElementById("calculator-shell");
 const expandableKeypadShell = document.getElementById(
   "expandable-keypad-shell"
 );
+const allButtons = document.querySelectorAll(".btn");
 const expandKeypadButton = document.getElementById("expand-keypad");
 const clearButtons = document.querySelectorAll(".btn__clear");
 const numberButtons = document.querySelectorAll(".btn__num");
@@ -52,7 +31,7 @@ let calculateHasRun = false;
 
 numberButtons.forEach((button) => {
   button.addEventListener("click", (e) => {
-    handleNums(e);
+    handleNums(e.target.innerText);
     buttonAnimation(e.target);
   });
 });
@@ -69,7 +48,7 @@ posOrNegButtons.forEach((button) => {
 
 operatorButtons.forEach((button) => {
   button.addEventListener("click", (e) => {
-    handleOperators(e);
+    handleOperators(e.target.innerText);
     buttonAnimation(e.target);
   });
 });
@@ -92,10 +71,8 @@ closeParenthesisButtons.forEach((button) => {
 });
 
 clearButtons.forEach((button) => {
-  button.addEventListener("click", (e) => {
-    if (clear()) {
-      buttonAnimation(e.target);
-    }
+  button.addEventListener("click", () => {
+    clear();
   });
 });
 
@@ -110,13 +87,51 @@ percentageButtons.forEach((button) => {
 
 expandKeypadButton.addEventListener("click", expandKeypadShell);
 
-////// Keyboard Event Listeners //////
+////// Keydown Event Listeners //////
 
-//
+document.addEventListener("keydown", (e) => {
+  if (NUMS.includes(e.key)) {
+    handleNums(e.key);
+  }
+});
 
-//
+document.addEventListener("keydown", (e) => {
+  if (OPERATORS.includes(e.key)) {
+    handleOperators(e.key);
+    if (MULTIPLIERS.includes(e.key)) {
+      console.log("this event is a multiplier!");
+      buttonAnimation(document.getElementById("multiply"));
+      return;
+    } else if (DIVISION.includes(e.key)) {
+      console.log("this event is division!");
+      buttonAnimation(document.getElementById("divide"));
+      return;
+    } else if (EQUALS_OPERATORS.includes(e.key)) {
+      console.log("this event is an equals!");
+      buttonAnimation(document.getElementById("equals"));
+      return;
+    }
+  }
+});
 
-//
+document.addEventListener("keydown", (e) => {
+  if (e.key === "(") {
+    handleOpenParenthesis();
+    buttonAnimation(document.getElementById("open-parenthesis"));
+  }
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === ")") {
+    if (handleCloseParenthesis()) {
+      buttonAnimation(document.getElementById("close-parenthesis"));
+    }
+  }
+});
+
+document.addEventListener("keydown", (e) => {
+  setEscapeToClear(e);
+});
 
 ////// Functions //////
 
@@ -146,30 +161,28 @@ function collapseKeypadShell(event) {
 
 ////// Call Back Functions for Numbers and Operators //////
 
-function handleNums(e) {
-  // buttonAnimation(e.target);
+function handleNums(givenNum) {
   switchToClear(); // switch the clear button back to clear from A/C in the event that was pushed
   currentNumString = giveDefaultOperator(currentNumString);
   if (
     (currentNumString.length === 2 &&
       currentNumString[1] === "0" &&
-      e.target.innerText === ".") ||
-    (currentNumString.length === 1 && e.target.innerText === ".")
+      givenNum === ".") ||
+    (currentNumString.length === 1 && givenNum === ".")
   ) {
     currentNumString = `${currentNumString[0]}0.`;
   } else if (currentNumString.length === 2 && currentNumString[1] === "0") {
     // disallow leading 0's i.e. 000005 could never happen
-    currentNumString = e.target.innerText;
+    currentNumString = givenNum;
   } else {
-    currentNumString += e.target.innerText;
+    currentNumString += givenNum;
   }
   updateDisplay(currentNumString);
 }
 
-function handleOperators(e) {
-  buttonAnimation(e.target);
+function handleOperators(givenOperator) {
   const equationString = grabLastStringInStack(equationStack); // last string in the stack
-  const nextOperator = e.target.innerText;
+  const nextOperator = givenOperator;
   if (EQUALS_OPERATORS.includes(nextOperator)) {
     handleEquals();
     return;
@@ -236,6 +249,7 @@ function handleOpenParenthesis() {
 function handleCloseParenthesis() {
   if (operatorStack.length === 0) {
     // if there are no open parenthesis, we can't close one
+    console.log("handleCloseParenthesis is returning false");
     return false;
   }
   if (lastParenthesisSolution) {
@@ -261,12 +275,13 @@ function handleCloseParenthesis() {
   );
   currentNumString = "";
   currentOperator = "";
+  console.log("handleCloseParenthesis is returning true");
   return true;
 }
 
 //////  Call Back Function to handle Positive/Negative Numbers  //////
 
-function makePosOrNeg(e) {
+function makePosOrNeg() {
   currentNumString = giveDefaultOperator(currentNumString);
   if (
     currentNumString.length < 2 ||
@@ -418,19 +433,33 @@ function solve(num1, num2, currentOperator) {
 
 function clear() {
   if (
-    currentNumString.length === 0 &&
+    !isValidNumString(currentNumString) &&
+    equationStack[0] === "+0" &&
     equationStack.length === 1 &&
-    equationStack[0] === "+0"
+    lastParenthesisSolution === ""
   ) {
     blinkZero();
-    return false;
+    return;
   }
-  currentNumString = giveDefaultOperator(currentNumString)[0];
-  updateDisplay("0");
-  if (equationStack.length > 1 || equationStack[0] !== "+0") {
+  if (isValidNumString(currentNumString)) {
+    if (
+      equationStack[0] !== "+0" ||
+      equationStack.length > 1 ||
+      lastParenthesisSolution !== ""
+    ) {
+      currentNumString = giveDefaultOperator(currentNumString)[0];
+      switchToAllClear();
+    } else {
+      currentNumString = "";
+    }
+  } else {
+    currentNumString = "";
     switchToAllClear();
   }
-  return true;
+  updateDisplay("0");
+  clearButtons.forEach((button) => {
+    buttonAnimation(button);
+  });
 }
 
 function switchToAllClear() {
@@ -438,7 +467,25 @@ function switchToAllClear() {
     button.innerText = "A/C";
     button.removeEventListener("click", clear);
     button.addEventListener("click", allClear);
+    document.removeEventListener("keydown", (e) => {
+      setEscapeToClear(e);
+    });
+    document.addEventListener("keydown", (e) => {
+      setEscapeToAllClear(e);
+    });
   });
+}
+
+function setEscapeToClear(e) {
+  if (e.key === "Escape") {
+    clear();
+  }
+}
+
+function setEscapeToAllClear(e) {
+  if (e.key === "Escape") {
+    allClear();
+  }
 }
 
 function switchToClear() {
@@ -446,6 +493,12 @@ function switchToClear() {
     button.innerText = "C";
     button.removeEventListener("click", allClear);
     button.addEventListener("click", clear);
+    document.removeEventListener("keydown", (e) => {
+      setEscapeToAllClear(e);
+    });
+    document.addEventListener("keydown", (e) => {
+      setEscapeToClear(e);
+    });
   });
 }
 
@@ -453,9 +506,13 @@ function allClear() {
   currentNumString = "";
   equationStack.length = 0;
   equationStack.push("+0");
+  lastParenthesisSolution = "";
   updateDisplay(currentNumString);
   switchToClear();
   calculateHasRun = false; // so if new parenthesis are opened immediately after this button is pressed, their value is added to zero not multiplied by it. i.e. (3 + 4) (5 - 2) === +0+7 *3 not +0*7 *3
+  clearButtons.forEach((button) => {
+    buttonAnimation(button);
+  });
 }
 
 function isValidNumString(localNumString) {
@@ -471,12 +528,6 @@ function isValidNumString(localNumString) {
 }
 
 function updateDisplay(numString) {
-  console.log(
-    "this is the numstring entered into updateDisplay: ",
-    numString,
-    " length of: ",
-    numString.length
-  );
   if (numString.length === 0) {
     numString = grabLastNum(grabLastStringInStack(equationStack));
   }
@@ -668,23 +719,6 @@ function blinkZero() {
 //     previousOperator = e.target.innerText;
 //     buttonAnimation(button);
 //   });
-// });
-
-// /// keydown event listeners
-
-// document.addEventListener("keydown", (e) => {
-//   if (KEY_NAMES.hasOwnProperty(e.key)) {
-//     buttonAnimation(document.getElementById(KEY_NAMES[e.key]));
-//     if (NUMS.includes(e.key)) {
-//       currentNum += e.key;
-//       updateDisplay(currentNum);
-//     } else if (OPERATORS.includes(e.key)) {
-//       updateDisplay(calculate());
-//       previousOperator = e.key;
-//     } else if (e.key === "Escape") {
-//       clear();
-//     }
-//   }
 // });
 
 // // functions

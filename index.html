@@ -23,7 +23,7 @@
 
         <div class="keypad keypad-standard col">
           <div class="row row__zero">
-            <div class="btn btn__clear">C</div>
+            <div id="clear" class="btn btn__clear">C</div>
           </div>
           <div class="row row__one">
             <div class="btn btn__num">1</div>
@@ -41,14 +41,14 @@
             <div class="btn btn__num">7</div>
             <div class="btn btn__num">8</div>
             <div class="btn btn__num">9</div>
-            <div class="btn btn__operator">x</div>
+            <div id="multiply" class="btn btn__operator">x</div>
           </div>
 
           <div class="row row__four">
             <div class="btn btn__num">.</div>
             <div class="btn btn__num">0</div>
             <div class="btn btn__text toggle-negative">+/-</div>
-            <div class="btn btn__operator">÷</div>
+            <div id="divide" class="btn btn__operator">÷</div>
           </div>
           <div class="row row__final">
             <div id="expand-keypad" class="btn btn__text expand-button">˿</div>
@@ -57,9 +57,13 @@
             >
               %
             </div>
-            <div class="btn btn__text open-parenthesis">(</div>
-            <div class="btn btn__text close-parenthesis">)</div>
-            <div class="btn btn__operator btn__equals">=</div>
+            <div id="open-parenthesis" class="btn btn__text open-parenthesis">
+              (
+            </div>
+            <div id="close-parenthesis" class="btn btn__text close-parenthesis">
+              )
+            </div>
+            <div id="equals" class="btn btn__operator btn__equals">=</div>
           </div>
         </div>
         <div id="expandable-keypad-shell" class="expandable-keypad-shell col">
@@ -145,8 +149,12 @@
             <div class="btn btn__text btn__special-text">cos</div>
             <div class="btn btn__text btn__special-text">tan</div>
             <div class="btn btn__text">%</div>
-            <div class="btn btn__text open-parenthesis">(</div>
-            <div class="btn btn__text close-parenthesis">)</div>
+            <div id="open-parenthesis" class="btn btn__text open-parenthesis">
+              (
+            </div>
+            <div id="close-parenthesis" class="btn btn__text close-parenthesis">
+              )
+            </div>
             <div class="btn btn__operator btn__equals">=</div>
           </div>
         </div>
