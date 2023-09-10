@@ -1,3 +1,5 @@
+//////// Constants ////////
+
 const NUMS = "0123456789.";
 const OPERATORS = "+÷-xX/*=Enter";
 const HIGHER_ORDER_OPERATIONS = "Xx*÷/";
@@ -5,6 +7,9 @@ const LOWER_ORDER_OPERATIONS = "+-";
 const MULTIPLIERS = "Xx*";
 const DIVISION = "/÷";
 const EQUALS_OPERATORS = "=Enter";
+
+//////// DOM Elements ////////
+
 const calculatorShell = document.getElementById("calculator-shell");
 const expandableKeypadShell = document.getElementById(
   "expandable-keypad-shell"
@@ -19,6 +24,9 @@ const closeParenthesisButtons = document.querySelectorAll(".close-parenthesis");
 const posOrNegButtons = document.querySelectorAll(".toggle-negative");
 const percentageButtons = document.querySelectorAll(".percentage-button");
 const displayNum = document.getElementById("display-text");
+
+//////// Global Variables ////////
+
 const equationStack = ["+0"];
 const operatorStack = [];
 let currentNumString = "";
@@ -27,7 +35,7 @@ let calculateHasRun = false;
 
 ////// Click Event Listeners //////
 
-// number buttons //
+// Number Buttons //
 
 numberButtons.forEach((button) => {
   button.addEventListener("click", (e) => {
@@ -44,7 +52,7 @@ posOrNegButtons.forEach((button) => {
   });
 });
 
-// operator buttons //
+// Operator Buttons //
 
 operatorButtons.forEach((button) => {
   button.addEventListener("click", (e) => {
@@ -53,7 +61,7 @@ operatorButtons.forEach((button) => {
   });
 });
 
-// non number/operator buttons //
+// Non-Number/Non-Operator Buttons //
 
 openParenthesisButtons.forEach((button) => {
   button.addEventListener("click", (e) => {
@@ -83,7 +91,7 @@ percentageButtons.forEach((button) => {
   });
 });
 
-// expandable keypad console
+// Expandable Keypad Console
 
 expandKeypadButton.addEventListener("click", expandKeypadShell);
 
@@ -99,15 +107,12 @@ document.addEventListener("keydown", (e) => {
   if (OPERATORS.includes(e.key)) {
     handleOperators(e.key);
     if (MULTIPLIERS.includes(e.key)) {
-      console.log("this event is a multiplier!");
       buttonAnimation(document.getElementById("multiply"));
       return;
     } else if (DIVISION.includes(e.key)) {
-      console.log("this event is division!");
       buttonAnimation(document.getElementById("divide"));
       return;
     } else if (EQUALS_OPERATORS.includes(e.key)) {
-      console.log("this event is an equals!");
       buttonAnimation(document.getElementById("equals"));
       return;
     }
@@ -249,7 +254,6 @@ function handleOpenParenthesis() {
 function handleCloseParenthesis() {
   if (operatorStack.length === 0) {
     // if there are no open parenthesis, we can't close one
-    console.log("handleCloseParenthesis is returning false");
     return false;
   }
   if (lastParenthesisSolution) {
@@ -275,7 +279,6 @@ function handleCloseParenthesis() {
   );
   currentNumString = "";
   currentOperator = "";
-  console.log("handleCloseParenthesis is returning true");
   return true;
 }
 
@@ -307,36 +310,18 @@ function makePosOrNeg() {
 //////  Call Back Function for Equals Sign  //////
 
 function handleEquals() {
-  // we can never have a currentNumString AND a lastParenthesisSolution.
-  // this is because everytime we hit an operator after ), that lastParenthesisSolution is compiled
-  // and set back to an empty string.  So if we hit (3 + 4) = we would not have a currentNumString but we would
-  // have a lastParenthesisSolution.  If we hit (3 + 4) * 4 = we would not have a lastParenthesisSolution
-  // but we would have a currentNumString.
-
-  // however, we COULD have a currentNumString AND parenthesis that were left open.  If this is the case,
-  // that currentNumString should be handled inside handleCloseParenthesis()
-
-  // We do need to be concerned with currentNumString if all parenthesis have been closed.  If there are
-  // no parenthesis at all, we can just calculate() the currentNumString against equationStack[0]
-
-  // These 3 steps handle parenthesis when equals is pushed.
   if (lastParenthesisSolution) {
-    // 1. check to see if lastParenthesisSolution.  If so, that has to be sent into calculate() along with whatever is at equationStack[lastIndex]. once the stack has been updated to include the lastParenthesisSolution (if it exists), set lastParenthesisSolution = '' because in the next step, we're going to call handleCloseParenthesis() which will check to see if there's a lastParenthesisSolution and we don't want to aggregate something twice,
     handleLastParenthesis();
   }
   if (equationStack.length > 1) {
     while (operatorStack.length > 0) {
-      // // 2.  Next, we need to check to see if there are any other sets of parenthesis that have not yet closed before = was hit.
-      // To do this, check the length of the global equationStack, since a new string is pushed for every new set of parenthesis opened. If there are open parenthesis, Inside the loop, keep calling closeParenthesis(), which will pop the equationStack as well as the operatorStack each time it runs, stopping this while loop from running forever.  handleCloseParenthesis() will call calculate() with whatever the last solution of parenthetical math was last saved as lastParenthesisSolution.  Each time, lastParenthesisSolution is set as the currentNumString and whatever the last equationString is from the stack is passed into calculate().
       handleCloseParenthesis();
     }
-    handleLastParenthesis(); // 3.  Since handleCloseParenthesis() will set the last set of parenthetical math to lastParenthesisSolution, we need to check for one lastParenthesisSolution after the loop on step 2 runs.
-    // To do that, call calculate(lastParenthesisSolution, grabLastStringFromStack(equationStack) <-- this will be equationStack[0], lastParenthesisSolution[0] <-- this is currentOperator, '=' <-- nextOperator )
+    handleLastParenthesis();
   }
   if (!isValidNumString(giveDefaultOperator(currentNumString))) {
     currentNumString = fixInvalidNumString(currentNumString);
   }
-
   calculate(
     grabLastStringInStack(equationStack),
     currentNumString[0],
@@ -344,12 +329,6 @@ function handleEquals() {
     "="
   );
   currentNumString = "";
-
-  //
-  //
-  // But after we handle potential parenthesis, we still have to solve for math that is not parenthetical. What if we just have 2 + 2 =
-  // if we have math left over after parenthesis, or math that exists without any parenthesis, it would certainly only exist at equationStack[0].  This is because any set of parenthesis that's opened causes a new string to be pushed to equationStack.
-  // so, we'd have to call calculate() with whatever numString was passed into handleEquals() against equationStack[0], which is what we're doing when we call handleOperators() unless there are open parenthesis.
 }
 
 function handleLastParenthesis() {
@@ -371,15 +350,6 @@ function calculate(
   currentNumString,
   nextOperator
 ) {
-  console.log("*************************************");
-  console.log("equation string: ", equationString);
-  console.log("current operator: ", currentOperator);
-  console.log("current number: ", currentNumString.slice(1));
-  console.log("next operator: ", nextOperator);
-  console.log("last num: ", grabLastNum(equationString).slice(1));
-  console.log("last operator: ", grabLastNum(equationString)[0]);
-  console.log("*************************************");
-
   if (!calculateHasRun) {
     calculateHasRun = true;
   }
@@ -402,18 +372,9 @@ function calculate(
   currentNumString = giveDefaultOperator(currentNumString);
   equationStack[equationStack.length - 1] += currentNumString;
   updateDisplay(currentNumString);
-  console.log("the stack after calculate ran: ", equationStack);
 }
 
 function solve(num1, num2, currentOperator) {
-  console.log(
-    "num1 inside solve(): ",
-    num1,
-    "current operator inside solve(): ",
-    currentOperator,
-    "num2 inside solve(): ",
-    num2
-  );
   let answer;
   if (currentOperator === "+") {
     answer = num1 + num2;
@@ -643,134 +604,3 @@ function blinkZero() {
     updateDisplay("0");
   }, 30);
 }
-
-//
-
-//
-
-//
-
-//
-
-//
-
-//
-
-//
-
-//
-
-//
-
-//
-
-// const NUMS = ".0123456789";
-// const OPERATORS = "+-xX*/=Enter";
-// const KEY_NAMES = {
-//   1: "one",
-//   2: "two",
-//   3: "three",
-//   4: "four",
-//   5: "five",
-//   6: "six",
-//   7: "seven",
-//   8: "eight",
-//   9: "nine",
-//   0: "zero",
-//   "*": "multiply",
-//   x: "multiply",
-//   X: "multiply",
-//   "/": "divide",
-//   "+": "plus",
-//   "-": "minus",
-//   "=": "equals",
-//   Enter: "equals",
-//   ".": "decimal",
-//   Escape: "clear",
-// };
-// const clearButton = document.getElementById("clear");
-// const numberButtons = document.querySelectorAll(".btn__num");
-// const operatorButtons = document.querySelectorAll(".btn__operator");
-// const displayNum = document.getElementById("display-text");
-
-// let numOfOperators = 0;
-// let answer = 0;
-// let currentNum = "";
-// let previousOperator = "";
-
-// /// click event listeners
-
-// numberButtons.forEach((button) => {
-//   button.addEventListener("click", (e) => {
-//     currentNum += e.target.innerText;
-//     updateDisplay(currentNum);
-//     buttonAnimation(button);
-//   });
-// });
-
-// clearButton.addEventListener("click", (e) => {
-//   clear();
-//   buttonAnimation(e.target);
-// });
-
-// operatorButtons.forEach((button) => {
-//   button.addEventListener("click", (e) => {
-//     updateDisplay(calculate());
-//     previousOperator = e.target.innerText;
-//     buttonAnimation(button);
-//   });
-// });
-
-// // functions
-
-// function clear() {
-//   currentNum = "";
-//   answer = 0;
-//   previousOperator = "";
-//   numOfOperators = 0;
-//   updateDisplay(answer);
-// }
-
-// function updateDisplay(num) {
-//   displayNum.setAttribute("value", num.toString());
-// }
-
-// function calculate() {
-//   numOfOperators++;
-//   if (numOfOperators < 2) {
-//     answer = Number(currentNum);
-//     currentNum = "";
-//   } else {
-//     switch (previousOperator) {
-//       case "➕":
-//       case "+":
-//         answer += Number(currentNum);
-//         break;
-//       case "➖":
-//       case "-":
-//         answer -= Number(currentNum);
-//         break;
-//       case "✖️":
-//       case "x":
-//       case "X":
-//       case "*":
-//         answer *= Number(currentNum);
-//         break;
-//       case "➗":
-//       case "/":
-//         answer /= Number(currentNum);
-//         break;
-//       default:
-//         break;
-//     }
-//     currentNum = "";
-//   }
-//   return answer;
-// }
-
-// function buttonAnimation(button) {
-//   button.classList.add("key-pressed");
-//   setTimeout(() => {
-//     button.classList.remove("key-pressed");
-//   }, 150);
-// }
