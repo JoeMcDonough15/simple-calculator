@@ -6,6 +6,8 @@ const HIGHER_ORDER_OPERATIONS = "Xx*÷/";
 const LOWER_ORDER_OPERATIONS = "+-";
 const MULTIPLIERS = "Xx*";
 const DIVISION = "/÷";
+const ADDITION = "+";
+const SUBTRACTION = "-";
 const EQUALS_OPERATORS = "=Enter";
 
 //////// DOM Elements ////////
@@ -14,7 +16,6 @@ const calculatorShell = document.getElementById("calculator-shell");
 const expandableKeypadShell = document.getElementById(
   "expandable-keypad-shell"
 );
-const allButtons = document.querySelectorAll(".btn");
 const expandKeypadButton = document.getElementById("expand-keypad");
 const clearButtons = document.querySelectorAll(".btn__clear");
 const numberButtons = document.querySelectorAll(".btn__num");
@@ -97,36 +98,38 @@ expandKeypadButton.addEventListener("click", expandKeypadShell);
 
 ////// Keydown Event Listeners //////
 
-document.addEventListener("keydown", (e) => {
+document.addEventListener("keypress", (e) => {
   if (NUMS.includes(e.key)) {
     handleNums(e.key);
+    buttonAnimation(document.getElementById(`num_${e.key}`));
   }
 });
 
-document.addEventListener("keydown", (e) => {
+document.addEventListener("keypress", (e) => {
   if (OPERATORS.includes(e.key)) {
     handleOperators(e.key);
     if (MULTIPLIERS.includes(e.key)) {
       buttonAnimation(document.getElementById("multiply"));
-      return;
     } else if (DIVISION.includes(e.key)) {
       buttonAnimation(document.getElementById("divide"));
-      return;
+    } else if (ADDITION.includes(e.key)) {
+      buttonAnimation(document.getElementById("add"));
+    } else if (SUBTRACTION.includes(e.key)) {
+      buttonAnimation(document.getElementById("subtract"));
     } else if (EQUALS_OPERATORS.includes(e.key)) {
       buttonAnimation(document.getElementById("equals"));
-      return;
     }
   }
 });
 
-document.addEventListener("keydown", (e) => {
+document.addEventListener("keypress", (e) => {
   if (e.key === "(") {
     handleOpenParenthesis();
     buttonAnimation(document.getElementById("open-parenthesis"));
   }
 });
 
-document.addEventListener("keydown", (e) => {
+document.addEventListener("keypress", (e) => {
   if (e.key === ")") {
     if (handleCloseParenthesis()) {
       buttonAnimation(document.getElementById("close-parenthesis"));
@@ -134,8 +137,16 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-document.addEventListener("keydown", (e) => {
+document.addEventListener("keypress", (e) => {
   setEscapeToClear(e);
+});
+
+document.addEventListener("keypress", (e) => {
+  if (e.key === "_") {
+    if (makePosOrNeg()) {
+      buttonAnimation(document.getElementById("toggle-negative"));
+    }
+  }
 });
 
 ////// Functions //////
@@ -409,6 +420,10 @@ function clear() {
       lastParenthesisSolution !== ""
     ) {
       currentNumString = giveDefaultOperator(currentNumString)[0];
+      console.log(
+        "currentNumString was valid and stack was not empty: ",
+        currentNumString
+      );
       switchToAllClear();
     } else {
       currentNumString = "";
