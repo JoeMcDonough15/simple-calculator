@@ -28,6 +28,7 @@ const piButtons = document.querySelectorAll(".pi");
 const squareButtons = document.querySelectorAll(".square");
 const cubeButtons = document.querySelectorAll(".cube");
 const eulerButtons = document.querySelectorAll(".euler");
+const factorialButtons = document.querySelectorAll(".factorial");
 const displayNum = document.getElementById("display-text");
 
 //////// Global Variables ////////
@@ -120,7 +121,6 @@ eulerButtons.forEach((button) => {
 
 squareButtons.forEach((button) => {
   button.addEventListener("click", (e) => {
-    console.log("e.target inside squareButtons event listener: ", e.target);
     const numObject = determineCorrectNumString();
     if (numObject.stringValue) {
       handleSquared(numObject);
@@ -134,6 +134,16 @@ cubeButtons.forEach((button) => {
     const numObject = determineCorrectNumString();
     if (numObject.stringValue) {
       handleCubed(numObject);
+      buttonAnimation(e.target);
+    }
+  });
+});
+
+factorialButtons.forEach((button) => {
+  button.addEventListener("click", (e) => {
+    const numObject = determineCorrectNumString();
+    if (numObject.stringValue) {
+      handleFactorial(numObject);
       buttonAnimation(e.target);
     }
   });
@@ -314,6 +324,20 @@ function handleCubed(numObject) {
   const base = Number(numObject.numValue.slice(1));
   const updatedNum = Math.pow(base, 3);
   numObject.numValue = operator + updatedNum;
+  updateAppropriateString(numObject);
+}
+
+function handleFactorial(numObject) {
+  const numArray = [];
+  let factor = numObject.numValue;
+  while (factor >= 1) {
+    numArray.push(factor);
+    factor -= 1;
+  }
+  const solution = numArray.reduce((accum, currentVal) => {
+    return accum * currentVal;
+  });
+  numObject.numValue = solution.toString();
   updateAppropriateString(numObject);
 }
 
