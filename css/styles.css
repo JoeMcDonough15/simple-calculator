@@ -218,6 +218,10 @@ body {
     max-width: 500px;
   }
 
+  .main-container {
+    padding: 1.5rem;
+  }
+
   .expandable-keypad-shell,
   .expand-button,
   .keypad-standard {
