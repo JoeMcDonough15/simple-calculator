@@ -32,6 +32,7 @@ const equationStack = ["+0"];
 const operatorStack = [];
 let currentNumString = "";
 let lastParenthesisSolution = "";
+let lastSolution = "";
 let calculateHasRun = false;
 
 ////// Click Event Listeners //////
@@ -45,10 +46,22 @@ numberButtons.forEach((button) => {
   });
 });
 
+// posOrNegButtons.forEach((button) => {
+//   button.addEventListener("click", (e) => {
+//     if (makePosOrNeg(e)) {
+//       buttonAnimation(e.target);
+//     }
+//   });
+// });
+
 posOrNegButtons.forEach((button) => {
   button.addEventListener("click", (e) => {
-    if (makePosOrNeg(e)) {
+    const numObject = determineCorrectNumString();
+    if (numObject.stringValue) {
+      makePosOrNeg(numObject);
       buttonAnimation(e.target);
+    } else {
+      blinkZero();
     }
   });
 });
@@ -87,8 +100,11 @@ clearButtons.forEach((button) => {
 
 percentageButtons.forEach((button) => {
   button.addEventListener("click", (e) => {
-    // handlePercentage();
-    buttonAnimation(e.target);
+    const numObject = determineCorrectNumString();
+    if (numObject.stringValue) {
+      handlePercentage(numObject);
+      buttonAnimation(e.target);
+    }
   });
 });
 
@@ -96,16 +112,16 @@ percentageButtons.forEach((button) => {
 
 expandKeypadButton.addEventListener("click", expandKeypadShell);
 
-////// Keydown Event Listeners //////
+////// Keyup Event Listeners //////
 
-document.addEventListener("keypress", (e) => {
+document.addEventListener("keyup", (e) => {
   if (NUMS.includes(e.key)) {
     handleNums(e.key);
     buttonAnimation(document.getElementById(`num_${e.key}`));
   }
 });
 
-document.addEventListener("keypress", (e) => {
+document.addEventListener("keyup", (e) => {
   if (OPERATORS.includes(e.key)) {
     handleOperators(e.key);
     if (MULTIPLIERS.includes(e.key)) {
@@ -122,14 +138,14 @@ document.addEventListener("keypress", (e) => {
   }
 });
 
-document.addEventListener("keypress", (e) => {
+document.addEventListener("keyup", (e) => {
   if (e.key === "(") {
     handleOpenParenthesis();
     buttonAnimation(document.getElementById("open-parenthesis"));
   }
 });
 
-document.addEventListener("keypress", (e) => {
+document.addEventListener("keyup", (e) => {
   if (e.key === ")") {
     if (handleCloseParenthesis()) {
       buttonAnimation(document.getElementById("close-parenthesis"));
@@ -137,17 +153,19 @@ document.addEventListener("keypress", (e) => {
   }
 });
 
-document.addEventListener("keypress", (e) => {
-  setEscapeToClear(e);
-});
-
-document.addEventListener("keypress", (e) => {
-  if (e.key === "_") {
-    if (makePosOrNeg()) {
-      buttonAnimation(document.getElementById("toggle-negative"));
-    }
+document.addEventListener("keyup", (e) => {
+  if (e.key === "Escape") {
+    clear();
   }
 });
+
+// document.addEventListener("keyup", (e) => {
+//   if (e.key === "_") {
+//     if (makePosOrNeg()) {
+//       buttonAnimation(document.getElementById("toggle-negative"));
+//     }
+//   }
+// });
 
 ////// Functions //////
 
@@ -179,6 +197,9 @@ function collapseKeypadShell(event) {
 
 function handleNums(givenNum) {
   switchToClear(); // switch the clear button back to clear from A/C in the event that was pushed
+  if (lastSolution) {
+    lastSolution = "";
+  }
   currentNumString = giveDefaultOperator(currentNumString);
   if (
     (currentNumString.length === 2 &&
@@ -197,6 +218,9 @@ function handleNums(givenNum) {
 }
 
 function handleOperators(givenOperator) {
+  if (lastSolution) {
+    lastSolution = "";
+  }
   const equationString = grabLastStringInStack(equationStack); // last string in the stack
   const nextOperator = givenOperator;
   if (EQUALS_OPERATORS.includes(nextOperator)) {
@@ -225,17 +249,28 @@ function handleOperators(givenOperator) {
 
 //// Percentage //////
 
-function handlePercentage() {
-  let numToChange = giveDefaultOperator(determineCorrectNumString());
-  let operator = numToChange[0];
-  numToChange /= 100;
-
-  // 1. temporarily remove the operator
-  // 2. update the string
-  // 3. replace numToChange with the new string including the stored operator from step 1.
+function handlePercentage(numObject) {
+  const operator = numObject.numValue[0];
+  let numToChange = Number(numObject.numValue.slice(1)) / 100;
+  numObject.numValue = operator + numToChange.toString();
+  updateAppropriateString(numObject);
 }
 
 ////
+
+function updateAppropriateString(numObject) {
+  if (numObject.stringValue === "currentNumString") {
+    currentNumString = numObject.numValue;
+    updateDisplay(currentNumString);
+  } else if (numObject.stringValue === "lastParenthesisSolution") {
+    lastParenthesisSolution = numObject.numValue;
+    updateDisplay(lastParenthesisSolution);
+  } else {
+    updateDisplay(numObject.numValue);
+    equationStack[0] = numObject.numValue;
+    lastSolution = "";
+  }
+}
 
 ////
 
@@ -295,27 +330,26 @@ function handleCloseParenthesis() {
 
 //////  Call Back Function to handle Positive/Negative Numbers  //////
 
-function makePosOrNeg() {
-  currentNumString = giveDefaultOperator(currentNumString);
+function makePosOrNeg(numObject) {
   if (
-    currentNumString.length < 2 ||
-    (currentNumString.length === 2 && currentNumString[1] === "0")
+    numObject.numValue.length < 2 ||
+    (numObject.numValue.length === 2 && numObject.numValue[1] === "0")
   ) {
     blinkZero();
-    return false;
+    return;
   }
-  if (currentNumString[1] === "-") {
-    currentNumString = `${currentNumString.slice(0, 1)}${currentNumString.slice(
-      2
-    )}`;
-  } else {
-    currentNumString = `${currentNumString.slice(
+  if (numObject.numValue[1] === "-") {
+    numObject.numValue = `${numObject.numValue.slice(
       0,
       1
-    )}-${currentNumString.slice(1)}`;
+    )}${numObject.numValue.slice(2)}`;
+  } else {
+    numObject.numValue = `${numObject.numValue.slice(
+      0,
+      1
+    )}-${numObject.numValue.slice(1)}`;
   }
-  updateDisplay(currentNumString);
-  return true;
+  updateAppropriateString(numObject);
 }
 
 //////  Call Back Function for Equals Sign  //////
@@ -340,6 +374,7 @@ function handleEquals() {
     "="
   );
   currentNumString = "";
+  lastSolution = equationStack[0];
 }
 
 function handleLastParenthesis() {
@@ -443,38 +478,48 @@ function switchToAllClear() {
     button.innerText = "A/C";
     button.removeEventListener("click", clear);
     button.addEventListener("click", allClear);
-    document.removeEventListener("keydown", (e) => {
-      setEscapeToClear(e);
-    });
-    document.addEventListener("keydown", (e) => {
-      setEscapeToAllClear(e);
-    });
+  });
+  // document.removeEventListener("keyup", (e) => {
+  //   setEscapeToClear(e);
+  // });
+  // document.addEventListener("keyup", (e) => {
+  //   setEscapeToAllClear(e);
+  // });
+  document.addEventListener("keyup", (e) => {
+    if (e.key === "Escape") {
+      allClear();
+    }
   });
 }
 
-function setEscapeToClear(e) {
-  if (e.key === "Escape") {
-    clear();
-  }
-}
+// function setEscapeToClear(e) {
+//   if (e.key === "Escape") {
+//     clear();
+//   }
+// }
 
-function setEscapeToAllClear(e) {
-  if (e.key === "Escape") {
-    allClear();
-  }
-}
+// function setEscapeToAllClear(e) {
+//   if (e.key === "Escape") {
+//     allClear();
+//   }
+// }
 
 function switchToClear() {
   clearButtons.forEach((button) => {
     button.innerText = "C";
     button.removeEventListener("click", allClear);
     button.addEventListener("click", clear);
-    document.removeEventListener("keydown", (e) => {
-      setEscapeToAllClear(e);
-    });
-    document.addEventListener("keydown", (e) => {
-      setEscapeToClear(e);
-    });
+  });
+  // document.removeEventListener("keyup", (e) => {
+  //   setEscapeToAllClear(e);
+  // });
+  // document.addEventListener("keyup", (e) => {
+  //   setEscapeToClear(e);
+  // });
+  document.addEventListener("keyup", (e) => {
+    if (e.key === "Escape") {
+      clear();
+    }
   });
 }
 
@@ -519,13 +564,23 @@ function updateDisplay(numString) {
 function determineCorrectNumString() {
   // determine the correct numString we are changing, and return a string with its name.  Use that information
   // inside whatever special button function is calling this and use that to replace the correct numString
+  const numToChange = { stringValue: "" };
   if (isValidNumString(currentNumString)) {
-    return currentNumString;
+    numToChange.numValue = giveDefaultOperator(currentNumString);
+    numToChange.stringValue = "currentNumString";
+    currentNumString = "";
+    return numToChange;
   } else if (lastParenthesisSolution) {
-    return lastParenthesisSolution;
-  } else {
-    return grabLastNum(grabLastStringInStack());
+    numToChange.numValue = giveDefaultOperator(lastParenthesisSolution);
+    numToChange.stringValue = "lastParenthesisSolution";
+    lastParenthesisSolution = "";
+    return numToChange;
+  } else if (lastSolution) {
+    numToChange.numValue = giveDefaultOperator(lastSolution);
+    numToChange.stringValue = "lastSolution";
+    lastSolution = "";
   }
+  return numToChange;
 }
 
 function grabLastStringInStack(givenEquationStack) {
