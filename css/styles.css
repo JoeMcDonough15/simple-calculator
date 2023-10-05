@@ -270,11 +270,7 @@ body {
 
   .keypad-standard,
   .mobile-percentage-button {
-    display: block;
-  }
-
-  .mobile-percentage-button {
-    text-align: center;
+    display: flex;
   }
 
   .keypad-landscape-tablet {
