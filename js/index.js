@@ -24,6 +24,10 @@ const openParenthesisButtons = document.querySelectorAll(".open-parenthesis");
 const closeParenthesisButtons = document.querySelectorAll(".close-parenthesis");
 const posOrNegButtons = document.querySelectorAll(".toggle-negative");
 const percentageButtons = document.querySelectorAll(".percentage-button");
+const piButtons = document.querySelectorAll(".pi");
+const squareButtons = document.querySelectorAll(".square");
+const cubeButtons = document.querySelectorAll(".cube");
+const eulerButtons = document.querySelectorAll(".euler");
 const displayNum = document.getElementById("display-text");
 
 //////// Global Variables ////////
@@ -45,14 +49,6 @@ numberButtons.forEach((button) => {
     buttonAnimation(e.target);
   });
 });
-
-// posOrNegButtons.forEach((button) => {
-//   button.addEventListener("click", (e) => {
-//     if (makePosOrNeg(e)) {
-//       buttonAnimation(e.target);
-//     }
-//   });
-// });
 
 posOrNegButtons.forEach((button) => {
   button.addEventListener("click", (e) => {
@@ -103,6 +99,41 @@ percentageButtons.forEach((button) => {
     const numObject = determineCorrectNumString();
     if (numObject.stringValue) {
       handlePercentage(numObject);
+      buttonAnimation(e.target);
+    }
+  });
+});
+
+piButtons.forEach((button) => {
+  button.addEventListener("click", (e) => {
+    handlePi();
+    buttonAnimation(e.target);
+  });
+});
+
+eulerButtons.forEach((button) => {
+  button.addEventListener("click", (e) => {
+    handleEuler();
+    buttonAnimation(e.target);
+  });
+});
+
+squareButtons.forEach((button) => {
+  button.addEventListener("click", (e) => {
+    console.log("e.target inside squareButtons event listener: ", e.target);
+    const numObject = determineCorrectNumString();
+    if (numObject.stringValue) {
+      handleSquared(numObject);
+      buttonAnimation(e.target);
+    }
+  });
+});
+
+cubeButtons.forEach((button) => {
+  button.addEventListener("click", (e) => {
+    const numObject = determineCorrectNumString();
+    if (numObject.stringValue) {
+      handleCubed(numObject);
       buttonAnimation(e.target);
     }
   });
@@ -256,20 +287,34 @@ function handlePercentage(numObject) {
   updateAppropriateString(numObject);
 }
 
-////
+function handlePi() {
+  const operator = giveDefaultOperator(currentNumString)[0];
+  const pi = Math.PI.toString();
+  currentNumString = operator + pi;
+  updateDisplay(currentNumString);
+}
 
-function updateAppropriateString(numObject) {
-  if (numObject.stringValue === "currentNumString") {
-    currentNumString = numObject.numValue;
-    updateDisplay(currentNumString);
-  } else if (numObject.stringValue === "lastParenthesisSolution") {
-    lastParenthesisSolution = numObject.numValue;
-    updateDisplay(lastParenthesisSolution);
-  } else {
-    updateDisplay(numObject.numValue);
-    equationStack[0] = numObject.numValue;
-    lastSolution = "";
-  }
+function handleEuler() {
+  const operator = giveDefaultOperator(currentNumString)[0];
+  const euler = Math.E.toString();
+  currentNumString = operator + euler;
+  updateDisplay(currentNumString);
+}
+
+function handleSquared(numObject) {
+  const operator = numObject.numValue[0];
+  const base = Number(numObject.numValue.slice(1));
+  const updatedNum = Math.pow(base, 2);
+  numObject.numValue = operator + updatedNum;
+  updateAppropriateString(numObject);
+}
+
+function handleCubed(numObject) {
+  const operator = numObject.numValue[0];
+  const base = Number(numObject.numValue.slice(1));
+  const updatedNum = Math.pow(base, 3);
+  numObject.numValue = operator + updatedNum;
+  updateAppropriateString(numObject);
 }
 
 ////
@@ -581,6 +626,20 @@ function determineCorrectNumString() {
     lastSolution = "";
   }
   return numToChange;
+}
+
+function updateAppropriateString(numObject) {
+  if (numObject.stringValue === "currentNumString") {
+    currentNumString = numObject.numValue;
+    updateDisplay(currentNumString);
+  } else if (numObject.stringValue === "lastParenthesisSolution") {
+    lastParenthesisSolution = numObject.numValue;
+    updateDisplay(lastParenthesisSolution);
+  } else {
+    updateDisplay(numObject.numValue);
+    equationStack[0] = numObject.numValue;
+    lastSolution = "";
+  }
 }
 
 function grabLastStringInStack(givenEquationStack) {

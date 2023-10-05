@@ -179,7 +179,8 @@ body {
 
 .btn__num.key-pressed,
 .btn__clear.key-pressed,
-.btn__text.key-pressed {
+.btn__text.key-pressed,
+.btn__exponent.key-pressed {
   background-color: #ff7600;
 }
 
