@@ -662,7 +662,7 @@ function updateAppropriateString(numObject) {
   } else {
     updateDisplay(numObject.numValue);
     equationStack[0] = numObject.numValue;
-    lastSolution = "";
+    lastSolution = numObject.numValue;
   }
 }
 
