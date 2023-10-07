@@ -29,6 +29,7 @@ const squareButtons = document.querySelectorAll(".square");
 const cubeButtons = document.querySelectorAll(".cube");
 const eulerButtons = document.querySelectorAll(".euler");
 const factorialButtons = document.querySelectorAll(".factorial");
+const inverseFractionButtons = document.querySelectorAll(".btn__inverse");
 const displayNum = document.getElementById("display-text");
 
 //////// Global Variables ////////
@@ -145,6 +146,16 @@ factorialButtons.forEach((button) => {
     const numObject = determineCorrectNumString();
     if (numObject.stringValue) {
       handleFactorial(numObject);
+      buttonAnimation(e.target);
+    }
+  });
+});
+
+inverseFractionButtons.forEach((button) => {
+  button.addEventListener("click", (e) => {
+    const numObject = determineCorrectNumString();
+    if (numObject.stringValue) {
+      handleInverseFraction(numObject);
       buttonAnimation(e.target);
     }
   });
@@ -348,6 +359,14 @@ function handleFactorial(numObject) {
     return accum * currentVal;
   });
   numObject.numValue = solution.toString();
+  updateAppropriateString(numObject);
+}
+
+function handleInverseFraction(numObject) {
+  const operator = numObject.numValue[0];
+  const denominator = Number(numObject.numValue.slice(1));
+  const inverseFractionAsDecimal = (100 / denominator / 100).toString();
+  numObject.numValue = operator + inverseFractionAsDecimal;
   updateAppropriateString(numObject);
 }
 
