@@ -243,15 +243,8 @@ function handleNums(givenNum) {
     lastSolution = "";
   }
   if (overwriteCurrentNumString) {
-    console.log(
-      "overwrite at beginning of handleNums: ",
-      overwriteCurrentNumString
-    );
     currentNumString = "";
-    console.log("currentNumString after we cleared it: ", currentNumString);
     overwriteCurrentNumString = false;
-    updateDisplay(givenNum);
-    console.log("overwrite at end of handleNums: ", overwriteCurrentNumString);
   }
   currentNumString = giveDefaultOperator(currentNumString);
   if (
@@ -541,10 +534,6 @@ function clear() {
       lastParenthesisSolution !== ""
     ) {
       currentNumString = giveDefaultOperator(currentNumString)[0];
-      console.log(
-        "currentNumString was valid and stack was not empty: ",
-        currentNumString
-      );
       switchToAllClear();
     } else {
       currentNumString = "";
@@ -683,10 +672,6 @@ function updateAppropriateString(numObject) {
     lastSolution = numObject.numValue;
   }
   overwriteCurrentNumString = true;
-  console.log(
-    "overwrite at end of updateAppropriate: ",
-    overwriteCurrentNumString
-  );
 }
 
 function grabLastStringInStack(givenEquationStack) {
