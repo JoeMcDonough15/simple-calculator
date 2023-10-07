@@ -39,6 +39,7 @@ let currentNumString = "";
 let lastParenthesisSolution = "";
 let lastSolution = "";
 let calculateHasRun = false;
+let overwriteCurrentNumString = false;
 
 ////// Click Event Listeners //////
 
@@ -241,6 +242,17 @@ function handleNums(givenNum) {
   if (lastSolution) {
     lastSolution = "";
   }
+  if (overwriteCurrentNumString) {
+    console.log(
+      "overwrite at beginning of handleNums: ",
+      overwriteCurrentNumString
+    );
+    currentNumString = "";
+    console.log("currentNumString after we cleared it: ", currentNumString);
+    overwriteCurrentNumString = false;
+    updateDisplay(givenNum);
+    console.log("overwrite at end of handleNums: ", overwriteCurrentNumString);
+  }
   currentNumString = giveDefaultOperator(currentNumString);
   if (
     (currentNumString.length === 2 &&
@@ -261,6 +273,9 @@ function handleNums(givenNum) {
 function handleOperators(givenOperator) {
   if (lastSolution) {
     lastSolution = "";
+  }
+  if (overwriteCurrentNumString) {
+    overwriteCurrentNumString = false;
   }
   const equationString = grabLastStringInStack(equationStack); // last string in the stack
   const nextOperator = givenOperator;
@@ -302,6 +317,7 @@ function handlePi() {
   const pi = Math.PI.toString();
   currentNumString = operator + pi;
   updateDisplay(currentNumString);
+  overwriteCurrentNumString = true;
 }
 
 function handleEuler() {
@@ -309,6 +325,7 @@ function handleEuler() {
   const euler = Math.E.toString();
   currentNumString = operator + euler;
   updateDisplay(currentNumString);
+  overwriteCurrentNumString = true;
 }
 
 function handleSquared(numObject) {
@@ -665,6 +682,11 @@ function updateAppropriateString(numObject) {
     equationStack[0] = numObject.numValue;
     lastSolution = numObject.numValue;
   }
+  overwriteCurrentNumString = true;
+  console.log(
+    "overwrite at end of updateAppropriate: ",
+    overwriteCurrentNumString
+  );
 }
 
 function grabLastStringInStack(givenEquationStack) {
