@@ -27,6 +27,7 @@ const percentageButtons = document.querySelectorAll(".percentage-button");
 const piButtons = document.querySelectorAll(".pi");
 const squareButtons = document.querySelectorAll(".square");
 const cubeButtons = document.querySelectorAll(".cube");
+const customExponentButtons = document.querySelectorAll(".custom-exponent");
 const eulerButtons = document.querySelectorAll(".euler");
 const factorialButtons = document.querySelectorAll(".factorial");
 const inverseFractionButtons = document.querySelectorAll(".btn__inverse");
@@ -39,6 +40,8 @@ const operatorStack = [];
 let currentNumString = "";
 let lastParenthesisSolution = "";
 let lastSolution = "";
+let base = "";
+let customExp = "";
 let calculateHasRun = false;
 let overwriteCurrentNumString = false;
 
@@ -161,6 +164,16 @@ inverseFractionButtons.forEach((button) => {
   });
 });
 
+customExponentButtons.forEach((button) => {
+  button.addEventListener("click", (e) => {
+    const numObject = determineCorrectNumString();
+    if (numObject.stringValue) {
+      setBase(numObject);
+      buttonAnimation(e.target);
+    }
+  });
+});
+
 // Expandable Keypad Console
 
 expandKeypadButton.addEventListener("click", expandKeypadShell);
@@ -250,6 +263,11 @@ function collapseKeypadShell(event) {
 
 function handleNums(givenNum) {
   switchToClear(); // switch the clear button back to clear from A/C in the event that was pushed
+  if (base) {
+    customExp = concatOrReplace(customExp, givenNum);
+    updateDisplay(customExp);
+    return;
+  }
   if (lastSolution) {
     lastSolution = "";
   }
@@ -258,23 +276,32 @@ function handleNums(givenNum) {
     overwriteCurrentNumString = false;
   }
   currentNumString = giveDefaultOperator(currentNumString);
-  if (
-    (currentNumString.length === 2 &&
-      currentNumString[1] === "0" &&
-      givenNum === ".") ||
-    (currentNumString.length === 1 && givenNum === ".")
-  ) {
-    currentNumString = `${currentNumString[0]}0.`;
-  } else if (currentNumString.length === 2 && currentNumString[1] === "0") {
-    // disallow leading 0's i.e. 000005 could never happen
-    currentNumString = givenNum;
-  } else {
-    currentNumString += givenNum;
-  }
+  currentNumString = concatOrReplace(currentNumString, givenNum);
   updateDisplay(currentNumString);
 }
 
+function concatOrReplace(numString, newNum) {
+  if (
+    (numString.length === 2 && numString[1] === "0" && newNum === ".") ||
+    (numString.length === 1 && newNum === ".")
+  ) {
+    numString = `${numString[0]}0.`;
+  } else if (numString.length === 2 && numString[1] === "0") {
+    // disallow leading 0's i.e. 000005 could never happen
+    numString = newNum;
+  } else {
+    numString += newNum;
+  }
+  return numString;
+}
+
 function handleOperators(givenOperator) {
+  if (base && !isValidNumString(customExp)) {
+    return;
+  } else if (base) {
+    solveCustomExponents(base, customExp);
+    return;
+  }
   if (lastSolution) {
     lastSolution = "";
   }
@@ -368,6 +395,20 @@ function handleInverseFraction(numObject) {
   const inverseFractionAsDecimal = (100 / denominator / 100).toString();
   numObject.numValue = operator + inverseFractionAsDecimal;
   updateAppropriateString(numObject);
+}
+
+function setBase(numObject) {
+  base = numObject.numValue.slice(1);
+}
+
+function solveCustomExponents(baseNum, exponentNum) {
+  const numObject = determineCorrectNumString();
+  const operator = numObject.numValue[0];
+  const solution = Math.pow(Number(baseNum), Number(exponentNum)).toString();
+  numObject.numValue = operator + solution;
+  updateAppropriateString(numObject);
+  base = "";
+  customExp = "";
 }
 
 ////
@@ -663,17 +704,17 @@ function determineCorrectNumString() {
   if (isValidNumString(currentNumString)) {
     numToChange.numValue = giveDefaultOperator(currentNumString);
     numToChange.stringValue = "currentNumString";
-    currentNumString = "";
+    // currentNumString = "";
     return numToChange;
   } else if (lastParenthesisSolution) {
     numToChange.numValue = giveDefaultOperator(lastParenthesisSolution);
     numToChange.stringValue = "lastParenthesisSolution";
-    lastParenthesisSolution = "";
+    // lastParenthesisSolution = "";
     return numToChange;
   } else if (lastSolution) {
     numToChange.numValue = giveDefaultOperator(lastSolution);
     numToChange.stringValue = "lastSolution";
-    lastSolution = "";
+    // lastSolution = "";
   }
   return numToChange;
 }
