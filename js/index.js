@@ -597,6 +597,7 @@ function allClear() {
   equationStack.length = 0;
   equationStack.push("+0");
   lastParenthesisSolution = "";
+  lastSolution = "";
   updateDisplay(currentNumString);
   switchToClear();
   calculateHasRun = false; // so if new parenthesis are opened immediately after this button is pressed, their value is added to zero not multiplied by it. i.e. (3 + 4) (5 - 2) === +0+7 *3 not +0*7 *3
