@@ -7,6 +7,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  user-select: none;
 }
 
 html {
@@ -28,10 +29,17 @@ body {
 .display-text {
   background-color: inherit;
   border: none;
+  caret-color: transparent;
+  cursor: default;
   font-family: inherit;
   font-size: 5rem;
   text-align: right;
   width: 100%;
+}
+
+.display-text:focus-visible,
+.display-text:focus {
+  outline: none;
 }
 
 .btn__num,
