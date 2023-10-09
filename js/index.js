@@ -38,6 +38,7 @@ const customExponentButtons = document.querySelectorAll(".custom-exponent");
 const eulerButtons = document.querySelectorAll(".euler");
 const factorialButtons = document.querySelectorAll(".factorial");
 const inverseFractionButtons = document.querySelectorAll(".btn__inverse");
+const eulerRaisedButtons = document.querySelectorAll(".e-raised");
 const displayNum = document.getElementById("display-text");
 
 //////// Global Variables ////////
@@ -127,6 +128,13 @@ piButtons.forEach((button) => {
 eulerButtons.forEach((button) => {
   button.addEventListener("click", (e) => {
     handleEuler();
+    buttonAnimation(e.target);
+  });
+});
+
+eulerRaisedButtons.forEach((button) => {
+  button.addEventListener("click", (e) => {
+    handleRaiseEuler();
     buttonAnimation(e.target);
   });
 });
@@ -364,6 +372,12 @@ function handleEuler() {
   currentNumString = operator + euler;
   updateDisplay(currentNumString);
   overwriteCurrentNumString = true;
+}
+
+function handleRaiseEuler() {
+  handleEuler();
+  base = currentNumString;
+  overwriteCurrentNumString = false;
 }
 
 function handleSquared(numObject) {
@@ -715,17 +729,14 @@ function determineCorrectNumString() {
   if (isValidNumString(currentNumString)) {
     numToChange.numValue = giveDefaultOperator(currentNumString);
     numToChange.stringValue = "currentNumString";
-    // currentNumString = "";
     return numToChange;
   } else if (lastParenthesisSolution) {
     numToChange.numValue = giveDefaultOperator(lastParenthesisSolution);
     numToChange.stringValue = "lastParenthesisSolution";
-    // lastParenthesisSolution = "";
     return numToChange;
   } else if (lastSolution) {
     numToChange.numValue = giveDefaultOperator(lastSolution);
     numToChange.stringValue = "lastSolution";
-    // lastSolution = "";
   }
   return numToChange;
 }
