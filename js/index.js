@@ -1,3 +1,10 @@
+// console.log(
+//   "0.1 + 0.2 = using math.chain from mathjs: ",
+//   math.chain(0.1).add(0.2).toString()
+// );
+// console.log("0.1 + 0.2 = using built in JS math operator ", 0.1 + 0.2);
+// console.log("mathjs: ", math);
+
 //////// Constants ////////
 
 const NUMS = "0123456789.";
@@ -338,14 +345,14 @@ function handleOperators(givenOperator) {
 
 function handlePercentage(numObject) {
   const operator = numObject.numValue[0];
-  let numToChange = Number(numObject.numValue.slice(1)) / 100;
+  let numToChange = math.chain(Number(numObject.numValue.slice(1))).divide(100);
   numObject.numValue = operator + numToChange.toString();
   updateAppropriateString(numObject);
 }
 
 function handlePi() {
   const operator = giveDefaultOperator(currentNumString)[0];
-  const pi = Math.PI.toString();
+  const pi = math.pi.toString();
   currentNumString = operator + pi;
   updateDisplay(currentNumString);
   overwriteCurrentNumString = true;
@@ -353,7 +360,7 @@ function handlePi() {
 
 function handleEuler() {
   const operator = giveDefaultOperator(currentNumString)[0];
-  const euler = Math.E.toString();
+  const euler = math.e.toString();
   currentNumString = operator + euler;
   updateDisplay(currentNumString);
   overwriteCurrentNumString = true;
@@ -362,7 +369,7 @@ function handleEuler() {
 function handleSquared(numObject) {
   const operator = numObject.numValue[0];
   const base = Number(numObject.numValue.slice(1));
-  const updatedNum = Math.pow(base, 2);
+  const updatedNum = math.pow(base, 2).toString();
   numObject.numValue = operator + updatedNum;
   updateAppropriateString(numObject);
 }
@@ -370,7 +377,7 @@ function handleSquared(numObject) {
 function handleCubed(numObject) {
   const operator = numObject.numValue[0];
   const base = Number(numObject.numValue.slice(1));
-  const updatedNum = Math.pow(base, 3);
+  const updatedNum = math.pow(base, 3).toString();
   numObject.numValue = operator + updatedNum;
   updateAppropriateString(numObject);
 }
@@ -383,7 +390,7 @@ function handleFactorial(numObject) {
     factor -= 1;
   }
   const solution = numArray.reduce((accum, currentVal) => {
-    return accum * currentVal;
+    return math.chain(accum).multiply(currentVal);
   });
   numObject.numValue = solution.toString();
   updateAppropriateString(numObject);
@@ -392,7 +399,11 @@ function handleFactorial(numObject) {
 function handleInverseFraction(numObject) {
   const operator = numObject.numValue[0];
   const denominator = Number(numObject.numValue.slice(1));
-  const inverseFractionAsDecimal = (100 / denominator / 100).toString();
+  const inverseFractionAsDecimal = math
+    .chain(100)
+    .divide(denominator)
+    .divide(100)
+    .toString();
   numObject.numValue = operator + inverseFractionAsDecimal;
   updateAppropriateString(numObject);
 }
@@ -404,7 +415,7 @@ function setBase(numObject) {
 function solveCustomExponents(baseNum, exponentNum) {
   const numObject = determineCorrectNumString();
   const operator = numObject.numValue[0];
-  const solution = Math.pow(Number(baseNum), Number(exponentNum)).toString();
+  const solution = math.pow(Number(baseNum), Number(exponentNum)).toString();
   numObject.numValue = operator + solution;
   updateAppropriateString(numObject);
   base = "";
@@ -562,17 +573,17 @@ function calculate(
 function solve(num1, num2, currentOperator) {
   let answer;
   if (currentOperator === "+") {
-    answer = num1 + num2;
+    answer = math.chain(num1).add(num2).done();
   } else if (currentOperator === "-") {
-    answer = num1 - num2;
+    answer = math.chain(num1).subtract(num2).done();
   } else if (
     currentOperator === "*" ||
     currentOperator === "x" ||
     currentOperator === "X"
   ) {
-    answer = num1 * num2;
+    answer = math.chain(num1).multiply(num2).done();
   } else {
-    answer = num1 / num2;
+    answer = math.chain(num1).divide(num2).done();
   }
   return answer;
 }
