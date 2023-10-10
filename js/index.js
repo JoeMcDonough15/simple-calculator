@@ -39,6 +39,7 @@ const eulerButtons = document.querySelectorAll(".euler");
 const factorialButtons = document.querySelectorAll(".factorial");
 const inverseFractionButtons = document.querySelectorAll(".btn__inverse");
 const eulerRaisedButtons = document.querySelectorAll(".e-raised");
+const trigButtons = document.querySelectorAll(".btn__trig");
 const displayNum = document.getElementById("display-text");
 
 //////// Global Variables ////////
@@ -50,6 +51,8 @@ let lastParenthesisSolution = "";
 let lastSolution = "";
 let base = "";
 let customExp = "";
+let trig = "";
+let theta = "";
 let calculateHasRun = false;
 let overwriteCurrentNumString = false;
 
@@ -189,6 +192,13 @@ customExponentButtons.forEach((button) => {
   });
 });
 
+trigButtons.forEach((button) => {
+  button.addEventListener("click", (e) => {
+    determineTrigFunction(e.target);
+    buttonAnimation(e.target);
+  });
+});
+
 // Expandable Keypad Console
 
 expandKeypadButton.addEventListener("click", expandKeypadShell);
@@ -283,6 +293,11 @@ function handleNums(givenNum) {
     updateDisplay(customExp);
     return;
   }
+  if (trig) {
+    theta = concatOrReplace(theta, givenNum);
+    updateDisplay(theta);
+    return;
+  }
   if (lastSolution) {
     lastSolution = "";
   }
@@ -311,11 +326,18 @@ function concatOrReplace(numString, newNum) {
 }
 
 function handleOperators(givenOperator) {
-  if (base && !isValidNumString(customExp)) {
+  if (
+    (base && !isValidNumString(customExp)) ||
+    (trig && !isValidNumString(theta))
+  ) {
     return;
-  } else if (base) {
+  }
+  if (base) {
     solveCustomExponents(base, customExp);
     return;
+  }
+  if (trig) {
+    currentNumString = handleTrig();
   }
   if (lastSolution) {
     lastSolution = "";
@@ -348,8 +370,6 @@ function handleOperators(givenOperator) {
 }
 
 /// Call Back Functions for non number/operator characters //////
-
-//// Percentage //////
 
 function handlePercentage(numObject) {
   const operator = numObject.numValue[0];
@@ -434,6 +454,35 @@ function solveCustomExponents(baseNum, exponentNum) {
   updateAppropriateString(numObject);
   base = "";
   customExp = "";
+}
+
+////// Trig Functions /////////
+
+function determineTrigFunction(button) {
+  if (button.classList.contains("sin")) {
+    trig = "sin";
+  } else if (button.classList.contains("cos")) {
+    trig = "cos";
+  } else {
+    trig = "tan";
+  }
+  theta = giveDefaultOperator(currentNumString)[0];
+}
+
+function handleTrig() {
+  let trigSolution;
+  const operator = theta[0];
+  if (trig === "sin") {
+    trigSolution = math.sin(theta.slice(1));
+  } else if (trig === "cos") {
+    trigSolution = math.cos(theta.slice(1));
+  } else {
+    trigSolution = math.tan(theta.slice(1));
+  }
+  trigSolution = operator + trigSolution.toString();
+  trig = "";
+  theta = "";
+  return trigSolution;
 }
 
 ////
@@ -607,7 +656,9 @@ function clear() {
     !isValidNumString(currentNumString) &&
     equationStack[0] === "+0" &&
     equationStack.length === 1 &&
-    lastParenthesisSolution === ""
+    lastParenthesisSolution === "" &&
+    !trig &&
+    !base
   ) {
     blinkZero();
     return;
@@ -626,6 +677,10 @@ function clear() {
   } else {
     currentNumString = "";
     switchToAllClear();
+  }
+  if (theta || base) {
+    customExp = "";
+    theta = "";
   }
   updateDisplay("0");
   clearButtons.forEach((button) => {
@@ -689,6 +744,9 @@ function allClear() {
   equationStack.push("+0");
   lastParenthesisSolution = "";
   lastSolution = "";
+  base = "";
+  trig = "";
+  theta = "";
   updateDisplay(currentNumString);
   switchToClear();
   calculateHasRun = false; // so if new parenthesis are opened immediately after this button is pressed, their value is added to zero not multiplied by it. i.e. (3 + 4) (5 - 2) === +0+7 *3 not +0*7 *3
@@ -725,6 +783,13 @@ function updateDisplay(numString) {
 function determineCorrectNumString() {
   // determine the correct numString we are changing, and return a string with its name.  Use that information
   // inside whatever special button function is calling this and use that to replace the correct numString
+  // in here, at the top, check for trig.  if we have trig to solve, solve it and set currentNumSTring as that trig answer.
+  // then continue down through the steps to prioritize currentNumString (which was just reassigned the trig value) as numToChange.stringValue.
+  if (trig && !isValidNumString(theta)) {
+    return;
+  } else if (trig) {
+    currentNumString = handleTrig();
+  }
   const numToChange = { stringValue: "" };
   if (isValidNumString(currentNumString)) {
     numToChange.numValue = giveDefaultOperator(currentNumString);
