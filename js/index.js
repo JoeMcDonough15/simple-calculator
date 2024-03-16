@@ -92,8 +92,9 @@ operatorButtons.forEach((button) => {
 
 openParenthesisButtons.forEach((button) => {
   button.addEventListener("click", (e) => {
-    handleOpenParenthesis();
-    buttonAnimation(e.target);
+    if (handleOpenParenthesis()) {
+      buttonAnimation(e.target);
+    }
   });
 });
 
@@ -137,6 +138,9 @@ eulerButtons.forEach((button) => {
 
 eulerRaisedButtons.forEach((button) => {
   button.addEventListener("click", (e) => {
+    if (base) {
+      return;
+    }
     handleRaiseEuler();
     buttonAnimation(e.target);
   });
@@ -184,6 +188,9 @@ inverseFractionButtons.forEach((button) => {
 
 customExponentButtons.forEach((button) => {
   button.addEventListener("click", (e) => {
+    if (base) {
+      return;
+    }
     const numObject = determineCorrectNumString();
     if (numObject.stringValue) {
       setBase(numObject);
@@ -494,6 +501,9 @@ function handleTrig() {
 //////  Call Back Functions for Parentheses  //////
 
 function handleOpenParenthesis() {
+  if (base) {
+    return false; // prohibit button from animating
+  }
   if (lastParenthesisSolution) {
     reduceEquationString(
       grabLastStringInStack(equationStack), // last string from the stack
@@ -512,6 +522,7 @@ function handleOpenParenthesis() {
   equationStack.push("+0");
   currentNumString = "";
   equationStringHasReduced = false;
+  return true;
 }
 
 function handleCloseParenthesis() {
