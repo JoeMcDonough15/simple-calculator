@@ -331,7 +331,7 @@ function handleOperators(givenOperator) {
   }
   if (base) {
     solveCustomExponents(base, customExp);
-    return;
+    handleOperators(givenOperator); // recursion!  because solveCustomExponents() will cause base to be reset to an empty string which evaluates as false, we won't loop infinitely.
   }
   if (trig) {
     currentNumString = handleTrig();
@@ -591,6 +591,8 @@ function handleEquals() {
     "="
   );
   currentNumString = equationStack[0];
+  equationStack[0] = "+0";
+  equationStringHasReduced = false;
 }
 
 function handleLastParenthesis() {
