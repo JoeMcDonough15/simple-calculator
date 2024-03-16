@@ -308,6 +308,9 @@ function handleNums(givenNum) {
 }
 
 function concatOrReplace(numString, newNum) {
+  if (numString.includes(".") && newNum === ".") {
+    return numString;
+  }
   if (
     (numString.length === 2 && numString[1] === "0" && newNum === ".") ||
     (numString.length === 1 && newNum === ".")
