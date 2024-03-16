@@ -3,7 +3,8 @@
 //   math.chain(0.1).add(0.2).toString()
 // );
 // console.log("0.1 + 0.2 = using built in JS math operator ", 0.1 + 0.2);
-// console.log("mathjs: ", math);
+// console.log("mathjs library: ", math);
+// console.log("built in Math library: ", Math);
 
 //////// Constants ////////
 
@@ -48,12 +49,11 @@ const equationStack = ["+0"];
 const operatorStack = [];
 let currentNumString = "";
 let lastParenthesisSolution = "";
-let lastSolution = "";
 let base = "";
 let customExp = "";
 let trig = "";
 let theta = "";
-let calculateHasRun = false;
+let equationStringHasReduced = false;
 let overwriteCurrentNumString = false;
 
 ////// Click Event Listeners //////
@@ -298,9 +298,6 @@ function handleNums(givenNum) {
     updateDisplay(theta);
     return;
   }
-  if (lastSolution) {
-    lastSolution = "";
-  }
   if (overwriteCurrentNumString) {
     currentNumString = "";
     overwriteCurrentNumString = false;
@@ -317,8 +314,8 @@ function concatOrReplace(numString, newNum) {
   ) {
     numString = `${numString[0]}0.`;
   } else if (numString.length === 2 && numString[1] === "0") {
-    // disallow leading 0's i.e. 000005 could never happen
-    numString = newNum;
+    // keep the operator in tact but disallow leading 0's i.e. +000005 could never happen; would just be +5
+    numString = `${numString[0]}${newNum}`;
   } else {
     numString += newNum;
   }
@@ -339,9 +336,6 @@ function handleOperators(givenOperator) {
   if (trig) {
     currentNumString = handleTrig();
   }
-  if (lastSolution) {
-    lastSolution = "";
-  }
   if (overwriteCurrentNumString) {
     overwriteCurrentNumString = false;
   }
@@ -352,19 +346,24 @@ function handleOperators(givenOperator) {
     return;
   }
   if (lastParenthesisSolution) {
-    calculate(
+    reduceEquationString(
       equationString, // last string from the stack
       lastParenthesisSolution[0], // the operator that went in front of the parentheses (from operatorStack)
       lastParenthesisSolution, // currentNumString (what was solved inside the last set of parentheses)
-      nextOperator // operator that was just pressed
-    );
+      nextOperator
+    ); // operator that was just pressed
     lastParenthesisSolution = "";
   } else if (isValidNumString(currentNumString)) {
     currentNumString = giveDefaultOperator(currentNumString);
     currentNumString =
       currentNumString[0] + Number(currentNumString.slice(1)).toString(); // removes any unnecessary trailing 0's after a decimal point i.e. 12.00400 becomes 12.004
     const currentOperator = currentNumString[0];
-    calculate(equationString, currentOperator, currentNumString, nextOperator);
+    reduceEquationString(
+      equationString,
+      currentOperator,
+      currentNumString,
+      nextOperator
+    );
   }
   currentNumString = nextOperator;
 }
@@ -491,7 +490,7 @@ function handleTrig() {
 
 function handleOpenParenthesis() {
   if (lastParenthesisSolution) {
-    calculate(
+    reduceEquationString(
       grabLastStringInStack(equationStack), // last string from the stack
       lastParenthesisSolution[0], // the operator that went in front of the last set of parentheses (from operatorStack)
       lastParenthesisSolution, // what was solved inside the last set of parentheses
@@ -507,7 +506,7 @@ function handleOpenParenthesis() {
   }
   equationStack.push("+0");
   currentNumString = "";
-  calculateHasRun = false;
+  equationStringHasReduced = false;
 }
 
 function handleCloseParenthesis() {
@@ -527,10 +526,15 @@ function handleCloseParenthesis() {
     currentOperator = currentNumString[0];
   }
   // now solve what's in the parenthesis that we JUST closed
-  // to do that, calculate with what we have for currentNumString, currentOperator, equationStack[lastIndex], and use '=' as nextOperator.
+  // to do that, reduceEquationString with what we have for currentNumString, currentOperator, equationStack[lastIndex], and use '=' as nextOperator.
   const lastEquationString = grabLastStringInStack(equationStack); // this is what is inside the parenthesis we are closing.
-  calculate(lastEquationString, currentOperator, currentNumString, "="); // this will update the display to whatever the solution of the parenthesis math was
-  const newParenthesisSolution = equationStack.pop(); // We're now storing whatever was just calculated as lastParenthesisSolution so we don't want it in equationStack anymore
+  reduceEquationString(
+    lastEquationString,
+    currentOperator,
+    currentNumString,
+    "="
+  ); // this will update the display to whatever the solution of the parenthesis math was
+  const newParenthesisSolution = equationStack.pop(); // We're now storing whatever equation string was just reduced as lastParenthesisSolution so we don't want it in equationStack anymore
   const operatorFromStack = operatorStack.pop(); // make sure we put the operator that was outside the opened parenthesis in front of lastParenthesisSolution.  This will also make sure handleEquals() doesn't run infinitely since we are calling handleCloseParenthesis() on a loop that is based on the length of operatorStack inside handleEquals()
   lastParenthesisSolution = replaceOperator(
     newParenthesisSolution,
@@ -580,19 +584,18 @@ function handleEquals() {
   if (!isValidNumString(giveDefaultOperator(currentNumString))) {
     currentNumString = fixInvalidNumString(currentNumString);
   }
-  calculate(
+  reduceEquationString(
     grabLastStringInStack(equationStack),
     currentNumString[0],
     currentNumString,
     "="
   );
-  currentNumString = "";
-  lastSolution = equationStack[0];
+  currentNumString = equationStack[0];
 }
 
 function handleLastParenthesis() {
   const equationString = grabLastStringInStack(equationStack);
-  calculate(
+  reduceEquationString(
     equationString,
     lastParenthesisSolution[0],
     lastParenthesisSolution,
@@ -603,14 +606,14 @@ function handleLastParenthesis() {
 
 //////  Calculator Functionality //////
 
-function calculate(
+function reduceEquationString(
   equationString,
   currentOperator,
   currentNumString,
   nextOperator
 ) {
-  if (!calculateHasRun) {
-    calculateHasRun = true;
+  if (!equationStringHasReduced) {
+    equationStringHasReduced = true;
   }
   while (
     equationString.length !== 0 &&
@@ -624,7 +627,7 @@ function calculate(
     equationStack[equationStack.length - 1] = equationString;
     const num1 = Number(lastNum);
     const num2 = Number(currentNumString);
-    const solution = solve(num1, num2, currentOperator);
+    const solution = calculate(num1, num2, currentOperator);
     currentNumString = `${lastOperator}${solution.toString()}`;
     currentOperator = lastOperator;
   } // if we can't solve it yet, or if the last string in the stack is empty, concatenate currentNumString to the end of the last string in equationStack
@@ -633,7 +636,7 @@ function calculate(
   updateDisplay(currentNumString);
 }
 
-function solve(num1, num2, currentOperator) {
+function calculate(num1, num2, currentOperator) {
   let answer;
   if (currentOperator === "+") {
     answer = math.chain(num1).add(num2).done();
@@ -743,13 +746,12 @@ function allClear() {
   equationStack.length = 0;
   equationStack.push("+0");
   lastParenthesisSolution = "";
-  lastSolution = "";
   base = "";
   trig = "";
   theta = "";
   updateDisplay(currentNumString);
   switchToClear();
-  calculateHasRun = false; // so if new parenthesis are opened immediately after this button is pressed, their value is added to zero not multiplied by it. i.e. (3 + 4) (5 - 2) === +0+7 *3 not +0*7 *3
+  equationStringHasReduced = false; // so if new parenthesis are opened immediately after this button is pressed, their value is added to zero not multiplied by it. i.e. (3 + 4) (5 - 2) === +0+7 *3 not +0*7 *3
   clearButtons.forEach((button) => {
     buttonAnimation(button);
   });
@@ -799,24 +801,18 @@ function determineCorrectNumString() {
     numToChange.numValue = giveDefaultOperator(lastParenthesisSolution);
     numToChange.stringValue = "lastParenthesisSolution";
     return numToChange;
-  } else if (lastSolution) {
-    numToChange.numValue = giveDefaultOperator(lastSolution);
-    numToChange.stringValue = "lastSolution";
   }
   return numToChange;
 }
 
 function updateAppropriateString(numObject) {
+  console.log("num object inside updateAppropriateString: ", numObject);
   if (numObject.stringValue === "currentNumString") {
     currentNumString = numObject.numValue;
     updateDisplay(currentNumString);
   } else if (numObject.stringValue === "lastParenthesisSolution") {
     lastParenthesisSolution = numObject.numValue;
     updateDisplay(lastParenthesisSolution);
-  } else {
-    updateDisplay(numObject.numValue);
-    equationStack[0] = numObject.numValue;
-    lastSolution = numObject.numValue;
   }
   overwriteCurrentNumString = true;
 }
@@ -881,7 +877,7 @@ function giveDefaultOperator(numString) {
 
 function determineStoredOperator(currentNumString) {
   let storedOperator;
-  if (currentNumString.length === 0 && !calculateHasRun) {
+  if (currentNumString.length === 0 && !equationStringHasReduced) {
     storedOperator = "+";
   } else if (
     currentNumString.length === 1 &&
