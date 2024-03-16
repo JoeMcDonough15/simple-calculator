@@ -238,8 +238,9 @@ document.addEventListener("keyup", (e) => {
 
 document.addEventListener("keyup", (e) => {
   if (e.key === "(") {
-    handleOpenParenthesis();
-    buttonAnimation(document.getElementById("open-parenthesis"));
+    if (handleOpenParenthesis()) {
+      buttonAnimation(document.getElementById("open-parenthesis"));
+    }
   }
 });
 
@@ -252,8 +253,14 @@ document.addEventListener("keyup", (e) => {
 });
 
 document.addEventListener("keyup", (e) => {
-  if (e.key === "Escape") {
+  if (e.key === "Backspace") {
     clear();
+  }
+});
+
+document.addEventListener("keyup", (e) => {
+  if (e.key === "Escape") {
+    allClear();
   }
 });
 
@@ -608,6 +615,7 @@ function handleEquals() {
   );
   currentNumString = equationStack[0];
   equationStack[0] = "+0";
+  switchToClear(); // in case clear button says A/C because there's now nothing to clear
   equationStringHasReduced = false;
   overwriteCurrentNumString = true;
 }
@@ -683,26 +691,26 @@ function clear() {
     !trig &&
     !base
   ) {
-    blinkDisplay("0");
+    blinkDisplay("0"); // there's nothing to clear
     return;
   }
   if (isValidNumString(currentNumString)) {
     if (
       equationStack[0] !== "+0" ||
       equationStack.length > 1 ||
-      lastParenthesisSolution !== ""
+      lastParenthesisSolution
     ) {
-      currentNumString = giveDefaultOperator(currentNumString)[0];
+      currentNumString = giveDefaultOperator(currentNumString)[0]; // we're just clearing the current number, but keeping its operator, and switching this button's functionality to allClear() in case it's clicked a second time
       switchToAllClear();
     } else {
       currentNumString = "";
     }
   } else {
-    currentNumString = "";
+    currentNumString = ""; // then there's more stuff to clear in the stack, but this currentNumString isn't valid anyway, so just set it to an empty string and switch the button's functionality to allClear() in case it's clicked a second time
     switchToAllClear();
   }
   if (theta || base) {
-    customExp = "";
+    customExp = ""; // I think these two values customExp and theta could actually just be currentNumString in the event that line 704 is true
     theta = "";
   }
   updateDisplay("0");
@@ -717,47 +725,13 @@ function switchToAllClear() {
     button.removeEventListener("click", clear);
     button.addEventListener("click", allClear);
   });
-  // document.removeEventListener("keyup", (e) => {
-  //   setEscapeToClear(e);
-  // });
-  // document.addEventListener("keyup", (e) => {
-  //   setEscapeToAllClear(e);
-  // });
-  document.addEventListener("keyup", (e) => {
-    if (e.key === "Escape") {
-      allClear();
-    }
-  });
 }
-
-// function setEscapeToClear(e) {
-//   if (e.key === "Escape") {
-//     clear();
-//   }
-// }
-
-// function setEscapeToAllClear(e) {
-//   if (e.key === "Escape") {
-//     allClear();
-//   }
-// }
 
 function switchToClear() {
   clearButtons.forEach((button) => {
     button.innerText = "C";
     button.removeEventListener("click", allClear);
     button.addEventListener("click", clear);
-  });
-  // document.removeEventListener("keyup", (e) => {
-  //   setEscapeToAllClear(e);
-  // });
-  // document.addEventListener("keyup", (e) => {
-  //   setEscapeToClear(e);
-  // });
-  document.addEventListener("keyup", (e) => {
-    if (e.key === "Escape") {
-      clear();
-    }
   });
 }
 
