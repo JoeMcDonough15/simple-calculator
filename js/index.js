@@ -46,7 +46,7 @@ const displayNum = document.getElementById("display-text");
 //////// Global Variables ////////
 
 const equationStack = ["+0"];
-const operatorStack = [];
+const operatorsBeforeParentheses = [];
 let currentNumString = "";
 let lastParenthesisSolution = "";
 let base = "";
@@ -351,7 +351,7 @@ function handleOperators(givenOperator) {
   if (lastParenthesisSolution) {
     reduceEquationString(
       equationString, // last string from the stack
-      lastParenthesisSolution[0], // the operator that went in front of the parentheses (from operatorStack)
+      lastParenthesisSolution[0], // the operator that went in front of the parentheses (from operatorsBeforeParentheses)
       lastParenthesisSolution, // currentNumString (what was solved inside the last set of parentheses)
       nextOperator
     ); // operator that was just pressed
@@ -497,14 +497,14 @@ function handleOpenParenthesis() {
   if (lastParenthesisSolution) {
     reduceEquationString(
       grabLastStringInStack(equationStack), // last string from the stack
-      lastParenthesisSolution[0], // the operator that went in front of the last set of parentheses (from operatorStack)
+      lastParenthesisSolution[0], // the operator that went in front of the last set of parentheses (from operatorsBeforeParentheses)
       lastParenthesisSolution, // what was solved inside the last set of parentheses
       "=" // = acts as nextOperator because an ( character is not an operator
     );
     lastParenthesisSolution = "";
   }
   const operatorToStore = determineStoredOperator(currentNumString);
-  operatorStack.push(operatorToStore);
+  operatorsBeforeParentheses.push(operatorToStore);
   if (isValidNumString(currentNumString)) {
     currentNumString = giveDefaultOperator(currentNumString);
     equationStack[equationStack.length - 1] += currentNumString; // store the last num outside the parenthesis in equationStack so we can deal with the parenthesis first
@@ -515,7 +515,7 @@ function handleOpenParenthesis() {
 }
 
 function handleCloseParenthesis() {
-  if (operatorStack.length === 0) {
+  if (operatorsBeforeParentheses.length === 0) {
     // if there are no open parenthesis, we can't close one
     return false;
   }
@@ -540,10 +540,10 @@ function handleCloseParenthesis() {
     "="
   ); // this will update the display to whatever the solution of the parenthesis math was
   const newParenthesisSolution = equationStack.pop(); // We're now storing whatever equation string was just reduced as lastParenthesisSolution so we don't want it in equationStack anymore
-  const operatorFromStack = operatorStack.pop(); // make sure we put the operator that was outside the opened parenthesis in front of lastParenthesisSolution.  This will also make sure handleEquals() doesn't run infinitely since we are calling handleCloseParenthesis() on a loop that is based on the length of operatorStack inside handleEquals()
+  const operatorBeforeParenthesis = operatorsBeforeParentheses.pop(); // make sure we put the operator that was outside the opened parenthesis in front of lastParenthesisSolution.  This will also make sure handleEquals() doesn't run infinitely since we are calling handleCloseParenthesis() on a loop that is based on the length of operatorsBeforeParentheses inside handleEquals()
   lastParenthesisSolution = replaceOperator(
     newParenthesisSolution,
-    operatorFromStack
+    operatorBeforeParenthesis
   );
   currentNumString = "";
   currentOperator = "";
@@ -581,7 +581,7 @@ function handleEquals() {
     handleLastParenthesis();
   }
   if (equationStack.length > 1) {
-    while (operatorStack.length > 0) {
+    while (operatorsBeforeParentheses.length > 0) {
       handleCloseParenthesis();
     }
     handleLastParenthesis();
@@ -815,7 +815,6 @@ function determineCorrectNumString() {
 }
 
 function updateAppropriateString(numObject) {
-  console.log("num object inside updateAppropriateString: ", numObject);
   if (numObject.stringValue === "currentNumString") {
     currentNumString = numObject.numValue;
     updateDisplay(currentNumString);
