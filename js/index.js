@@ -74,7 +74,7 @@ posOrNegButtons.forEach((button) => {
       makePosOrNeg(numObject);
       buttonAnimation(e.target);
     } else {
-      blinkZero();
+      blinkDisplay("0");
     }
   });
 });
@@ -367,6 +367,8 @@ function handleOperators(givenOperator) {
       currentNumString,
       nextOperator
     );
+  } else {
+    blinkDisplay(grabLastNum(grabLastStringInStack(equationStack)).slice(1));
   }
   currentNumString = nextOperator;
 }
@@ -555,7 +557,7 @@ function makePosOrNeg(numObject) {
     numObject.numValue.length < 2 ||
     (numObject.numValue.length === 2 && numObject.numValue[1] === "0")
   ) {
-    blinkZero();
+    blinkDisplay("0");
     return;
   }
   if (numObject.numValue[1] === "-") {
@@ -596,6 +598,7 @@ function handleEquals() {
   currentNumString = equationStack[0];
   equationStack[0] = "+0";
   equationStringHasReduced = false;
+  overwriteCurrentNumString = true;
 }
 
 function handleLastParenthesis() {
@@ -639,6 +642,7 @@ function reduceEquationString(
   currentNumString = giveDefaultOperator(currentNumString);
   equationStack[equationStack.length - 1] += currentNumString;
   updateDisplay(currentNumString);
+  blinkDisplay(currentNumString.slice(1));
 }
 
 function calculate(num1, num2, currentOperator) {
@@ -668,7 +672,7 @@ function clear() {
     !trig &&
     !base
   ) {
-    blinkZero();
+    blinkDisplay("0");
     return;
   }
   if (isValidNumString(currentNumString)) {
@@ -907,9 +911,9 @@ function buttonAnimation(button) {
   }, 150);
 }
 
-function blinkZero() {
-  updateDisplay(" ");
+function blinkDisplay(numString) {
+  displayNum.value = " ";
   setTimeout(() => {
-    updateDisplay("0");
+    displayNum.value = numString;
   }, 30);
 }
