@@ -50,7 +50,6 @@ const operatorsBeforeParentheses = [];
 let currentNumString = "";
 let lastParenthesisSolution = "";
 let base = "";
-let customExp = "";
 let trig = "";
 let theta = "";
 let equationStringHasReduced = false;
@@ -302,11 +301,6 @@ function collapseKeypadShell(event) {
 
 function handleNums(givenNum) {
   switchToClear(); // switch the clear button back to clear from A/C in the event that was pushed
-  if (base) {
-    customExp = concatOrReplace(customExp, givenNum);
-    updateDisplay(customExp);
-    return;
-  }
   if (trig) {
     theta = concatOrReplace(theta, givenNum);
     updateDisplay(theta);
@@ -341,14 +335,13 @@ function concatOrReplace(numString, newNum) {
 
 function handleOperators(givenOperator) {
   if (
-    (base && !isValidNumString(customExp)) ||
+    (base && !isValidNumString(currentNumString)) ||
     (trig && !isValidNumString(theta))
   ) {
     return;
   }
   if (base) {
-    solveCustomExponents(base, customExp);
-    handleOperators(givenOperator); // recursion!  because solveCustomExponents() will cause base to be reset to an empty string which evaluates as false, we won't loop infinitely.
+    solveCustomExponents(base, currentNumString);
   }
   if (trig) {
     currentNumString = handleTrig();
@@ -462,6 +455,7 @@ function handleInverseFraction(numObject) {
 
 function setBase(numObject) {
   base = numObject.numValue.slice(1);
+  currentNumString = "";
 }
 
 function solveCustomExponents(baseNum, exponentNum) {
@@ -471,7 +465,6 @@ function solveCustomExponents(baseNum, exponentNum) {
   numObject.numValue = operator + solution;
   updateAppropriateString(numObject);
   base = "";
-  customExp = "";
 }
 
 ////// Trig Functions /////////
@@ -710,7 +703,7 @@ function clear() {
     switchToAllClear();
   }
   if (theta || base) {
-    customExp = ""; // I think these two values customExp and theta could actually just be currentNumString in the event that line 704 is true
+    // customExp = ""; // I think these two values customExp and theta could actually just be currentNumString in the event that line 704 is true
     theta = "";
   }
   updateDisplay("0");
