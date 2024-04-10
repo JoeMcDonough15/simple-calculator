@@ -51,7 +51,7 @@ let currentNumString = "";
 let lastParenthesisSolution = "";
 let base = "";
 let trig = "";
-let theta = "";
+// let theta = "";
 let equationStringHasReduced = false;
 let overwriteCurrentNumString = false;
 
@@ -301,11 +301,11 @@ function collapseKeypadShell(event) {
 
 function handleNums(givenNum) {
   switchToClear(); // switch the clear button back to clear from A/C in the event that was pushed
-  if (trig) {
-    theta = concatOrReplace(theta, givenNum);
-    updateDisplay(theta);
-    return;
-  }
+  // if (trig) {
+  //   theta = concatOrReplace(theta, givenNum);
+  //   updateDisplay(theta);
+  //   return;
+  // }
   if (overwriteCurrentNumString) {
     currentNumString = "";
     overwriteCurrentNumString = false;
@@ -335,8 +335,9 @@ function concatOrReplace(numString, newNum) {
 
 function handleOperators(givenOperator) {
   if (
-    (base && !isValidNumString(currentNumString)) ||
-    (trig && !isValidNumString(theta))
+    (base || trig) &&
+    !isValidNumString(currentNumString)
+    // (trig && !isValidNumString(theta))
   ) {
     return;
   }
@@ -344,7 +345,8 @@ function handleOperators(givenOperator) {
     solveCustomExponents(base, currentNumString);
   }
   if (trig) {
-    currentNumString = handleTrig();
+    // currentNumString = handleTrig();
+    handleTrig();
   }
   if (overwriteCurrentNumString) {
     overwriteCurrentNumString = false;
@@ -477,23 +479,24 @@ function determineTrigFunction(button) {
   } else {
     trig = "tan";
   }
-  theta = giveDefaultOperator(currentNumString)[0];
+  // theta = giveDefaultOperator(currentNumString)[0];
 }
 
 function handleTrig() {
   let trigSolution;
-  const operator = theta[0];
+  const operator = currentNumString[0];
   if (trig === "sin") {
-    trigSolution = math.sin(theta.slice(1));
+    trigSolution = math.sin(currentNumString.slice(1));
   } else if (trig === "cos") {
-    trigSolution = math.cos(theta.slice(1));
+    trigSolution = math.cos(currentNumString.slice(1));
   } else {
-    trigSolution = math.tan(theta.slice(1));
+    trigSolution = math.tan(currentNumString.slice(1));
   }
   trigSolution = operator + trigSolution.toString();
   trig = "";
-  theta = "";
-  return trigSolution;
+  // theta = "";
+  // return trigSolution;
+  currentNumString = trigSolution;
 }
 
 ////
@@ -702,10 +705,10 @@ function clear() {
     currentNumString = ""; // then there's more stuff to clear in the stack, but this currentNumString isn't valid anyway, so just set it to an empty string and switch the button's functionality to allClear() in case it's clicked a second time
     switchToAllClear();
   }
-  if (theta || base) {
-    // customExp = ""; // I think these two values customExp and theta could actually just be currentNumString in the event that line 704 is true
-    theta = "";
-  }
+  // if (theta || base) {
+  //   // customExp = ""; // I think these two values customExp and theta could actually just be currentNumString in the event that line 704 is true
+  //   theta = "";
+  // }
   updateDisplay("0");
   clearButtons.forEach((button) => {
     buttonAnimation(button);
@@ -735,7 +738,7 @@ function allClear() {
   lastParenthesisSolution = "";
   base = "";
   trig = "";
-  theta = "";
+  // theta = "";
   updateDisplay(currentNumString);
   switchToClear();
   equationStringHasReduced = false; // so if new parenthesis are opened immediately after this button is pressed, their value is added to zero not multiplied by it. i.e. (3 + 4) (5 - 2) === +0+7 *3 not +0*7 *3
@@ -774,10 +777,15 @@ function determineCorrectNumString() {
   // inside whatever special button function is calling this and use that to replace the correct numString
   // in here, at the top, check for trig.  if we have trig to solve, solve it and set currentNumSTring as that trig answer.
   // then continue down through the steps to prioritize currentNumString (which was just reassigned the trig value) as numToChange.stringValue.
-  if (trig && !isValidNumString(theta)) {
+  // if (trig && !isValidNumString(theta)) {
+  //   return;
+  // } else if (trig) {
+  //   currentNumString = handleTrig();
+  // }
+  if (trig && !isValidNumString(currentNumString)) {
     return;
   } else if (trig) {
-    currentNumString = handleTrig();
+    handleTrig();
   }
   const numToChange = { stringValue: "" };
   if (isValidNumString(currentNumString)) {
