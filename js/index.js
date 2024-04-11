@@ -419,6 +419,8 @@ function handleCubed(numObject) {
 }
 
 function handleFactorial(numObject) {
+  // use the built in math.factorial for this.  This is not working for negative
+  // numbers or decimals.
   const numArray = [];
   let factor = numObject.numValue;
   while (factor >= 1) {
