@@ -48,7 +48,6 @@ const displayNum = document.getElementById("display-text");
 const equationStack = ["+0"];
 const operatorsBeforeParentheses = [];
 let currentNumString = "";
-let lastParenthesisSolution = "";
 let base = "";
 let trig = "";
 let equationStringHasReduced = false;
@@ -301,7 +300,8 @@ function collapseKeypadShell(event) {
 function handleNums(givenNum) {
   switchToClear(); // switch the clear button back to clear from A/C in the event that was pushed
   if (overwriteCurrentNumString) {
-    currentNumString = "";
+    currentNumString = giveDefaultOperator(currentNumString);
+    currentNumString = currentNumString[0];
     overwriteCurrentNumString = false;
   }
   currentNumString = giveDefaultOperator(currentNumString);
@@ -346,15 +346,7 @@ function handleOperators(givenOperator) {
     handleEquals();
     return;
   }
-  if (lastParenthesisSolution) {
-    reduceEquationString(
-      equationString, // last string from the stack
-      lastParenthesisSolution[0], // the operator that went in front of the parentheses (from operatorsBeforeParentheses)
-      lastParenthesisSolution, // currentNumString (what was solved inside the last set of parentheses)
-      nextOperator
-    ); // operator that was just pressed
-    lastParenthesisSolution = "";
-  } else if (isValidNumString(currentNumString)) {
+  if (isValidNumString(currentNumString)) {
     currentNumString = giveDefaultOperator(currentNumString);
     currentNumString =
       currentNumString[0] + Number(currentNumString.slice(1)).toString(); // removes any unnecessary trailing 0's after a decimal point i.e. 12.00400 becomes 12.004
@@ -368,6 +360,7 @@ function handleOperators(givenOperator) {
   } else {
     blinkDisplay(grabLastNum(grabLastStringInStack(equationStack)).slice(1));
   }
+
   currentNumString = nextOperator;
 }
 
@@ -495,15 +488,6 @@ function handleOpenParenthesis() {
   if (base) {
     return false; // prohibit button from animating
   }
-  if (lastParenthesisSolution) {
-    reduceEquationString(
-      grabLastStringInStack(equationStack), // last string from the stack
-      lastParenthesisSolution[0], // the operator that went in front of the last set of parentheses (from operatorsBeforeParentheses)
-      lastParenthesisSolution, // what was solved inside the last set of parentheses
-      "=" // = acts as nextOperator because an ( character is not an operator
-    );
-    lastParenthesisSolution = "";
-  }
   const operatorToStore = determineStoredOperator(currentNumString);
   operatorsBeforeParentheses.push(operatorToStore);
   if (isValidNumString(currentNumString)) {
@@ -521,17 +505,14 @@ function handleCloseParenthesis() {
     // if there are no open parenthesis, we can't close one
     return false;
   }
-  if (lastParenthesisSolution) {
-    // if we close a set of parenthesis and have a set unaccounted for (lastParenthesisSolution), then that means we are closing two sets of parenthesis in a row.  The inner set has already been solved for and that's what's sitting in lastParenthesisSolution.  This current set now is closing and so we want to remove it from the equationStack and store it with its appropriate operator in lastParenthesisSolution
-    currentNumString = lastParenthesisSolution;
-    currentOperator = lastParenthesisSolution[0];
-  } else if (!isValidNumString(currentNumString)) {
+  if (!isValidNumString(currentNumString)) {
     currentNumString = fixInvalidNumString(currentNumString);
     currentOperator = currentNumString[0];
   } else {
     currentNumString = giveDefaultOperator(currentNumString);
     currentOperator = currentNumString[0];
   }
+
   // now solve what's in the parenthesis that we JUST closed
   // to do that, reduceEquationString with what we have for currentNumString, currentOperator, equationStack[lastIndex], and use '=' as nextOperator.
   const lastEquationString = grabLastStringInStack(equationStack); // this is what is inside the parenthesis we are closing.
@@ -541,13 +522,13 @@ function handleCloseParenthesis() {
     currentNumString,
     "="
   ); // this will update the display to whatever the solution of the parenthesis math was
-  const newParenthesisSolution = equationStack.pop(); // We're now storing whatever equation string was just reduced as lastParenthesisSolution so we don't want it in equationStack anymore
-  const operatorBeforeParenthesis = operatorsBeforeParentheses.pop(); // make sure we put the operator that was outside the opened parenthesis in front of lastParenthesisSolution.  This will also make sure handleEquals() doesn't run infinitely since we are calling handleCloseParenthesis() on a loop that is based on the length of operatorsBeforeParentheses inside handleEquals()
-  lastParenthesisSolution = replaceOperator(
+  const newParenthesisSolution = equationStack.pop(); // We're now storing whatever equation string was just reduced so we don't want it in equationStack anymore
+  const operatorBeforeParenthesis = operatorsBeforeParentheses.pop(); // make sure we put the operator that was outside the opened parenthesis in front.  This will also make sure handleEquals() doesn't run infinitely since we are calling handleCloseParenthesis() on a loop that is based on the length of operatorsBeforeParentheses inside handleEquals()
+  currentNumString = replaceOperator(
     newParenthesisSolution,
     operatorBeforeParenthesis
   );
-  currentNumString = "";
+  overwriteCurrentNumString = true;
   currentOperator = "";
   return true;
 }
@@ -579,14 +560,10 @@ function makePosOrNeg(numObject) {
 //////  Call Back Function for Equals Sign  //////
 
 function handleEquals() {
-  if (lastParenthesisSolution) {
-    handleLastParenthesis();
-  }
   if (equationStack.length > 1) {
     while (operatorsBeforeParentheses.length > 0) {
       handleCloseParenthesis();
     }
-    handleLastParenthesis();
   }
   if (!isValidNumString(giveDefaultOperator(currentNumString))) {
     currentNumString = fixInvalidNumString(currentNumString);
@@ -602,17 +579,6 @@ function handleEquals() {
   switchToClear(); // in case clear button says A/C because there's now nothing to clear
   equationStringHasReduced = false;
   overwriteCurrentNumString = true;
-}
-
-function handleLastParenthesis() {
-  const equationString = grabLastStringInStack(equationStack);
-  reduceEquationString(
-    equationString,
-    lastParenthesisSolution[0],
-    lastParenthesisSolution,
-    "="
-  );
-  lastParenthesisSolution = "";
 }
 
 //////  Calculator Functionality //////
@@ -671,7 +637,6 @@ function clear() {
     !isValidNumString(currentNumString) &&
     equationStack[0] === "+0" &&
     equationStack.length === 1 &&
-    lastParenthesisSolution === "" &&
     !trig &&
     !base
   ) {
@@ -679,11 +644,7 @@ function clear() {
     return;
   }
   if (isValidNumString(currentNumString)) {
-    if (
-      equationStack[0] !== "+0" ||
-      equationStack.length > 1 ||
-      lastParenthesisSolution
-    ) {
+    if (equationStack[0] !== "+0" || equationStack.length > 1) {
       currentNumString = giveDefaultOperator(currentNumString)[0]; // we're just clearing the current number, but keeping its operator, and switching this button's functionality to allClear() in case it's clicked a second time
       switchToAllClear();
     } else {
@@ -719,7 +680,6 @@ function allClear() {
   currentNumString = "";
   equationStack.length = 0;
   equationStack.push("+0");
-  lastParenthesisSolution = "";
   base = "";
   trig = "";
   updateDisplay(currentNumString);
@@ -771,10 +731,6 @@ function determineCorrectNumString() {
     numToChange.numValue = giveDefaultOperator(currentNumString);
     numToChange.stringValue = "currentNumString";
     return numToChange;
-  } else if (lastParenthesisSolution) {
-    numToChange.numValue = giveDefaultOperator(lastParenthesisSolution);
-    numToChange.stringValue = "lastParenthesisSolution";
-    return numToChange;
   }
   return numToChange;
 }
@@ -783,9 +739,6 @@ function updateAppropriateString(numObject) {
   if (numObject.stringValue === "currentNumString") {
     currentNumString = numObject.numValue;
     updateDisplay(currentNumString);
-  } else if (numObject.stringValue === "lastParenthesisSolution") {
-    lastParenthesisSolution = numObject.numValue;
-    updateDisplay(lastParenthesisSolution);
   }
   overwriteCurrentNumString = true;
 }
