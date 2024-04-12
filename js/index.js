@@ -66,9 +66,7 @@ numberButtons.forEach((button) => {
 
 posOrNegButtons.forEach((button) => {
   button.addEventListener("click", (e) => {
-    const numObject = determineCorrectNumString();
-    if (numObject.stringValue) {
-      makePosOrNeg(numObject);
+    if (makePosOrNeg()) {
       buttonAnimation(e.target);
     } else {
       blinkDisplay("0");
@@ -111,11 +109,7 @@ clearButtons.forEach((button) => {
 
 percentageButtons.forEach((button) => {
   button.addEventListener("click", (e) => {
-    const numObject = determineCorrectNumString();
-    if (numObject.stringValue) {
-      handlePercentage(numObject);
-      buttonAnimation(e.target);
-    }
+    updateNumStringInPlace(handlePercentage, e.target);
   });
 });
 
@@ -145,41 +139,25 @@ eulerRaisedButtons.forEach((button) => {
 
 squareButtons.forEach((button) => {
   button.addEventListener("click", (e) => {
-    const numObject = determineCorrectNumString();
-    if (numObject.stringValue) {
-      handleSquared(numObject);
-      buttonAnimation(e.target);
-    }
+    updateNumStringInPlace(handleSquared, e.target);
   });
 });
 
 cubeButtons.forEach((button) => {
   button.addEventListener("click", (e) => {
-    const numObject = determineCorrectNumString();
-    if (numObject.stringValue) {
-      handleCubed(numObject);
-      buttonAnimation(e.target);
-    }
+    updateNumStringInPlace(handleCubed, e.target);
   });
 });
 
 factorialButtons.forEach((button) => {
   button.addEventListener("click", (e) => {
-    const numObject = determineCorrectNumString();
-    if (numObject.stringValue) {
-      handleFactorial(numObject);
-      buttonAnimation(e.target);
-    }
+    updateNumStringInPlace(handleFactorial, e.target);
   });
 });
 
 inverseFractionButtons.forEach((button) => {
   button.addEventListener("click", (e) => {
-    const numObject = determineCorrectNumString();
-    if (numObject.stringValue) {
-      handleInverseFraction(numObject);
-      buttonAnimation(e.target);
-    }
+    updateNumStringInPlace(handleInverseFraction, e.target);
   });
 });
 
@@ -188,9 +166,8 @@ customExponentButtons.forEach((button) => {
     if (base) {
       return;
     }
-    const numObject = determineCorrectNumString();
-    if (numObject.stringValue) {
-      setBase(numObject);
+    if (isValidNumString(currentNumString)) {
+      setBase();
       buttonAnimation(e.target);
     }
   });
@@ -366,11 +343,9 @@ function handleOperators(givenOperator) {
 
 /// Call Back Functions for non number/operator characters //////
 
-function handlePercentage(numObject) {
-  const operator = numObject.numValue[0];
-  let numToChange = math.chain(Number(numObject.numValue.slice(1))).divide(100);
-  numObject.numValue = operator + numToChange.toString();
-  updateAppropriateString(numObject);
+function handlePercentage(num) {
+  const percentAsDecimal = math.chain(num).divide(100).toString();
+  return percentAsDecimal;
 }
 
 function handlePi() {
@@ -392,64 +367,43 @@ function handleEuler() {
 function handleRaiseEuler() {
   handleEuler();
   base = currentNumString;
-  overwriteCurrentNumString = false;
 }
 
-function handleSquared(numObject) {
-  const operator = numObject.numValue[0];
-  const base = Number(numObject.numValue.slice(1));
-  const updatedNum = math.pow(base, 2).toString();
-  numObject.numValue = operator + updatedNum;
-  updateAppropriateString(numObject);
+function handleSquared(num) {
+  const squaredNumString = math.pow(num, 2).toString();
+  return squaredNumString;
 }
 
-function handleCubed(numObject) {
-  const operator = numObject.numValue[0];
-  const base = Number(numObject.numValue.slice(1));
-  const updatedNum = math.pow(base, 3).toString();
-  numObject.numValue = operator + updatedNum;
-  updateAppropriateString(numObject);
+function handleCubed(num) {
+  const cubedNumString = math.pow(num, 3).toString();
+  return cubedNumString;
 }
 
-function handleFactorial(numObject) {
-  // use the built in math.factorial for this.  This is not working for negative
-  // numbers or decimals.
-  const numArray = [];
-  let factor = numObject.numValue;
-  while (factor >= 1) {
-    numArray.push(factor);
-    factor -= 1;
-  }
-  const solution = numArray.reduce((accum, currentVal) => {
-    return math.chain(accum).multiply(currentVal);
-  });
-  numObject.numValue = solution.toString();
-  updateAppropriateString(numObject);
+function handleFactorial(num) {
+  const factorialString = math.factorial(num).toString();
+  return factorialString;
 }
 
-function handleInverseFraction(numObject) {
-  const operator = numObject.numValue[0];
-  const denominator = Number(numObject.numValue.slice(1));
+function handleInverseFraction(num) {
   const inverseFractionAsDecimal = math
     .chain(100)
-    .divide(denominator)
+    .divide(num)
     .divide(100)
     .toString();
-  numObject.numValue = operator + inverseFractionAsDecimal;
-  updateAppropriateString(numObject);
+  return inverseFractionAsDecimal;
 }
 
-function setBase(numObject) {
-  base = numObject.numValue.slice(1);
+function setBase() {
+  base = currentNumString;
   currentNumString = "";
 }
 
-function solveCustomExponents(baseNum, exponentNum) {
-  const numObject = determineCorrectNumString();
-  const operator = numObject.numValue[0];
-  const solution = math.pow(Number(baseNum), Number(exponentNum)).toString();
-  numObject.numValue = operator + solution;
-  updateAppropriateString(numObject);
+function solveCustomExponents() {
+  const operator = base[0];
+  const solution = math
+    .pow(Number(base.slice(1)), Number(currentNumString))
+    .toString();
+  currentNumString = operator + solution;
   base = "";
 }
 
@@ -535,26 +489,26 @@ function handleCloseParenthesis() {
 
 //////  Call Back Function to handle Positive/Negative Numbers  //////
 
-function makePosOrNeg(numObject) {
+function makePosOrNeg() {
   if (
-    numObject.numValue.length < 2 ||
-    (numObject.numValue.length === 2 && numObject.numValue[1] === "0")
+    currentNumString.length < 2 ||
+    (currentNumString.length === 2 && currentNumString[1] === "0")
   ) {
     blinkDisplay("0");
-    return;
+    return false;
   }
-  if (numObject.numValue[1] === "-") {
-    numObject.numValue = `${numObject.numValue.slice(
-      0,
-      1
-    )}${numObject.numValue.slice(2)}`;
+  if (currentNumString[1] === "-") {
+    currentNumString = `${currentNumString.slice(0, 1)}${currentNumString.slice(
+      2
+    )}`;
   } else {
-    numObject.numValue = `${numObject.numValue.slice(
+    currentNumString = `${currentNumString.slice(
       0,
       1
-    )}-${numObject.numValue.slice(1)}`;
+    )}-${currentNumString.slice(1)}`;
   }
-  updateAppropriateString(numObject);
+  updateDisplay(currentNumString);
+  return true;
 }
 
 //////  Call Back Function for Equals Sign  //////
@@ -715,31 +669,25 @@ function updateDisplay(numString) {
 
 // helper functions
 
-function determineCorrectNumString() {
-  // determine the correct numString we are changing, and return a string with its name.  Use that information
-  // inside whatever special button function is calling this and use that to replace the correct numString
-  // in here, at the top, check for trig.  if we have trig to solve, solve it and set currentNumSTring as that trig answer.
-  // then continue down through the steps to prioritize currentNumString (which was just reassigned the trig value) as numToChange.stringValue.
-
-  if (trig && !isValidNumString(currentNumString)) {
+function updateNumStringInPlace(functionToUpdateNumString, eventTarget) {
+  // this is going to update currentNumString by calling whatever function was passed into it
+  // first, it should check to make sure the currentNumString is valid. // only if currentNumString is valid, should we call the function on it
+  if (!isValidNumString(currentNumString)) {
     return;
-  } else if (trig) {
-    handleTrig();
   }
-  const numToChange = { stringValue: "" };
-  if (isValidNumString(currentNumString)) {
-    numToChange.numValue = giveDefaultOperator(currentNumString);
-    numToChange.stringValue = "currentNumString";
-    return numToChange;
-  }
-  return numToChange;
-}
-
-function updateAppropriateString(numObject) {
-  if (numObject.stringValue === "currentNumString") {
-    currentNumString = numObject.numValue;
-    updateDisplay(currentNumString);
-  }
+  // store the operator
+  const operator = currentNumString[0];
+  // remove the operator, turn it into a number
+  const num = Number(removeOperator(currentNumString));
+  // call the function passed in
+  const newNumString = functionToUpdateNumString(num);
+  // reassign currentNumSTring the value of the string returned by passed in function and its original operator put in front
+  currentNumString = operator + newNumString;
+  // and animate the button that called this function
+  buttonAnimation(eventTarget);
+  // show the user the new currentNumString
+  updateDisplay(currentNumString);
+  // we should lastly set overwriteCurrentNumString to true so if they hit another number it just overwrites this
   overwriteCurrentNumString = true;
 }
 
@@ -819,6 +767,10 @@ function determineStoredOperator(currentNumString) {
 function replaceOperator(currentNumString, newOperator) {
   currentNumString = `${newOperator}${currentNumString.slice(1)}`;
   return currentNumString;
+}
+
+function removeOperator(numString) {
+  return numString.slice(1);
 }
 
 function buttonAnimation(button) {
