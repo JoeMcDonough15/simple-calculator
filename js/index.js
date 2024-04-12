@@ -66,11 +66,7 @@ numberButtons.forEach((button) => {
 
 posOrNegButtons.forEach((button) => {
   button.addEventListener("click", (e) => {
-    if (makePosOrNeg()) {
-      buttonAnimation(e.target);
-    } else {
-      blinkDisplay("0");
-    }
+    updateNumStringInPlace(makePosOrNeg, e.target);
   });
 });
 
@@ -344,7 +340,7 @@ function handleOperators(givenOperator) {
 /// Call Back Functions for non number/operator characters //////
 
 function handlePercentage(num) {
-  const percentAsDecimal = math.chain(num).divide(100).toString();
+  const percentAsDecimal = math.chain(num).divide(100);
   return percentAsDecimal;
 }
 
@@ -370,26 +366,22 @@ function handleRaiseEuler() {
 }
 
 function handleSquared(num) {
-  const squaredNumString = math.pow(num, 2).toString();
+  const squaredNumString = math.pow(num, 2);
   return squaredNumString;
 }
 
 function handleCubed(num) {
-  const cubedNumString = math.pow(num, 3).toString();
+  const cubedNumString = math.pow(num, 3);
   return cubedNumString;
 }
 
 function handleFactorial(num) {
-  const factorialString = math.factorial(num).toString();
+  const factorialString = math.factorial(num);
   return factorialString;
 }
 
 function handleInverseFraction(num) {
-  const inverseFractionAsDecimal = math
-    .chain(100)
-    .divide(num)
-    .divide(100)
-    .toString();
+  const inverseFractionAsDecimal = math.chain(100).divide(num).divide(100);
   return inverseFractionAsDecimal;
 }
 
@@ -483,32 +475,21 @@ function handleCloseParenthesis() {
     operatorBeforeParenthesis
   );
   overwriteCurrentNumString = true;
-  currentOperator = "";
+  // currentOperator = "";
   return true;
 }
 
 //////  Call Back Function to handle Positive/Negative Numbers  //////
 
-function makePosOrNeg() {
-  if (
-    currentNumString.length < 2 ||
-    (currentNumString.length === 2 && currentNumString[1] === "0")
-  ) {
-    blinkDisplay("0");
-    return false;
+function makePosOrNeg(num) {
+  if (num === 0) {
+    return num;
   }
-  if (currentNumString[1] === "-") {
-    currentNumString = `${currentNumString.slice(0, 1)}${currentNumString.slice(
-      2
-    )}`;
+  if (num < 0) {
+    return math.abs(num);
   } else {
-    currentNumString = `${currentNumString.slice(
-      0,
-      1
-    )}-${currentNumString.slice(1)}`;
+    return 0 - num;
   }
-  updateDisplay(currentNumString);
-  return true;
 }
 
 //////  Call Back Function for Equals Sign  //////
@@ -644,16 +625,24 @@ function allClear() {
   });
 }
 
-function isValidNumString(localNumString) {
-  if (
-    !(
-      localNumString.length === 0 ||
-      (localNumString.length === 1 && isOperator(localNumString))
-    )
-  ) {
-    return true;
+function updateNumStringInPlace(functionToUpdateNumString, eventTarget) {
+  if (!isValidNumString(currentNumString)) {
+    const lastNumStringFromStack = grabLastNum(
+      grabLastStringInStack(equationStack)
+    );
+    equationStack[equationStack.length - 1] = cutFromNumString(
+      grabLastStringInStack(equationStack),
+      lastNumStringFromStack.length
+    );
+    currentNumString = lastNumStringFromStack;
   }
-  return false;
+  const operator = currentNumString[0];
+  const num = Number(removeOperator(currentNumString));
+  const newNumString = functionToUpdateNumString(num).toString();
+  currentNumString = operator + newNumString;
+  buttonAnimation(eventTarget);
+  updateDisplay(currentNumString);
+  overwriteCurrentNumString = true;
 }
 
 function updateDisplay(numString) {
@@ -665,30 +654,21 @@ function updateDisplay(numString) {
     numString = numString.slice(1);
   }
   displayNum.value = numString;
+  blinkDisplay(numString);
 }
 
 // helper functions
 
-function updateNumStringInPlace(functionToUpdateNumString, eventTarget) {
-  // this is going to update currentNumString by calling whatever function was passed into it
-  // first, it should check to make sure the currentNumString is valid. // only if currentNumString is valid, should we call the function on it
-  if (!isValidNumString(currentNumString)) {
-    return;
+function isValidNumString(localNumString) {
+  if (
+    !(
+      localNumString.length === 0 ||
+      (localNumString.length === 1 && isOperator(localNumString))
+    )
+  ) {
+    return true;
   }
-  // store the operator
-  const operator = currentNumString[0];
-  // remove the operator, turn it into a number
-  const num = Number(removeOperator(currentNumString));
-  // call the function passed in
-  const newNumString = functionToUpdateNumString(num);
-  // reassign currentNumSTring the value of the string returned by passed in function and its original operator put in front
-  currentNumString = operator + newNumString;
-  // and animate the button that called this function
-  buttonAnimation(eventTarget);
-  // show the user the new currentNumString
-  updateDisplay(currentNumString);
-  // we should lastly set overwriteCurrentNumString to true so if they hit another number it just overwrites this
-  overwriteCurrentNumString = true;
+  return false;
 }
 
 function grabLastStringInStack(givenEquationStack) {
@@ -749,24 +729,21 @@ function giveDefaultOperator(numString) {
   return numString;
 }
 
-function determineStoredOperator(currentNumString) {
+function determineStoredOperator(numString) {
   let storedOperator;
-  if (currentNumString.length === 0 && !equationStringHasReduced) {
+  if (numString.length === 0 && !equationStringHasReduced) {
     storedOperator = "+";
-  } else if (
-    currentNumString.length === 1 &&
-    !isValidNumString(currentNumString)
-  ) {
-    storedOperator = currentNumString;
+  } else if (numString.length === 1 && !isValidNumString(numString)) {
+    storedOperator = numString;
   } else {
     storedOperator = "*";
   }
   return storedOperator;
 }
 
-function replaceOperator(currentNumString, newOperator) {
-  currentNumString = `${newOperator}${currentNumString.slice(1)}`;
-  return currentNumString;
+function replaceOperator(numString, newOperator) {
+  numString = `${newOperator}${numString.slice(1)}`;
+  return numString;
 }
 
 function removeOperator(numString) {
