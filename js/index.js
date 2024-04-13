@@ -21,25 +21,23 @@ const EQUALS_OPERATORS = "=Enter";
 //////// DOM Elements ////////
 
 const calculatorShell = document.getElementById("calculator-shell");
-const expandableKeypadShell = document.getElementById(
-  "expandable-keypad-shell"
-);
-const expandKeypadButton = document.getElementById("expand-keypad");
-const clearButtons = document.querySelectorAll(".btn__clear");
+const clearButton = document.getElementById("clear-button");
 const numberButtons = document.querySelectorAll(".btn__num");
 const operatorButtons = document.querySelectorAll(".btn__operator");
-const openParenthesisButtons = document.querySelectorAll(".open-parenthesis");
-const closeParenthesisButtons = document.querySelectorAll(".close-parenthesis");
-const posOrNegButtons = document.querySelectorAll(".toggle-negative");
-const percentageButtons = document.querySelectorAll(".percentage-button");
-const piButtons = document.querySelectorAll(".pi");
-const squareButtons = document.querySelectorAll(".square");
-const cubeButtons = document.querySelectorAll(".cube");
-const customExponentButtons = document.querySelectorAll(".custom-exponent");
-const eulerButtons = document.querySelectorAll(".euler");
-const factorialButtons = document.querySelectorAll(".factorial");
-const inverseFractionButtons = document.querySelectorAll(".btn__inverse");
-const eulerRaisedButtons = document.querySelectorAll(".e-raised");
+const openParenthesisButton = document.getElementById("open-parenthesis");
+const closeParenthesisButton = document.getElementById("close-parenthesis");
+const posOrNegButton = document.getElementById("toggle-negative");
+const percentageButton = document.getElementById("percentage-button");
+const piButton = document.getElementById("pi-button");
+const squareButton = document.getElementById("square-button");
+const cubeButton = document.getElementById("cube-button");
+const customExponentButton = document.getElementById("custom-exponent-button");
+const eulerButton = document.getElementById("euler-button");
+const factorialButton = document.getElementById("factorial-button");
+const inverseFractionButton = document.getElementById(
+  "inverse-fraction-button"
+);
+const eulerRaisedButton = document.getElementById("euler-raised-button");
 const trigButtons = document.querySelectorAll(".btn__trig");
 const displayNum = document.getElementById("display-text");
 
@@ -64,10 +62,8 @@ numberButtons.forEach((button) => {
   });
 });
 
-posOrNegButtons.forEach((button) => {
-  button.addEventListener("click", (e) => {
-    updateNumStringInPlace(makePosOrNeg, e.target);
-  });
+posOrNegButton.addEventListener("click", (e) => {
+  updateNumStringInPlace(makePosOrNeg, e.target);
 });
 
 // Operator Buttons //
@@ -81,92 +77,68 @@ operatorButtons.forEach((button) => {
 
 // Non-Number/Non-Operator Buttons //
 
-openParenthesisButtons.forEach((button) => {
-  button.addEventListener("click", (e) => {
-    if (handleOpenParenthesis()) {
-      buttonAnimation(e.target);
-    }
-  });
-});
-
-closeParenthesisButtons.forEach((button) => {
-  button.addEventListener("click", (e) => {
-    if (handleCloseParenthesis()) {
-      buttonAnimation(e.target);
-    }
-  });
-});
-
-clearButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    clear();
-  });
-});
-
-percentageButtons.forEach((button) => {
-  button.addEventListener("click", (e) => {
-    updateNumStringInPlace(handlePercentage, e.target);
-  });
-});
-
-piButtons.forEach((button) => {
-  button.addEventListener("click", (e) => {
-    handlePi();
+openParenthesisButton.addEventListener("click", (e) => {
+  if (handleOpenParenthesis()) {
     buttonAnimation(e.target);
-  });
+  }
 });
 
-eulerButtons.forEach((button) => {
-  button.addEventListener("click", (e) => {
-    handleEuler();
+closeParenthesisButton.addEventListener("click", (e) => {
+  if (handleCloseParenthesis()) {
     buttonAnimation(e.target);
-  });
+  }
 });
 
-eulerRaisedButtons.forEach((button) => {
-  button.addEventListener("click", (e) => {
-    if (base) {
-      return;
-    }
-    handleRaiseEuler();
+clearButton.addEventListener("click", () => {
+  clear();
+});
+
+percentageButton.addEventListener("click", (e) => {
+  updateNumStringInPlace(handlePercentage, e.target);
+});
+
+piButton.addEventListener("click", (e) => {
+  handlePi();
+  buttonAnimation(e.target);
+});
+
+eulerButton.addEventListener("click", (e) => {
+  handleEuler();
+  buttonAnimation(e.target);
+});
+
+eulerRaisedButton.addEventListener("click", (e) => {
+  if (base) {
+    return;
+  }
+  handleRaiseEuler();
+  buttonAnimation(e.target);
+});
+
+squareButton.addEventListener("click", (e) => {
+  updateNumStringInPlace(handleSquared, e.target);
+});
+
+cubeButton.addEventListener("click", (e) => {
+  updateNumStringInPlace(handleCubed, e.target);
+});
+
+factorialButton.addEventListener("click", (e) => {
+  updateNumStringInPlace(handleFactorial, e.target);
+});
+
+inverseFractionButton.addEventListener("click", (e) => {
+  updateNumStringInPlace(handleInverseFraction, e.target);
+});
+
+customExponentButton.addEventListener("click", (e) => {
+  if (base) {
+    return;
+  }
+  if (isValidNumString(currentNumString)) {
+    setBase();
     buttonAnimation(e.target);
-  });
-});
-
-squareButtons.forEach((button) => {
-  button.addEventListener("click", (e) => {
-    updateNumStringInPlace(handleSquared, e.target);
-  });
-});
-
-cubeButtons.forEach((button) => {
-  button.addEventListener("click", (e) => {
-    updateNumStringInPlace(handleCubed, e.target);
-  });
-});
-
-factorialButtons.forEach((button) => {
-  button.addEventListener("click", (e) => {
-    updateNumStringInPlace(handleFactorial, e.target);
-  });
-});
-
-inverseFractionButtons.forEach((button) => {
-  button.addEventListener("click", (e) => {
-    updateNumStringInPlace(handleInverseFraction, e.target);
-  });
-});
-
-customExponentButtons.forEach((button) => {
-  button.addEventListener("click", (e) => {
-    if (base) {
-      return;
-    }
-    if (isValidNumString(currentNumString)) {
-      setBase();
-      buttonAnimation(e.target);
-    }
-  });
+  }
 });
 
 trigButtons.forEach((button) => {
@@ -175,10 +147,6 @@ trigButtons.forEach((button) => {
     buttonAnimation(e.target);
   });
 });
-
-// Expandable Keypad Console
-
-expandKeypadButton.addEventListener("click", expandKeypadShell);
 
 ////// Keyup Event Listeners //////
 
@@ -245,28 +213,6 @@ document.addEventListener("keyup", (e) => {
 ////// Functions //////
 
 ////// Call Back Functions //////
-
-////// Call Back Functions for Expanding and Collapsing Keypad Shell //////
-
-function expandKeypadShell(event) {
-  calculatorShell.classList.add("straight-bottom-left-border");
-  expandableKeypadShell.classList.add("expanded-shell");
-  setTimeout(() => {
-    expandableKeypadShell.classList.add("higher-stacking-index");
-  }, "500");
-  event.target.addEventListener("click", collapseKeypadShell);
-  event.target.removeEventListener("click", expandKeypadShell);
-}
-
-function collapseKeypadShell(event) {
-  expandableKeypadShell.classList.remove("higher-stacking-index");
-  setTimeout(() => {
-    expandableKeypadShell.classList.remove("expanded-shell");
-    calculatorShell.classList.remove("straight-bottom-left-border");
-  }, "250");
-  event.target.addEventListener("click", expandKeypadShell);
-  event.target.removeEventListener("click", collapseKeypadShell);
-}
 
 ////// Call Back Functions for Numbers and Operators //////
 
@@ -402,31 +348,24 @@ function solveCustomExponents() {
 ////// Trig Functions /////////
 
 function determineTrigFunction(button) {
-  if (button.classList.contains("sin")) {
-    trig = "sin";
-  } else if (button.classList.contains("cos")) {
-    trig = "cos";
-  } else {
-    trig = "tan";
-  }
+  trig = button.getAttribute("id");
 }
 
 function handleTrig() {
   let trigSolution;
   const operator = currentNumString[0];
+  const theta = Number(currentNumString.slice(1));
   if (trig === "sin") {
-    trigSolution = math.sin(currentNumString.slice(1));
+    trigSolution = math.sin(theta);
   } else if (trig === "cos") {
-    trigSolution = math.cos(currentNumString.slice(1));
+    trigSolution = math.cos(theta);
   } else {
-    trigSolution = math.tan(currentNumString.slice(1));
+    trigSolution = math.tan(theta);
   }
   trigSolution = operator + trigSolution.toString();
   trig = "";
   currentNumString = trigSolution;
 }
-
-////
 
 //////  Call Back Functions for Parentheses  //////
 
@@ -590,25 +529,19 @@ function clear() {
     switchToAllClear();
   }
   updateDisplay("0");
-  clearButtons.forEach((button) => {
-    buttonAnimation(button);
-  });
+  buttonAnimation(clearButton);
 }
 
 function switchToAllClear() {
-  clearButtons.forEach((button) => {
-    button.innerText = "A/C";
-    button.removeEventListener("click", clear);
-    button.addEventListener("click", allClear);
-  });
+  clearButton.innerText = "A/C";
+  clearButton.removeEventListener("click", clear);
+  clearButton.addEventListener("click", allClear);
 }
 
 function switchToClear() {
-  clearButtons.forEach((button) => {
-    button.innerText = "C";
-    button.removeEventListener("click", allClear);
-    button.addEventListener("click", clear);
-  });
+  clearButton.innerText = "C";
+  clearButton.removeEventListener("click", allClear);
+  clearButton.addEventListener("click", clear);
 }
 
 function allClear() {
@@ -620,9 +553,7 @@ function allClear() {
   updateDisplay(currentNumString);
   switchToClear();
   equationStringHasReduced = false; // so if new parenthesis are opened immediately after this button is pressed, their value is added to zero not multiplied by it. i.e. (3 + 4) (5 - 2) === +0+7 *3 not +0*7 *3
-  clearButtons.forEach((button) => {
-    buttonAnimation(button);
-  });
+  buttonAnimation(clearButton);
 }
 
 function updateNumStringInPlace(functionToUpdateNumString, eventTarget) {
