@@ -286,7 +286,7 @@ body {
   }
 
   .display-text {
-    font-size: 2.5rem;
+    font-size: 3rem;
   }
 }
 
@@ -302,7 +302,7 @@ body {
   }
 
   .display-window {
-    padding: 0.6em 0.25em;
+    padding: 0.3em 0.25em;
   }
 
   .keypad {
