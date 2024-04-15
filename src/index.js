@@ -11,8 +11,17 @@ const SUBTRACTION = "-";
 const EQUALS_OPERATORS = "=Enter";
 
 // //////// DOM Elements ////////
-
+const mainContainer = document.getElementById("main-container");
 const calculatorShell = document.getElementById("calculator-shell");
+const displayWindow = document.getElementById("display-window");
+const allButtons = Array.from(document.querySelectorAll(".btn"));
+const darkModeElements = [
+  mainContainer,
+  calculatorShell,
+  displayWindow,
+  allButtons,
+];
+const toggleDarkModeButton = document.getElementById("toggle-dark-mode");
 const clearButton = document.getElementById("clear-button");
 const numberButtons = document.querySelectorAll(".btn__num");
 const operatorButtons = document.querySelectorAll(".btn__operator");
@@ -49,9 +58,25 @@ function buttonAnimation(button) {
   }, 150);
 }
 
+function toggleDarkMode(elementsArray) {
+  elementsArray.forEach((element) => {
+    if (element.constructor === Array) {
+      toggleDarkMode(element);
+    } else {
+      element.classList.toggle("dark");
+    }
+  });
+}
+
 ////// Event Listeners ////////
 
 //// Click Event Listeners //////
+
+// Toggle Dark Mode //
+
+toggleDarkModeButton.addEventListener("click", () => {
+  toggleDarkMode(darkModeElements);
+});
 
 // Number Buttons //
 
