@@ -10,7 +10,6 @@ const EQUALS_OPERATORS = "=Enter";
 
 class Calculator {
   equationStack;
-  operatorsBeforeParentheses;
   currentNumString;
   numToDisplay;
   base;
@@ -21,7 +20,6 @@ class Calculator {
 
   constructor() {
     this.equationStack = ["+0"];
-    this.operatorsBeforeParentheses = [];
     this.currentNumString = "";
     this.numToDisplay = "0";
     this.base = "";
@@ -120,8 +118,8 @@ class Calculator {
     return lastNum;
   }
 
-  grabLastStringInStack(givenEquationStack) {
-    return givenEquationStack[givenEquationStack.length - 1];
+  grabLastStringInStack() {
+    return this.equationStack[this.equationStack.length - 1];
   }
 
   isOperator(char) {
@@ -130,9 +128,7 @@ class Calculator {
 
   updateNumToDisplay(numString) {
     if (numString.length === 0) {
-      numString = this.grabLastNum(
-        this.grabLastStringInStack(this.equationStack)
-      );
+      numString = this.grabLastNum(this.grabLastStringInStack());
     }
     const firstChar = numString[0];
     if (this.isOperator(firstChar)) {
@@ -232,11 +228,13 @@ class Calculator {
       return false; // prohibit button from animating
     }
     const operatorToStore = this.determineStoredOperator(this.currentNumString);
-    this.operatorsBeforeParentheses.push(operatorToStore);
     if (this.isValidNumString(this.currentNumString)) {
-      this.currentNumString = this.giveDefaultOperator(this.currentNumString);
+      this.currentNumString =
+        this.giveDefaultOperator(this.currentNumString) + operatorToStore;
       this.equationStack[this.equationStack.length - 1] +=
-        this.currentNumString; // store the last num outside the parenthesis in equationStack so we can deal with the parenthesis first
+        this.currentNumString; // store the last num as well as the operator right before the parenthesis in equationStack so we can deal with the parenthesis first
+    } else {
+      this.equationStack[this.equationStack.length - 1] += operatorToStore; // if currentNumString is not valid, just store the operator outside these parentheses we're opening
     }
     this.equationStack.push("+0");
     this.currentNumString = "";
@@ -245,7 +243,7 @@ class Calculator {
   }
 
   handleCloseParenthesis() {
-    if (this.operatorsBeforeParentheses.length === 0) {
+    if (this.equationStack.length === 1) {
       // if there are no open parenthesis, we can't close one
       return false;
     }
@@ -259,10 +257,14 @@ class Calculator {
     // to do that, reduceEquationString with what we have for currentNumString, currentOperator, equationStack[lastIndex], and use '=' as nextOperator.
     this.reduceEquationString("="); // this will update the display to whatever the solution of the parenthesis math was
     const newParenthesisSolution = this.equationStack.pop(); // We're now storing whatever equation string was just reduced so we don't want it in equationStack anymore
-    const operatorBeforeParenthesis = this.operatorsBeforeParentheses.pop(); // make sure we put the operator that was outside the opened parenthesis in front.  This will also make sure handleEquals() doesn't run infinitely since we are calling handleCloseParenthesis() on a loop that is based on the length of operatorsBeforeParentheses inside handleEquals()
+    const lastNumStringInStack = this.grabLastStringInStack(); // last numString of equation stack
+    const operatorBeforeParenthesisSolution =
+      lastNumStringInStack[lastNumStringInStack.length - 1]; // last character of lastNumStringInStack
+    this.equationStack[this.equationStack.length - 1] =
+      lastNumStringInStack.slice(0, lastNumStringInStack.length - 1); // replace the last numString in the equationStack with that last character now removed
     this.currentNumString = this.replaceOperator(
       newParenthesisSolution,
-      operatorBeforeParenthesis
+      operatorBeforeParenthesisSolution
     );
     this.overwriteCurrentNumString = true;
     return true;
@@ -284,10 +286,8 @@ class Calculator {
   //////  Call Back Function for Equals Sign  //////
 
   handleEquals() {
-    if (this.equationStack.length > 1) {
-      while (this.operatorsBeforeParentheses.length > 0) {
-        this.handleCloseParenthesis();
-      }
+    while (this.equationStack.length > 1) {
+      this.handleCloseParenthesis();
     }
     if (
       !this.isValidNumString(this.giveDefaultOperator(this.currentNumString))
@@ -306,7 +306,7 @@ class Calculator {
 
   reduceEquationString(nextOperator) {
     let currentOperator = this.currentNumString[0];
-    let equationString = this.grabLastStringInStack(this.equationStack);
+    let equationString = this.grabLastStringInStack();
     if (!this.equationStringHasReduced) {
       this.equationStringHasReduced = true;
     }
@@ -400,10 +400,10 @@ class Calculator {
   updateNumStringInPlace(functionToUpdateNumString) {
     if (!this.isValidNumString(this.currentNumString)) {
       const lastNumStringFromStack = this.grabLastNum(
-        this.grabLastStringInStack(this.equationStack) // Is there any time grabLastStringInStack is not referring to this.equationStack?  If not, we shouldn't need to pass an argument to it
+        this.grabLastStringInStack()
       );
       this.equationStack[this.equationStack.length - 1] = this.cutFromNumString(
-        this.grabLastStringInStack(this.equationStack),
+        this.grabLastStringInStack(),
         lastNumStringFromStack.length
       );
       this.currentNumString = lastNumStringFromStack;
