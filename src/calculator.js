@@ -45,10 +45,7 @@ class Calculator {
   }
 
   handleOperators(givenOperator) {
-    if (
-      (this.base || this.trig) &&
-      !this.isValidNumString(this.currentNumString)
-    ) {
+    if ((this.base || this.trig) && !this.isValidNumString()) {
       return;
     }
     if (this.base) {
@@ -64,7 +61,7 @@ class Calculator {
       this.handleEquals();
       return;
     }
-    if (this.isValidNumString(this.currentNumString)) {
+    if (this.isValidNumString()) {
       this.currentNumString = this.giveDefaultOperator(this.currentNumString);
       this.currentNumString =
         this.currentNumString[0] +
@@ -132,7 +129,7 @@ class Calculator {
       return;
     }
     let numString;
-    if (this.isValidNumString(this.currentNumString)) {
+    if (this.isValidNumString()) {
       numString = this.currentNumString;
     } else {
       numString = this.grabLastNum(this.grabLastStringInStack());
@@ -234,8 +231,8 @@ class Calculator {
     if (this.base) {
       return false; // prohibit button from animating
     }
-    const operatorToStore = this.determineStoredOperator(this.currentNumString);
-    if (this.isValidNumString(this.currentNumString)) {
+    const operatorToStore = this.determineStoredOperator();
+    if (this.isValidNumString()) {
       this.currentNumString =
         this.giveDefaultOperator(this.currentNumString) + operatorToStore;
       this.equationStack[this.equationStack.length - 1] +=
@@ -254,7 +251,7 @@ class Calculator {
       // if there are no open parenthesis, we can't close one
       return false;
     }
-    if (!this.isValidNumString(this.currentNumString)) {
+    if (!this.isValidNumString()) {
       this.currentNumString = this.fixInvalidNumString(this.currentNumString);
     }
 
@@ -360,7 +357,7 @@ class Calculator {
 
   clear() {
     if (
-      !this.isValidNumString(this.currentNumString) &&
+      !this.isValidNumString() &&
       this.equationStack[0] === "+0" &&
       this.equationStack.length === 1 &&
       !this.trig &&
@@ -368,7 +365,7 @@ class Calculator {
     ) {
       return;
     }
-    if (this.isValidNumString(this.currentNumString)) {
+    if (this.isValidNumString()) {
       if (this.equationStack[0] !== "+0" || this.equationStack.length > 1) {
         this.currentNumString = this.giveDefaultOperator(
           this.currentNumString
@@ -404,7 +401,7 @@ class Calculator {
   }
 
   updateNumStringInPlace(functionToUpdateNumString) {
-    if (!this.isValidNumString(this.currentNumString)) {
+    if (!this.isValidNumString()) {
       const lastNumStringFromStack = this.grabLastNum(
         this.grabLastStringInStack()
       );
@@ -424,11 +421,12 @@ class Calculator {
 
   // helper functions
 
-  isValidNumString(localNumString) {
+  isValidNumString() {
     if (
       !(
-        localNumString.length === 0 ||
-        (localNumString.length === 1 && this.isOperator(localNumString))
+        this.currentNumString.length === 0 ||
+        (this.currentNumString.length === 1 &&
+          this.isOperator(this.currentNumString))
       )
     ) {
       return true;
@@ -462,12 +460,12 @@ class Calculator {
     );
   }
 
-  determineStoredOperator(numString) {
+  determineStoredOperator() {
     let storedOperator;
-    if (numString.length === 0 && !this.equationStringHasReduced) {
+    if (this.currentNumString.length === 0 && !this.equationStringHasReduced) {
       storedOperator = "+";
-    } else if (numString.length === 1 && !this.isValidNumString(numString)) {
-      storedOperator = numString;
+    } else if (this.currentNumString.length === 1 && !this.isValidNumString()) {
+      storedOperator = this.currentNumString;
     } else {
       storedOperator = "*";
     }
