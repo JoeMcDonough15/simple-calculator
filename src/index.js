@@ -83,6 +83,11 @@ toggleDarkModeButton.addEventListener("click", () => {
 numberButtons.forEach((button) => {
   button.addEventListener("click", (e) => {
     myCalculator.handleNums(e.target.innerText);
+    if (myCalculator.clearAll) {
+      clearButton.innerText = "A/C";
+    } else {
+      clearButton.innerText = "C";
+    }
     buttonAnimation(e.target);
     blinkDisplay(myCalculator.numToDisplay);
   });
