@@ -1,4 +1,5 @@
 import Calculator from "./calculator.js";
+import "./css/styles.css";
 
 // //////// Constants ////////
 
