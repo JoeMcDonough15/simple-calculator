@@ -39,8 +39,8 @@ body {
   font-size: 2.5rem;
 }
 
-.btn__operator {
-  color: #fff;
+.btn__operator,
+.btn__clear {
   font-family: "Roboto", sans-serif;
   font-weight: 900;
 }
@@ -161,14 +161,17 @@ body {
   border-color: black;
 }
 
-.btn__operator {
+.btn__operator,
+.btn__clear {
   align-self: flex-start;
   background-color: #ff7600;
+  color: #fff;
   border: 1px solid #fff;
   padding-bottom: 0.52em;
 }
 
-.btn.btn__operator.dark {
+.btn.btn__operator.dark,
+.btn.btn__clear.dark {
   background-color: black;
   border-color: darkgray;
   color: darkgray;
@@ -189,12 +192,14 @@ body {
   color: darkgray;
 }
 
-.btn.btn__operator.key-pressed {
+.btn.btn__operator.key-pressed,
+.btn.btn__clear.key-pressed {
   background-color: #fff;
   color: #ff7600;
 }
 
-.btn.btn__operator.dark.key-pressed {
+.btn.btn__operator.dark.key-pressed,
+.btn.btn__clear.dark.key-pressed {
   background-color: darkgray;
   border-color: darkgray;
   color: black;
