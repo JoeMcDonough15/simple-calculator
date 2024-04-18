@@ -194,11 +194,9 @@ customExponentButton.addEventListener("click", (e) => {
   if (myCalculator.base) {
     return;
   }
-  if (myCalculator.isValidNumString(myCalculator.currentNumString)) {
-    myCalculator.setBase();
-    buttonAnimation(e.target);
-    blinkDisplay(myCalculator.numToDisplay);
-  }
+  myCalculator.setBase(myCalculator.determineCorrectNumString());
+  buttonAnimation(e.target);
+  blinkDisplay(myCalculator.numToDisplay);
 });
 
 trigButtons.forEach((button) => {
