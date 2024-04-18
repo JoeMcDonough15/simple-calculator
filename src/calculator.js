@@ -32,11 +32,11 @@ class Calculator {
   handleNums(givenNum) {
     this.switchToClear(); // switch the clear button back to clear from A/C in the event that was pushed
     if (this.overwriteCurrentNumString) {
-      this.currentNumString = this.giveDefaultOperator(this.currentNumString);
+      this.giveDefaultOperator(); // anytime this.overwriteCurrentNumString is true, this.currentNumString already has an operator ;)
       this.currentNumString = this.currentNumString[0];
       this.overwriteCurrentNumString = false;
     }
-    this.currentNumString = this.giveDefaultOperator(this.currentNumString);
+    this.giveDefaultOperator();
     this.currentNumString = this.concatOrReplace(
       this.currentNumString,
       givenNum
@@ -62,7 +62,7 @@ class Calculator {
       return;
     }
     if (this.isValidNumString()) {
-      this.currentNumString = this.giveDefaultOperator(this.currentNumString);
+      this.giveDefaultOperator();
       this.currentNumString =
         this.currentNumString[0] +
         Number(this.currentNumString.slice(1)).toString(); // removes any unnecessary trailing 0's after a decimal point i.e. 12.00400 becomes 12.004
@@ -91,11 +91,13 @@ class Calculator {
     return numString;
   }
 
-  giveDefaultOperator(numString) {
-    if (numString === "" || !this.isOperator(numString[0])) {
-      numString = `+${numString}`;
+  giveDefaultOperator() {
+    if (
+      this.currentNumString === "" ||
+      !this.isOperator(this.currentNumString[0])
+    ) {
+      this.currentNumString = `+${this.currentNumString}`;
     }
-    return numString;
   }
 
   grabLastNum(equationString) {
@@ -149,7 +151,8 @@ class Calculator {
   }
 
   handlePi() {
-    const operator = this.giveDefaultOperator(this.currentNumString)[0];
+    this.giveDefaultOperator();
+    const operator = this.currentNumString[0];
     const pi = math.pi.toString();
     this.currentNumString = operator + pi;
     this.updateNumToDisplay();
@@ -157,7 +160,8 @@ class Calculator {
   }
 
   handleEuler() {
-    const operator = this.giveDefaultOperator(this.currentNumString)[0];
+    this.giveDefaultOperator();
+    const operator = this.currentNumString[0];
     const euler = math.e.toString();
     this.currentNumString = operator + euler;
     this.updateNumToDisplay();
@@ -233,8 +237,8 @@ class Calculator {
     }
     const operatorToStore = this.determineStoredOperator();
     if (this.isValidNumString()) {
-      this.currentNumString =
-        this.giveDefaultOperator(this.currentNumString) + operatorToStore;
+      this.giveDefaultOperator();
+      this.currentNumString += operatorToStore;
       this.equationStack[this.equationStack.length - 1] +=
         this.currentNumString; // store the last num as well as the operator right before the parenthesis in equationStack so we can deal with the parenthesis first
     } else {
@@ -254,8 +258,7 @@ class Calculator {
     if (!this.isValidNumString()) {
       this.validateCurrentNumString();
     }
-
-    this.currentNumString = this.giveDefaultOperator(this.currentNumString);
+    this.giveDefaultOperator();
 
     // now solve what's in the parenthesis that we are closing
     // to do that, reduceEquationString with what we have for currentNumString, currentOperator, equationStack[lastIndex], and use '=' as nextOperator.
@@ -293,9 +296,8 @@ class Calculator {
     while (this.equationStack.length > 1) {
       this.handleCloseParenthesis();
     }
-    if (
-      !this.isValidNumString(this.giveDefaultOperator(this.currentNumString))
-    ) {
+    this.giveDefaultOperator();
+    if (!this.isValidNumString()) {
       this.validateCurrentNumString();
     }
     this.reduceEquationString("=");
@@ -332,7 +334,7 @@ class Calculator {
       this.currentNumString = `${lastOperator}${solution.toString()}`;
       currentOperator = lastOperator;
     } // if we can't solve it yet, or if the last string in the stack is empty, concatenate currentNumString to the end of the last string in equationStack
-    this.currentNumString = this.giveDefaultOperator(this.currentNumString);
+    this.giveDefaultOperator();
     this.equationStack[this.equationStack.length - 1] += this.currentNumString;
     this.updateNumToDisplay();
   }
@@ -367,9 +369,8 @@ class Calculator {
     }
     if (this.isValidNumString()) {
       if (this.equationStack[0] !== "+0" || this.equationStack.length > 1) {
-        this.currentNumString = this.giveDefaultOperator(
-          this.currentNumString
-        )[0]; // we're just clearing the current number, but keeping its operator, and switching this button's functionality to allClear() in case it's clicked a second time
+        this.giveDefaultOperator();
+        this.currentNumString = this.currentNumString[0]; // we're just clearing the current number, but keeping its operator, and switching this button's functionality to allClear() in case it's clicked a second time
         this.switchToAllClear();
       } else {
         this.currentNumString = "";
@@ -435,7 +436,8 @@ class Calculator {
   }
 
   validateCurrentNumString() {
-    const operator = this.giveDefaultOperator(this.currentNumString)[0];
+    this.giveDefaultOperator();
+    const operator = this.currentNumString[0];
     if (HIGHER_ORDER_OPERATIONS.includes(operator)) {
       this.currentNumString = `${operator}1`;
     } else {
