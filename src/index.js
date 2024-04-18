@@ -111,11 +111,20 @@ operatorButtons.forEach((button) => {
 });
 
 clearButton.addEventListener("click", (event) => {
+  if (
+    myCalculator.currentNumString.length === 0 &&
+    myCalculator.equationStack[0] === "+0" &&
+    myCalculator.equationStack.length === 1 &&
+    !myCalculator.trig &&
+    !myCalculator.base
+  ) {
+    return;
+  }
   if (myCalculator.clearAll) {
     myCalculator.allClear();
     event.target.innerText = "C";
   } else {
-    myCalculator.clear();
+    myCalculator.clearCurrentNumString();
     if (myCalculator.clearAll) {
       event.target.innerText = "A/C";
     }

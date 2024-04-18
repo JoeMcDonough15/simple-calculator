@@ -44,7 +44,7 @@ class Calculator {
   }
 
   handleOperators(givenOperator) {
-    if ((this.base || this.trig) && !this.isValidNumString()) {
+    if (this.expectingThetaOrExponent()) {
       return;
     }
     if (this.base) {
@@ -123,16 +123,13 @@ class Calculator {
     return OPERATORS.includes(char);
   }
 
-  updateNumToDisplay() {
-    if (this.clearAll) {
-      this.numToDisplay = "0";
-      return;
-    }
-    let numString;
-    if (this.isValidNumString()) {
-      numString = this.currentNumString;
-    } else {
-      numString = this.grabLastNum(this.grabLastStringInStack());
+  updateNumToDisplay(numString = null) {
+    if (!numString) {
+      if (this.isValidNumString()) {
+        numString = this.currentNumString;
+      } else {
+        numString = this.grabLastNum(this.grabLastStringInStack());
+      }
     }
     const firstChar = numString[0];
     if (this.isOperator(firstChar)) {
@@ -190,9 +187,8 @@ class Calculator {
   }
 
   setBase(baseNumString) {
-    this.currentNumString = baseNumString;
-    this.base = this.currentNumString;
-    this.overwriteCurrentNumString = true;
+    this.base = baseNumString;
+    this.currentNumString = "";
   }
 
   solveCustomExponents() {
@@ -208,6 +204,7 @@ class Calculator {
 
   determineTrigFunction(trigString) {
     this.trig = trigString;
+    this.currentNumString = "";
   }
 
   handleTrig() {
@@ -226,11 +223,19 @@ class Calculator {
     this.currentNumString = trigSolution;
   }
 
+  expectingThetaOrExponent() {
+    // return true or false if we are waiting for numeric-only input for trig or base to evaluate
+    if ((this.base || this.trig) && !this.isValidNumString()) {
+      return true;
+    }
+    return false;
+  }
+
   //////  Call Back Functions for Parentheses  //////
 
   handleOpenParenthesis() {
-    if (this.base) {
-      return false; // prohibit button from animating
+    if (this.expectingThetaOrExponent()) {
+      return false; // exit function and prohibit button from animating
     }
     const operatorToStore = this.determineStoredOperator();
     if (this.isValidNumString()) {
@@ -248,8 +253,11 @@ class Calculator {
   }
 
   handleCloseParenthesis() {
-    if (this.equationStack.length === 1) {
-      // if there are no open parenthesis, we can't close one
+    if (
+      this.equationStack.length === 1 ||
+      this.expectingThetaOrExponent() ||
+      (!this.isValidNumString() && !this.equationStringHasReduced)
+    ) {
       return false;
     }
     if (!this.isValidNumString()) {
@@ -354,28 +362,33 @@ class Calculator {
     return answer;
   }
 
-  clear() {
-    if (
-      !this.isValidNumString() &&
-      this.equationStack[0] === "+0" &&
-      this.equationStack.length === 1 &&
-      !this.trig &&
-      !this.base
-    ) {
-      return;
+  clearCurrentNumString() {
+    if (this.expectingThetaOrExponent()) {
+      this.clearBaseAndTrig();
     }
-    if (this.isValidNumString()) {
-      if (this.equationStack[0] !== "+0" || this.equationStack.length > 1) {
-        this.currentNumString = this.grabOperatorOfCurrentNumString(); // we're just clearing the current number, but keeping its operator, and switching this button's functionality to allClear() in case it's clicked a second time
-        this.switchToAllClear();
-      } else {
-        this.currentNumString = "";
-      }
+    if (this.isValidNumString() && this.equationStringHasReduced) {
+      this.currentNumString = this.grabOperatorOfCurrentNumString();
     } else {
-      this.currentNumString = ""; // then there's more stuff to clear in the stack, but this currentNumString isn't valid anyway, so just set it to an empty string and switch the button's functionality to allClear() in case it's clicked a second time
+      this.currentNumString = "";
+    }
+    this.determineClearLogic();
+    this.updateNumToDisplay("0");
+  }
+
+  clearBaseAndTrig() {
+    this.base = "";
+    this.trig = "";
+  }
+
+  determineClearLogic() {
+    if (
+      this.equationStack[0] !== "+0" ||
+      this.equationStack.length > 1 ||
+      this.trig ||
+      this.base
+    ) {
       this.switchToAllClear();
     }
-    this.updateNumToDisplay();
   }
 
   switchToAllClear() {
@@ -390,8 +403,7 @@ class Calculator {
     this.currentNumString = "";
     this.equationStack.length = 0;
     this.equationStack.push("+0");
-    this.base = "";
-    this.trig = "";
+    this.clearBaseAndTrig();
     this.updateNumToDisplay();
     this.switchToClear();
     this.equationStringHasReduced = false; // so if new parenthesis are opened immediately after this button is pressed, their value is added to zero not multiplied by it. i.e. (3 + 4) (5 - 2) === +0+7 *3 not +0*7 *3
@@ -424,6 +436,9 @@ class Calculator {
   }
 
   updateNumStringInPlace(operationToPerform) {
+    if (this.expectingThetaOrExponent()) {
+      return;
+    }
     this.currentNumString = this.determineCorrectNumString();
     const operator = this.grabOperatorOfCurrentNumString();
     const num = this.numStringAsNumber();
