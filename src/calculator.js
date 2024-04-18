@@ -400,7 +400,7 @@ class Calculator {
     this.equationStringHasReduced = false; // so if new parenthesis are opened immediately after this button is pressed, their value is added to zero not multiplied by it. i.e. (3 + 4) (5 - 2) === +0+7 *3 not +0*7 *3
   }
 
-  updateNumStringInPlace(functionToUpdateNumString) {
+  updateNumStringInPlace(operationToPerform) {
     if (!this.isValidNumString()) {
       const lastNumStringFromStack = this.grabLastNum(
         this.grabLastStringInStack()
@@ -412,8 +412,8 @@ class Calculator {
       this.currentNumString = lastNumStringFromStack;
     }
     const operator = this.currentNumString[0];
-    const num = Number(this.removeOperator(this.currentNumString));
-    const newNumString = functionToUpdateNumString(num).toString();
+    const num = this.currentNumStringAsNumber();
+    const newNumString = operationToPerform(num).toString();
     this.currentNumString = operator + newNumString;
     this.updateNumToDisplay();
     this.overwriteCurrentNumString = true;
@@ -477,8 +477,8 @@ class Calculator {
     return numString;
   }
 
-  removeOperator(numString) {
-    return numString.slice(1);
+  currentNumStringAsNumber() {
+    return Number(this.currentNumString.slice(1));
   }
 }
 
