@@ -252,7 +252,7 @@ class Calculator {
       return false;
     }
     if (!this.isValidNumString()) {
-      this.currentNumString = this.fixInvalidNumString(this.currentNumString);
+      this.validateCurrentNumString();
     }
 
     this.currentNumString = this.giveDefaultOperator(this.currentNumString);
@@ -296,7 +296,7 @@ class Calculator {
     if (
       !this.isValidNumString(this.giveDefaultOperator(this.currentNumString))
     ) {
-      this.currentNumString = this.fixInvalidNumString(this.currentNumString);
+      this.validateCurrentNumString();
     }
     this.reduceEquationString("=");
     this.currentNumString = this.equationStack[0];
@@ -434,12 +434,12 @@ class Calculator {
     return false;
   }
 
-  fixInvalidNumString(invalidNumString) {
-    const operator = this.giveDefaultOperator(invalidNumString)[0];
+  validateCurrentNumString() {
+    const operator = this.giveDefaultOperator(this.currentNumString)[0];
     if (HIGHER_ORDER_OPERATIONS.includes(operator)) {
-      return `${operator}1`;
+      this.currentNumString = `${operator}1`;
     } else {
-      return `${operator}0`;
+      this.currentNumString = `${operator}0`;
     }
   }
 
