@@ -71,6 +71,11 @@ function toggleDarkMode(elementsArray) {
   });
 }
 
+function animateButtonAndBlinkDisplay(buttonToAnimate) {
+  buttonAnimation(buttonToAnimate);
+  blinkDisplay(myCalculator.numToDisplay);
+}
+
 ////// Event Listeners ////////
 
 //// Click Event Listeners //////
@@ -91,15 +96,13 @@ numberButtons.forEach((button) => {
     } else {
       clearButton.innerText = "C";
     }
-    buttonAnimation(e.target);
-    blinkDisplay(myCalculator.numToDisplay);
+    animateButtonAndBlinkDisplay(e.target);
   });
 });
 
 posOrNegButton.addEventListener("click", (e) => {
   myCalculator.updateNumStringInPlace(myCalculator.makePosOrNeg);
-  buttonAnimation(e.target);
-  blinkDisplay(myCalculator.numToDisplay);
+  animateButtonAndBlinkDisplay(e.target);
 });
 
 // Operator Buttons //
@@ -107,12 +110,11 @@ posOrNegButton.addEventListener("click", (e) => {
 operatorButtons.forEach((button) => {
   button.addEventListener("click", (e) => {
     myCalculator.handleOperators(e.target.innerText);
-    buttonAnimation(e.target);
-    blinkDisplay(myCalculator.numToDisplay);
+    animateButtonAndBlinkDisplay(e.target);
   });
 });
 
-clearButton.addEventListener("click", (event) => {
+clearButton.addEventListener("click", (e) => {
   if (
     myCalculator.currentNumString.length === 0 &&
     myCalculator.equationStack[0] === "+0" &&
@@ -122,84 +124,88 @@ clearButton.addEventListener("click", (event) => {
   }
   if (myCalculator.clearAll) {
     myCalculator.allClear();
-    event.target.innerText = "C";
+    e.target.innerText = "C";
   } else {
     myCalculator.clearCurrentNumString();
     if (myCalculator.clearAll) {
-      event.target.innerText = "A/C";
+      e.target.innerText = "A/C";
     }
   }
-  buttonAnimation(event.target);
-  blinkDisplay(myCalculator.numToDisplay);
+  animateButtonAndBlinkDisplay(e.target);
 });
 
 // Non-Number/Non-Operator Buttons //
 
 openParenthesisButton.addEventListener("click", (e) => {
   if (myCalculator.handleOpenParenthesis()) {
-    buttonAnimation(e.target);
+    animateButtonAndBlinkDisplay(e.target);
   }
 });
 
 closeParenthesisButton.addEventListener("click", (e) => {
   if (myCalculator.handleCloseParenthesis()) {
-    buttonAnimation(e.target);
-    blinkDisplay(myCalculator.numToDisplay);
+    animateButtonAndBlinkDisplay(e.target);
   }
 });
 
 percentageButton.addEventListener("click", (e) => {
   myCalculator.updateNumStringInPlace(myCalculator.handlePercentage);
-  buttonAnimation(e.target);
-  blinkDisplay(myCalculator.numToDisplay);
+  animateButtonAndBlinkDisplay(e.target);
 });
 
 piButton.addEventListener("click", (e) => {
   myCalculator.handlePi();
-  buttonAnimation(e.target);
-  blinkDisplay(myCalculator.numToDisplay);
+  animateButtonAndBlinkDisplay(e.target);
 });
 
 eulerButton.addEventListener("click", (e) => {
   myCalculator.handleEuler();
-  buttonAnimation(e.target);
-  blinkDisplay(myCalculator.numToDisplay);
+  animateButtonAndBlinkDisplay(e.target);
 });
 
 eulerRaisedButton.addEventListener("click", (e) => {
   myCalculator.handleRaiseEuler();
-  buttonAnimation(e.target);
-  blinkDisplay(myCalculator.numToDisplay);
+  animateButtonAndBlinkDisplay(e.target);
 });
 
 squareButton.addEventListener("click", (e) => {
   myCalculator.updateNumStringInPlace(myCalculator.handleSquared);
-  buttonAnimation(e.target);
-  blinkDisplay(myCalculator.numToDisplay);
+  animateButtonAndBlinkDisplay(e.target);
 });
 
 cubeButton.addEventListener("click", (e) => {
   myCalculator.updateNumStringInPlace(myCalculator.handleCubed);
-  buttonAnimation(e.target);
-  blinkDisplay(myCalculator.numToDisplay);
+  animateButtonAndBlinkDisplay(e.target);
 });
 
 factorialButton.addEventListener("click", (e) => {
   myCalculator.updateNumStringInPlace(myCalculator.handleFactorial);
-  buttonAnimation(e.target);
-  blinkDisplay(myCalculator.numToDisplay);
+  animateButtonAndBlinkDisplay(e.target);
 });
 
 inverseFractionButton.addEventListener("click", (e) => {
   myCalculator.updateNumStringInPlace(myCalculator.handleInverseFraction);
-  buttonAnimation(e.target);
-  blinkDisplay(myCalculator.numToDisplay);
+  animateButtonAndBlinkDisplay(e.target);
 });
 
 customExponentButton.addEventListener("click", (e) => {
   myCalculator.handleOperators("^");
-  buttonAnimation(e.target);
-  blinkDisplay(myCalculator.numToDisplay);
+  animateButtonAndBlinkDisplay(e.target);
+});
+
+tanButton.addEventListener("click", (e) => {
+  myCalculator.handleOperators("t");
+  animateButtonAndBlinkDisplay(e.target);
+});
+
+sinButton.addEventListener("click", (e) => {
+  myCalculator.handleOperators("s");
+  animateButtonAndBlinkDisplay(e.target);
+});
+
+cosButton.addEventListener("click", (e) => {
+  myCalculator.handleOperators("c");
+  animateButtonAndBlinkDisplay(e.target);
 });
 
 ////// Keyup Event Listeners //////
