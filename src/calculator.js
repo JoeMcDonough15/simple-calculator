@@ -1,9 +1,18 @@
 //////// Constants ////////
 
 const NUMS = "0123456789.";
-const OPERATORS = "+÷-xX/*=Enter";
+const OPERATORS = "+÷-xX/*^tTsScC=Enter";
+const HIGHEST_ORDER_OPERATIONS = "^tsc"; // exponents, tan, sin, cos
 const HIGHER_ORDER_OPERATIONS = "Xx*÷/";
 const LOWER_ORDER_OPERATIONS = "+-";
+const MULTIPLIERS = "Xx*";
+const DIVISION = "/÷";
+const ADDITION = "+";
+const SUBTRACTION = "-";
+const EXPONENTS = "^";
+const SIN = "sS";
+const TAN = "tT";
+const COS = "cC";
 const EQUALS_OPERATORS = "=Enter";
 
 //////// Calculator Class ////////
@@ -12,8 +21,6 @@ class Calculator {
   equationStack;
   currentNumString;
   numToDisplay;
-  base;
-  trig;
   equationStringHasReduced;
   overwriteCurrentNumString;
   clearAll;
@@ -22,8 +29,6 @@ class Calculator {
     this.equationStack = ["+0"];
     this.currentNumString = "";
     this.numToDisplay = "0";
-    this.base = "";
-    this.trig = "";
     this.equationStringHasReduced = false;
     this.overwriteCurrentNumString = false;
     this.clearAll = false;
@@ -44,15 +49,6 @@ class Calculator {
   }
 
   handleOperators(givenOperator) {
-    if (this.expectingThetaOrExponent()) {
-      return;
-    }
-    if (this.base) {
-      this.solveCustomExponents();
-    }
-    if (this.trig) {
-      this.handleTrig();
-    }
     if (this.overwriteCurrentNumString) {
       this.overwriteCurrentNumString = false;
     }
@@ -163,7 +159,7 @@ class Calculator {
 
   handleRaiseEuler() {
     this.handleEuler();
-    this.base = this.currentNumString;
+    this.handleOperators("^");
   }
 
   handleSquared(num) {
@@ -186,57 +182,9 @@ class Calculator {
     return inverseFractionAsDecimal;
   }
 
-  setBase(baseNumString) {
-    this.base = baseNumString;
-    this.currentNumString = "";
-  }
-
-  solveCustomExponents() {
-    const operator = this.base[0];
-    const solution = math
-      .pow(this.numStringAsNumber(this.base), this.numStringAsNumber())
-      .toString();
-    this.currentNumString = operator + solution;
-    this.base = "";
-  }
-
-  ////// Trig Functions /////////
-
-  determineTrigFunction(trigString) {
-    this.trig = trigString;
-    this.currentNumString = "";
-  }
-
-  handleTrig() {
-    let trigSolution;
-    const operator = this.grabOperatorOfCurrentNumString();
-    const theta = Number(this.currentNumString.slice(1));
-    if (this.trig === "sin") {
-      trigSolution = math.sin(theta);
-    } else if (this.trig === "cos") {
-      trigSolution = math.cos(theta);
-    } else {
-      trigSolution = math.tan(theta);
-    }
-    trigSolution = operator + trigSolution.toString();
-    this.trig = "";
-    this.currentNumString = trigSolution;
-  }
-
-  expectingThetaOrExponent() {
-    // return true or false if we are waiting for numeric-only input for trig or base to evaluate
-    if ((this.base || this.trig) && !this.isValidNumString()) {
-      return true;
-    }
-    return false;
-  }
-
   //////  Call Back Functions for Parentheses  //////
 
   handleOpenParenthesis() {
-    if (this.expectingThetaOrExponent()) {
-      return false; // exit function and prohibit button from animating
-    }
     const operatorToStore = this.determineStoredOperator();
     if (this.isValidNumString()) {
       this.ensureCurrentNumStringHasOperator();
@@ -255,7 +203,6 @@ class Calculator {
   handleCloseParenthesis() {
     if (
       this.equationStack.length === 1 ||
-      this.expectingThetaOrExponent() ||
       (!this.isValidNumString() && !this.equationStringHasReduced)
     ) {
       return false;
@@ -327,14 +274,13 @@ class Calculator {
     ) {
       const lastNumString = this.grabLastNum(equationString); // this will be an operator and number, i.e. '+0'
       const lastOperator = lastNumString[0];
-      const lastNum = lastNumString.slice(1); // get rid of the operator ...
       equationString = this.cutFromNumString(
         equationString,
         lastNumString.length
       );
       this.equationStack[this.equationStack.length - 1] = equationString; // cut out the last num from the equation string inside this.equationStack since we're dealing with it below
-      const num1 = Number(lastNum);
-      const num2 = this.numStringAsNumber();
+      const num1 = this.numStringAsNumber(lastNumString);
+      const num2 = this.numStringAsNumber(); // no arg defaults to this.currentNumString
       const solution = this.calculate(num1, num2, currentOperator);
       this.currentNumString = `${lastOperator}${solution.toString()}`;
       currentOperator = lastOperator;
@@ -346,26 +292,21 @@ class Calculator {
 
   calculate(num1, num2, currentOperator) {
     let answer;
-    if (currentOperator === "+") {
+    if (ADDITION.includes(currentOperator)) {
       answer = math.chain(num1).add(num2).done();
-    } else if (currentOperator === "-") {
+    } else if (SUBTRACTION.includes(currentOperator)) {
       answer = math.chain(num1).subtract(num2).done();
-    } else if (
-      currentOperator === "*" ||
-      currentOperator === "x" ||
-      currentOperator === "X"
-    ) {
+    } else if (MULTIPLIERS.includes(currentOperator)) {
       answer = math.chain(num1).multiply(num2).done();
-    } else {
+    } else if (DIVISION.includes(currentOperator)) {
       answer = math.chain(num1).divide(num2).done();
+    } else if (EXPONENTS.includes(currentOperator)) {
+      answer = math.pow(num1, num2);
     }
     return answer;
   }
 
   clearCurrentNumString() {
-    if (this.expectingThetaOrExponent()) {
-      this.clearBaseAndTrig();
-    }
     if (this.isValidNumString() && this.equationStringHasReduced) {
       this.currentNumString = this.grabOperatorOfCurrentNumString();
     } else {
@@ -375,18 +316,8 @@ class Calculator {
     this.updateNumToDisplay("0");
   }
 
-  clearBaseAndTrig() {
-    this.base = "";
-    this.trig = "";
-  }
-
   determineClearLogic() {
-    if (
-      this.equationStack[0] !== "+0" ||
-      this.equationStack.length > 1 ||
-      this.trig ||
-      this.base
-    ) {
+    if (this.equationStack[0] !== "+0" || this.equationStack.length > 1) {
       this.switchToAllClear();
     }
   }
@@ -403,7 +334,6 @@ class Calculator {
     this.currentNumString = "";
     this.equationStack.length = 0;
     this.equationStack.push("+0");
-    this.clearBaseAndTrig();
     this.updateNumToDisplay();
     this.switchToClear();
     this.equationStringHasReduced = false; // so if new parenthesis are opened immediately after this button is pressed, their value is added to zero not multiplied by it. i.e. (3 + 4) (5 - 2) === +0+7 *3 not +0*7 *3
@@ -436,9 +366,6 @@ class Calculator {
   }
 
   updateNumStringInPlace(operationToPerform) {
-    if (this.expectingThetaOrExponent()) {
-      return;
-    }
     this.currentNumString = this.determineCorrectNumString();
     const operator = this.grabOperatorOfCurrentNumString();
     const num = this.numStringAsNumber();
@@ -489,8 +416,11 @@ class Calculator {
 
   isHigherOrder(currentOperator, nextOperator) {
     return (
-      LOWER_ORDER_OPERATIONS.includes(currentOperator) &&
-      HIGHER_ORDER_OPERATIONS.includes(nextOperator)
+      (LOWER_ORDER_OPERATIONS.includes(currentOperator) &&
+        HIGHER_ORDER_OPERATIONS.includes(nextOperator)) ||
+      ((LOWER_ORDER_OPERATIONS.includes(currentOperator) ||
+        HIGHER_ORDER_OPERATIONS.includes(currentOperator)) &&
+        HIGHEST_ORDER_OPERATIONS.includes(nextOperator))
     );
   }
 

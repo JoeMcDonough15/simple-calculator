@@ -40,7 +40,9 @@ const inverseFractionButton = document.getElementById(
   "inverse-fraction-button"
 );
 const eulerRaisedButton = document.getElementById("euler-raised-button");
-const trigButtons = document.querySelectorAll(".btn__trig");
+const tanButton = document.getElementById("tan");
+const sinButton = document.getElementById("sin");
+const cosButton = document.getElementById("cos");
 const displayNum = document.getElementById("display-text");
 
 const myCalculator = new Calculator();
@@ -114,9 +116,7 @@ clearButton.addEventListener("click", (event) => {
   if (
     myCalculator.currentNumString.length === 0 &&
     myCalculator.equationStack[0] === "+0" &&
-    myCalculator.equationStack.length === 1 &&
-    !myCalculator.trig &&
-    !myCalculator.base
+    myCalculator.equationStack.length === 1
   ) {
     return;
   }
@@ -167,9 +167,6 @@ eulerButton.addEventListener("click", (e) => {
 });
 
 eulerRaisedButton.addEventListener("click", (e) => {
-  if (myCalculator.base) {
-    return;
-  }
   myCalculator.handleRaiseEuler();
   buttonAnimation(e.target);
   blinkDisplay(myCalculator.numToDisplay);
@@ -200,19 +197,9 @@ inverseFractionButton.addEventListener("click", (e) => {
 });
 
 customExponentButton.addEventListener("click", (e) => {
-  if (myCalculator.base) {
-    return;
-  }
-  myCalculator.setBase(myCalculator.determineCorrectNumString());
+  myCalculator.handleOperators("^");
   buttonAnimation(e.target);
   blinkDisplay(myCalculator.numToDisplay);
-});
-
-trigButtons.forEach((button) => {
-  button.addEventListener("click", (e) => {
-    myCalculator.determineTrigFunction(e.target.getAttribute("id"));
-    buttonAnimation(e.target);
-  });
 });
 
 ////// Keyup Event Listeners //////
