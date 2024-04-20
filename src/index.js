@@ -194,17 +194,17 @@ customExponentButton.addEventListener("click", (e) => {
 });
 
 tanButton.addEventListener("click", (e) => {
-  myCalculator.handleOperators("t");
+  myCalculator.handleTrig("t");
   animateButtonAndBlinkDisplay(e.target);
 });
 
 sinButton.addEventListener("click", (e) => {
-  myCalculator.handleOperators("s");
+  myCalculator.handleTrig("s");
   animateButtonAndBlinkDisplay(e.target);
 });
 
 cosButton.addEventListener("click", (e) => {
-  myCalculator.handleOperators("c");
+  myCalculator.handleTrig("c");
   animateButtonAndBlinkDisplay(e.target);
 });
 

@@ -13,7 +13,7 @@ const EXPONENTS = "^";
 const SIN = "sS";
 const TAN = "tT";
 const COS = "cC";
-const EQUALS_OPERATORS = "=Enter";
+const EQUALS_OPERATORS = "=";
 
 //////// Calculator Class ////////
 
@@ -21,7 +21,7 @@ class Calculator {
   equationStack;
   currentNumString;
   numToDisplay;
-  equationStringHasReduced;
+  currentEquationStringModified;
   overwriteCurrentNumString;
   clearAll;
 
@@ -29,7 +29,7 @@ class Calculator {
     this.equationStack = ["+0"];
     this.currentNumString = "";
     this.numToDisplay = "0";
-    this.equationStringHasReduced = false;
+    this.currentEquationStringModified = false;
     this.overwriteCurrentNumString = false;
     this.clearAll = false;
   }
@@ -128,7 +128,9 @@ class Calculator {
       }
     }
     const firstChar = numString[0];
-    if (this.isOperator(firstChar)) {
+    if (numString.length === 1 && this.isOperator(firstChar)) {
+      numString = "0";
+    } else if (this.isOperator(firstChar)) {
       numString = numString.slice(1);
     }
     this.numToDisplay = numString;
@@ -182,28 +184,46 @@ class Calculator {
     return inverseFractionAsDecimal;
   }
 
+  handleTrig(trigOperator) {
+    this.determineAndStorePreviousOperator();
+    this.currentEquationStringModified = true;
+    this.currentNumString = "";
+    this.handleOperators(trigOperator);
+  }
+
+  determineAndStorePreviousOperator() {
+    const operatorToStore = this.determineStoredOperator();
+    if (this.isValidNumString()) {
+      this.storeCurrentNumStringAndOperator(operatorToStore);
+    } else {
+      this.storeOperatorOnly(operatorToStore);
+    }
+  }
+
+  storeCurrentNumStringAndOperator(operatorToStore) {
+    this.ensureCurrentNumStringHasOperator();
+    this.currentNumString += operatorToStore;
+    this.equationStack[this.equationStack.length - 1] += this.currentNumString;
+  }
+
+  storeOperatorOnly(operatorToStore) {
+    this.equationStack[this.equationStack.length - 1] += operatorToStore;
+  }
+
   //////  Call Back Functions for Parentheses  //////
 
   handleOpenParenthesis() {
-    const operatorToStore = this.determineStoredOperator();
-    if (this.isValidNumString()) {
-      this.ensureCurrentNumStringHasOperator();
-      this.currentNumString += operatorToStore;
-      this.equationStack[this.equationStack.length - 1] +=
-        this.currentNumString; // store the last num as well as the operator right before the parenthesis in equationStack so we can deal with the parenthesis first
-    } else {
-      this.equationStack[this.equationStack.length - 1] += operatorToStore; // if currentNumString is not valid, just store the operator outside these parentheses we're opening
-    }
+    this.determineAndStorePreviousOperator();
     this.equationStack.push("+0");
     this.currentNumString = "";
-    this.equationStringHasReduced = false;
+    this.currentEquationStringModified = false;
     return true;
   }
 
   handleCloseParenthesis() {
     if (
       this.equationStack.length === 1 ||
-      (!this.isValidNumString() && !this.equationStringHasReduced)
+      (!this.isValidNumString() && !this.currentEquationStringModified)
     ) {
       return false;
     }
@@ -256,7 +276,7 @@ class Calculator {
     this.currentNumString = this.equationStack[0];
     this.equationStack[0] = "+0";
     this.switchToClear(); // in case clear button says A/C because there's now nothing to clear
-    this.equationStringHasReduced = false;
+    this.currentEquationStringModified = false;
     this.overwriteCurrentNumString = true;
   }
 
@@ -265,9 +285,10 @@ class Calculator {
   reduceEquationString(nextOperator) {
     let currentOperator = this.grabOperatorOfCurrentNumString();
     let equationString = this.grabLastStringInStack();
-    if (!this.equationStringHasReduced) {
-      this.equationStringHasReduced = true;
-    }
+    // if (!this.currentEquationStringModified) {
+    //   this.currentEquationStringModified = true;
+    // }
+    this.currentEquationStringModified = true;
     while (
       equationString.length !== 0 &&
       !this.isHigherOrder(currentOperator, nextOperator)
@@ -307,7 +328,7 @@ class Calculator {
   }
 
   clearCurrentNumString() {
-    if (this.isValidNumString() && this.equationStringHasReduced) {
+    if (this.isValidNumString() && this.currentEquationStringModified) {
       this.currentNumString = this.grabOperatorOfCurrentNumString();
     } else {
       this.currentNumString = "";
@@ -336,7 +357,7 @@ class Calculator {
     this.equationStack.push("+0");
     this.updateNumToDisplay();
     this.switchToClear();
-    this.equationStringHasReduced = false; // so if new parenthesis are opened immediately after this button is pressed, their value is added to zero not multiplied by it. i.e. (3 + 4) (5 - 2) === +0+7 *3 not +0*7 *3
+    this.currentEquationStringModified = false; // so if new parenthesis are opened immediately after this button is pressed, their value is added to zero not multiplied by it. i.e. (3 + 4) (5 - 2) === +0+7 *3 not +0*7 *3
   }
 
   determineCorrectNumString() {
@@ -426,7 +447,10 @@ class Calculator {
 
   determineStoredOperator() {
     let storedOperator;
-    if (this.currentNumString.length === 0 && !this.equationStringHasReduced) {
+    if (
+      this.currentNumString.length === 0 &&
+      !this.currentEquationStringModified
+    ) {
       storedOperator = "+";
     } else if (this.currentNumString.length === 1 && !this.isValidNumString()) {
       storedOperator = this.currentNumString;
