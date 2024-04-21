@@ -10,9 +10,10 @@ const DIVISION = "/÷";
 const ADDITION = "+";
 const SUBTRACTION = "-";
 const EXPONENTS = "^";
-const SIN = "sS";
-const TAN = "tT";
-const COS = "cC";
+const TRIG_OPERATORS = "tTsScC";
+const SIN_OPERATORS = "sS";
+const TAN_OPERATORS = "tT";
+const COS_OPERATORS = "cC";
 const EQUALS_OPERATORS = "=";
 
 //////// Calculator Class ////////
@@ -48,10 +49,67 @@ class Calculator {
     this.updateNumToDisplay();
   }
 
+  previousOperatorAlreadyStored() {
+    // return true or false about whether the last character of the equationString is an operator
+    const lastNumStringInStack = this.grabLastStringInStack();
+    if (
+      this.isOperator(lastNumStringInStack[lastNumStringInStack.length - 1])
+    ) {
+      return true;
+    }
+    return false;
+  }
+
   handleOperators(givenOperator) {
     if (this.overwriteCurrentNumString) {
       this.overwriteCurrentNumString = false;
     }
+    // ************ HANDLE TRIG ************
+    // if the last equationString in the stack already has an operator stored at the end,
+    // and the currentNumString is not valid, and the givenOperator is not trig, return because this means we received trig
+    // already (that's what caused previousOperator to be stored), and now we have a currentNumString that is not valid so we
+    // cannot perform the trig function that was chosen, and now we have received a new operator that is not trig.
+    //  We cannot have a non trig operator follow
+    // a trig operator. i.e. 5 x tan 45 is ok but 5 tan x 45 should just be
+    // 5 tan 45 and we should ignore the x.  Also, 5 x cos ÷ should just be 5 x cos.  And, similarly, 5 cos x should just be 5 cos, which would store
+    // x before the cos (5 times cos of some angle we have yet to receive).
+    // ****If we just opened parentheses, we could not have a previousOperatorStored because we'd start a new string
+    // that would have +0 at the newly added current string of equationStack.
+
+    if (
+      this.previousOperatorAlreadyStored() &&
+      !this.isValidNumString() &&
+      !TRIG_OPERATORS.includes(givenOperator)
+    ) {
+      return;
+    }
+    //
+    //
+    // if the last equationString in the stack already has an operator stored at the end, and the currentNumString
+    // is not yet valid, and the newly givenOperator
+    // IS trig, that means we received two trigs in a row.  The first trig (say, tan) ordered the previous operator (say, x) to
+    // be stored, and now this SECOND trig (say, cos), should just replace tan.  So if we have 5 x tan cos, it should just be
+    // 5 x cos and the tan should be forgotten.  If the user wants to nest trig, they must use parentheses.  So that example
+    // correctly submitted would be 5 x tan(cos90) + , which would solve the cos of 90 first, then the tan of that, then 5 x that.
+    //
+    if (this.previousOperatorAlreadyStored() && !this.isValidNumString()) {
+      this.currentNumString = givenOperator;
+      return;
+    }
+    if (
+      !this.previousOperatorAlreadyStored() &&
+      TRIG_OPERATORS.includes(givenOperator)
+    ) {
+      // if the givenOperator is a trig operator, so long as we don't have an operator stored yet, even if the currentNumString
+      // is not valid, we sould run the steps of setting ourselves up to receive an angle theta.
+      this.determineAndStorePreviousOperator();
+      this.currentNumString = givenOperator;
+      return;
+    }
+    //
+    //
+    //
+
     if (EQUALS_OPERATORS.includes(givenOperator)) {
       this.handleEquals();
       return;
@@ -184,13 +242,6 @@ class Calculator {
     return inverseFractionAsDecimal;
   }
 
-  handleTrig(trigOperator) {
-    this.determineAndStorePreviousOperator();
-    this.currentEquationStringModified = true;
-    this.currentNumString = "";
-    this.handleOperators(trigOperator);
-  }
-
   determineAndStorePreviousOperator() {
     const operatorToStore = this.determineStoredOperator();
     if (this.isValidNumString()) {
@@ -198,6 +249,7 @@ class Calculator {
     } else {
       this.storeOperatorOnly(operatorToStore);
     }
+    this.currentEquationStringModified = true;
   }
 
   storeCurrentNumStringAndOperator(operatorToStore) {
@@ -208,6 +260,16 @@ class Calculator {
 
   storeOperatorOnly(operatorToStore) {
     this.equationStack[this.equationStack.length - 1] += operatorToStore;
+  }
+
+  retrieveAndRemoveLastOperator() {
+    const lastNumStringInStack = this.grabLastStringInStack();
+    const lastOperator = lastNumStringInStack[lastNumStringInStack.length - 1];
+    this.equationStack[this.equationStack.length - 1] = this.cutFromNumString(
+      lastNumStringInStack,
+      1
+    );
+    return lastOperator;
   }
 
   //////  Call Back Functions for Parentheses  //////
@@ -221,12 +283,10 @@ class Calculator {
   }
 
   handleCloseParenthesis() {
-    if (
-      this.equationStack.length === 1 ||
-      (!this.isValidNumString() && !this.currentEquationStringModified)
-    ) {
+    if (this.equationStack.length === 1) {
       return false;
     }
+
     if (!this.isValidNumString()) {
       this.validateCurrentNumString();
     }
@@ -235,12 +295,9 @@ class Calculator {
     // now solve what's in the parenthesis that we are closing
     // to do that, reduceEquationString with what we have for currentNumString, currentOperator, equationStack[lastIndex], and use '=' as nextOperator.
     this.reduceEquationString("="); // this will update the display to whatever the solution of the parenthesis math was
-    const newParenthesisSolution = this.equationStack.pop(); // We're now storing whatever equation string was just reduced so we don't want it in equationStack anymore
-    const lastNumStringInStack = this.grabLastStringInStack(); // last numString of equation stack
+    const newParenthesisSolution = this.equationStack.pop(); // We're now going to set this.currentNumString to whatever equationString was just reduced so we don't want that equationString in equationStack anymore
     const operatorBeforeParenthesisSolution =
-      lastNumStringInStack[lastNumStringInStack.length - 1]; // last character of lastNumStringInStack
-    this.equationStack[this.equationStack.length - 1] =
-      lastNumStringInStack.slice(0, lastNumStringInStack.length - 1); // replace the last numString in the equationStack with that last character now removed
+      this.retrieveAndRemoveLastOperator();
     this.currentNumString = this.replaceOperator(
       newParenthesisSolution,
       operatorBeforeParenthesisSolution
@@ -280,14 +337,31 @@ class Calculator {
     this.overwriteCurrentNumString = true;
   }
 
+  solveTrig(angleTheta, trigOperator) {
+    let trigSolution;
+    if (TAN_OPERATORS.includes(trigOperator)) {
+      trigSolution = math.tan(angleTheta);
+    } else if (SIN_OPERATORS.includes(trigOperator)) {
+      trigSolution = math.sin(angleTheta);
+    } else if (COS_OPERATORS.includes(trigOperator)) {
+      trigSolution = math.cos(angleTheta);
+    }
+    return trigSolution;
+  }
+
   //////  Calculator Functionality //////
 
   reduceEquationString(nextOperator) {
+    if (TRIG_OPERATORS.includes(this.grabOperatorOfCurrentNumString())) {
+      const trigSolution = this.solveTrig(
+        this.numStringAsNumber(),
+        this.grabOperatorOfCurrentNumString()
+      );
+      this.currentNumString =
+        this.retrieveAndRemoveLastOperator() + trigSolution.toString();
+    }
     let currentOperator = this.grabOperatorOfCurrentNumString();
     let equationString = this.grabLastStringInStack();
-    // if (!this.currentEquationStringModified) {
-    //   this.currentEquationStringModified = true;
-    // }
     this.currentEquationStringModified = true;
     while (
       equationString.length !== 0 &&
@@ -302,7 +376,7 @@ class Calculator {
       this.equationStack[this.equationStack.length - 1] = equationString; // cut out the last num from the equation string inside this.equationStack since we're dealing with it below
       const num1 = this.numStringAsNumber(lastNumString);
       const num2 = this.numStringAsNumber(); // no arg defaults to this.currentNumString
-      const solution = this.calculate(num1, num2, currentOperator);
+      const solution = this.calculate(num1, currentOperator, num2);
       this.currentNumString = `${lastOperator}${solution.toString()}`;
       currentOperator = lastOperator;
     } // if we can't solve it yet, or if the last string in the stack is empty, concatenate currentNumString to the end of the last string in equationStack
@@ -311,7 +385,7 @@ class Calculator {
     this.updateNumToDisplay();
   }
 
-  calculate(num1, num2, currentOperator) {
+  calculate(num1, currentOperator, num2) {
     let answer;
     if (ADDITION.includes(currentOperator)) {
       answer = math.chain(num1).add(num2).done();
@@ -360,7 +434,7 @@ class Calculator {
     this.currentEquationStringModified = false; // so if new parenthesis are opened immediately after this button is pressed, their value is added to zero not multiplied by it. i.e. (3 + 4) (5 - 2) === +0+7 *3 not +0*7 *3
   }
 
-  determineCorrectNumString() {
+  determineCorrectNumStringToUpdate() {
     if (this.isValidNumString()) {
       return this.currentNumString;
     } else if (
@@ -387,7 +461,7 @@ class Calculator {
   }
 
   updateNumStringInPlace(operationToPerform) {
-    this.currentNumString = this.determineCorrectNumString();
+    this.currentNumString = this.determineCorrectNumStringToUpdate();
     const operator = this.grabOperatorOfCurrentNumString();
     const num = this.numStringAsNumber();
     const newNumString = operationToPerform(num).toString();
