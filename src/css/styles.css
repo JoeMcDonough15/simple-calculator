@@ -113,14 +113,6 @@ body {
   display: flex;
 }
 
-.control-panel {
-  align-self: flex-start;
-  display: flex;
-  flex-direction: column;
-  margin-left: 1em;
-  margin-top: 4em;
-}
-
 /* Components */
 
 .display-window {
@@ -248,14 +240,12 @@ body {
 }
 
 .btn__dark-mode-toggle {
-  align-items: center;
-  background: #fff;
+  align-self: flex-end;
+  /* background-image: url("../assets/night-mode.png"); */ /* so webpack loads the image for use in html template */
   border-radius: 50%;
-  display: flex;
-  height: 60px;
-  justify-content: center;
-  text-transform: uppercase;
-  width: 60px;
+  margin: 5px 12px;
+  height: 40px;
+  width: 40px;
 }
 
 /* Landscape mode mobile and tablet styles */
@@ -293,6 +283,11 @@ body {
   .display-text {
     font-size: 3rem;
   }
+
+  .btn__dark-mode-toggle {
+    height: 30px;
+    width: 30px;
+  }
 }
 
 /* Portrait mode mobile styles */
@@ -312,7 +307,7 @@ body {
 
   .keypad {
     gap: 0.3333em;
-    padding: 1.5em 0.5em;
+    padding: 0 0.5em 1.5em;
   }
 
   .row__one {
@@ -328,5 +323,10 @@ body {
   .btn.btn__clear {
     margin-bottom: 8px;
     width: 100%;
+  }
+
+  .btn__dark-mode-toggle {
+    height: 30px;
+    width: 30px;
   }
 }

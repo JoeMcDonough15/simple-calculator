@@ -6,7 +6,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "bundle.js",
-    assetModuleFilename: "[name][ext]",
+    assetModuleFilename: "assets/[name][ext]",
   },
   devServer: {
     static: {
@@ -20,6 +20,10 @@ module.exports = {
   },
   module: {
     rules: [
+      {
+        test: /\.png|ico$/i,
+        type: "asset/resource",
+      },
       {
         test: /\.css$/i,
         use: [
