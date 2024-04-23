@@ -110,7 +110,8 @@ body {
 }
 
 .calculator-shell {
-  background-color: var(--secondary);
+  /* background-color: var(--secondary); */
+  background-color: var(--accent);
   border-radius: 1rem;
   box-shadow: 0 0 1.5em #000;
   max-width: 600px;
@@ -184,7 +185,8 @@ body {
 .btn__clear {
   align-self: flex-start;
   /* background-color: var(--primary); */
-  background-color: var(--accent);
+  /* background-color: var(--accent); */
+  background-color: var(--secondary);
   color: var(--white);
   border: 1px solid var(--white);
   padding-bottom: 0.52em;
@@ -269,13 +271,29 @@ body {
   width: 42%;
 }
 
-.btn__dark-mode-toggle {
+.control-panel {
   align-self: flex-end;
-  background-image: url("../assets/night-mode.png"); /* so webpack loads the image for use in html template */
+  display: flex;
+}
+
+.btn__dark-mode-toggle,
+.btn__color-scheme-toggle {
+  align-self: flex-end;
+  background-image: url("../assets/night-mode.png");
+  background-size: cover;
   border-radius: 50%;
   margin: 5px 12px;
   height: 40px;
   width: 40px;
+}
+
+.btn__color-scheme-toggle {
+  background-image: url("../assets/color-wheel.png");
+  transition: transform 0.2s;
+}
+
+.spin-wheel {
+  transform: rotate(360deg);
 }
 
 /* Landscape mode mobile and tablet styles */
@@ -314,7 +332,8 @@ body {
     font-size: 3rem;
   }
 
-  .btn__dark-mode-toggle {
+  .btn__dark-mode-toggle,
+  .btn__color-scheme-toggle {
     height: 30px;
     width: 30px;
   }
@@ -355,7 +374,8 @@ body {
     width: 100%;
   }
 
-  .btn__dark-mode-toggle {
+  .btn__dark-mode-toggle,
+  .btn__color-scheme-toggle {
     height: 30px;
     width: 30px;
   }

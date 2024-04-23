@@ -23,6 +23,9 @@ const darkModeElements = [
   allButtons,
 ];
 const toggleDarkModeButton = document.getElementById("toggle-dark-mode");
+const generateColorSchemeButton = document.getElementById(
+  "generate-color-scheme"
+);
 const clearButton = document.getElementById("clear-button");
 const numberButtons = document.querySelectorAll(".btn__num");
 const operatorButtons = document.querySelectorAll(".btn__operator");
@@ -44,20 +47,12 @@ const tanButton = document.getElementById("tan");
 const sinButton = document.getElementById("sin");
 const cosButton = document.getElementById("cos");
 const displayNum = document.getElementById("display-text");
-
-const myCalculator = new Calculator();
 const headTag = Array.from(document.getElementsByTagName("head"))[0];
 const styleTag = document.createElement("style");
 headTag.appendChild(styleTag);
 
 let myColorScheme = {
   // hardcoded to start but this will come from localStorage
-
-  // neutrals
-  // white: [0, 0, 100],
-  // darkGray: [0, 0, 66],
-  // slateGray: [0, 0, 35],
-  // almostBlack: [0, 0, 8],
 
   // primary scheme
   primaryLightest: [185, 40, 71],
@@ -70,10 +65,29 @@ let myColorScheme = {
   displayWindow: [185, 100, 87],
 };
 
-// Write a function called setColors().  For now, setColors() will just set the colors we have hardcoded in an object
-// to the styleTag's innerText.  Eventually, this will tap into localStorage, and pull that object out of there
-// and do the same thing, set the colors as the styleTag's innerText.
-//
+function blinkDisplay(numString) {
+  displayNum.value = " ";
+  setTimeout(() => {
+    displayNum.value = numString;
+  }, 30);
+}
+
+function buttonAnimation(button) {
+  button.classList.add("key-pressed");
+  setTimeout(() => {
+    button.classList.remove("key-pressed");
+  }, 150);
+}
+
+function toggleDarkMode(elementsArray) {
+  elementsArray.forEach((element) => {
+    if (element.constructor === Array) {
+      toggleDarkMode(element);
+    } else {
+      element.classList.toggle("dark");
+    }
+  });
+}
 
 function setColors(customColors) {
   styleTag.innerText = `:root  {
@@ -88,13 +102,8 @@ function setColors(customColors) {
 }`;
 }
 
-setColors(myColorScheme);
-
-// Write another function called createCustomPalette().  This function will reassign the colors object to a new object
-// whose values are determined within this function.
-
 function createCustomPalette() {
-  // return a new colors object to assign to myColorScheme
+  // return a new colors object to be passed into setColors()
   const customColorScheme = {};
   const newPrimaryColor = [
     Math.floor(Math.random() * 360), // hue between 0 and 360deg, saturation between 60% and 80%, light between 40% and 60%
@@ -142,42 +151,21 @@ function createCustomPalette() {
 
   const newAccent = [
     newPrimaryColor[0] - 180,
-    Math.floor(Math.random() * 10) + 90, // saturation between 90% and 100%, light between
+    Math.floor(Math.random() * 10) + 60, // saturation between 60% and 70%
     Math.floor(Math.random() * 20) + 40, // light between 40% and 60%
   ];
   customColorScheme.accent = newAccent;
 
   const newDisplayWindow = [newPrimaryColor[0] - 15, 100, 87];
   customColorScheme.displayWindow = newDisplayWindow;
-
-  console.log(customColorScheme);
   return customColorScheme;
 }
 
-setColors(createCustomPalette());
-
-function blinkDisplay(numString) {
-  displayNum.value = " ";
+function rotateColorWheel() {
+  generateColorSchemeButton.classList.add("spin-wheel");
   setTimeout(() => {
-    displayNum.value = numString;
-  }, 30);
-}
-
-function buttonAnimation(button) {
-  button.classList.add("key-pressed");
-  setTimeout(() => {
-    button.classList.remove("key-pressed");
-  }, 150);
-}
-
-function toggleDarkMode(elementsArray) {
-  elementsArray.forEach((element) => {
-    if (element.constructor === Array) {
-      toggleDarkMode(element);
-    } else {
-      element.classList.toggle("dark");
-    }
-  });
+    generateColorSchemeButton.classList.remove("spin-wheel");
+  }, 500);
 }
 
 function animateButtonAndBlinkDisplay(buttonToAnimate) {
@@ -189,11 +177,18 @@ function animateButtonAndBlinkDisplay(buttonToAnimate) {
 
 //// Click Event Listeners //////
 
-// Toggle Dark Mode //
+// Toggle Dark Mode and Generate Color Schemes //
 
 toggleDarkModeButton.addEventListener("click", () => {
   toggleDarkMode(darkModeElements);
 });
+
+generateColorSchemeButton.addEventListener("click", () => {
+  rotateColorWheel();
+  setColors(createCustomPalette());
+});
+
+// setColors(createCustomPalette());
 
 // Number Buttons //
 
@@ -316,6 +311,9 @@ cosButton.addEventListener("click", (e) => {
   myCalculator.handleOperators("c");
   animateButtonAndBlinkDisplay(e.target);
 });
+
+const myCalculator = new Calculator();
+setColors(myColorScheme);
 
 ////// Keyup Event Listeners //////
 
