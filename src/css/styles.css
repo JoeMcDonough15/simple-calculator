@@ -1,11 +1,10 @@
 :root {
-  /* Neutrals */
   --white: hsl(0, 100%, 100%);
   --almost-black: hsl(0, 0%, 8%);
   --slate-gray: hsl(0, 0%, 35%);
   --dark-gray: hsl(0, 0%, 66%);
 
-  /* Color Scheme */
+  /*
   --primary-lightest: hsl(185, 40%, 71%);
   --primary-lighter: hsl(195, 43%, 62%);
   --primary: hsl(200, 33%, 50%);
@@ -14,9 +13,10 @@
   --secondary: hsl(100, 30%, 66%);
   --accent: hsl(20, 100%, 50%);
 
-  /* Display Window */
   --display-window: hsl(185, 100%, 87%);
   --display-dark-mode: hsl(120, 73%, 75%);
+
+  */
 }
 
 @font-face {
@@ -152,8 +152,9 @@ body {
 }
 
 .display-window.dark {
-  background-color: var(--display-dark-mode);
-  box-shadow: 0px 0px 80px 5.8px var(--display-dark-mode);
+  /* background-color: var(--display-dark-mode); */
+  /* box-shadow: 0px 0px 80px 5.8px var(--display-dark-mode); */
+  box-shadow: 0px 0px 80px 5.8px var(--display-window);
 }
 
 .keypad {
@@ -270,7 +271,7 @@ body {
 
 .btn__dark-mode-toggle {
   align-self: flex-end;
-  /* background-image: url("../assets/night-mode.png"); */ /* so webpack loads the image for use in html template */
+  background-image: url("../assets/night-mode.png"); /* so webpack loads the image for use in html template */
   border-radius: 50%;
   margin: 5px 12px;
   height: 40px;

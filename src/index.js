@@ -46,6 +46,115 @@ const cosButton = document.getElementById("cos");
 const displayNum = document.getElementById("display-text");
 
 const myCalculator = new Calculator();
+const headTag = Array.from(document.getElementsByTagName("head"))[0];
+const styleTag = document.createElement("style");
+headTag.appendChild(styleTag);
+
+let myColorScheme = {
+  // hardcoded to start but this will come from localStorage
+
+  // neutrals
+  // white: [0, 0, 100],
+  // darkGray: [0, 0, 66],
+  // slateGray: [0, 0, 35],
+  // almostBlack: [0, 0, 8],
+
+  // primary scheme
+  primaryLightest: [185, 40, 71],
+  primaryLighter: [195, 43, 62],
+  primary: [200, 33, 50],
+  primaryDarker: [205, 23, 36],
+  primaryDarkest: [215, 26, 27],
+  secondary: [100, 30, 66],
+  accent: [20, 100, 50],
+  displayWindow: [185, 100, 87],
+};
+
+// Write a function called setColors().  For now, setColors() will just set the colors we have hardcoded in an object
+// to the styleTag's innerText.  Eventually, this will tap into localStorage, and pull that object out of there
+// and do the same thing, set the colors as the styleTag's innerText.
+//
+
+function setColors(customColors) {
+  styleTag.innerText = `:root  {
+  --primary-lightest: hsl(${customColors.primaryLightest[0]}, ${customColors.primaryLightest[1]}%, ${customColors.primaryLightest[2]}%);
+  --primary-lighter: hsl(${customColors.primaryLighter[0]}, ${customColors.primaryLighter[1]}%, ${customColors.primaryLighter[2]}%);
+  --primary: hsl(${customColors.primary[0]}, ${customColors.primary[1]}%, ${customColors.primary[2]}%);
+  --primary-darker: hsl(${customColors.primaryDarker[0]}, ${customColors.primaryDarker[1]}%, ${customColors.primaryDarker[2]}%);
+  --primary-darkest: hsl(${customColors.primaryDarkest[0]}, ${customColors.primaryDarkest[1]}%, ${customColors.primaryDarkest[2]}%);
+  --secondary: hsl(${customColors.secondary[0]}, ${customColors.secondary[1]}%, ${customColors.secondary[2]}%);
+  --accent: hsl(${customColors.accent[0]}, ${customColors.accent[1]}%, ${customColors.accent[2]}%);
+  --display-window: hsl(${customColors.displayWindow[0]}, ${customColors.displayWindow[1]}%, ${customColors.displayWindow[2]}%);
+}`;
+}
+
+setColors(myColorScheme);
+
+// Write another function called createCustomPalette().  This function will reassign the colors object to a new object
+// whose values are determined within this function.
+
+function createCustomPalette() {
+  // return a new colors object to assign to myColorScheme
+  const customColorScheme = {};
+  const newPrimaryColor = [
+    Math.floor(Math.random() * 360), // hue between 0 and 360deg, saturation between 60% and 80%, light between 40% and 60%
+    Math.floor(Math.random() * 20) + 60,
+    Math.floor(Math.random() * 20) + 40,
+  ];
+  customColorScheme.primary = newPrimaryColor;
+
+  // now, set other colors based on these new primary color values
+
+  const newPrimaryDarker = [
+    newPrimaryColor[0] + 5,
+    newPrimaryColor[1] - 10,
+    newPrimaryColor[2] - 16,
+  ];
+  customColorScheme.primaryDarker = newPrimaryDarker;
+
+  const newPrimaryDarkest = [
+    newPrimaryColor[0] + 15,
+    newPrimaryColor[1] - 7,
+    newPrimaryColor[2] - 23,
+  ];
+  customColorScheme.primaryDarkest = newPrimaryDarkest;
+
+  const newPrimaryLighter = [
+    newPrimaryColor[0] - 5,
+    newPrimaryColor[1] + 10,
+    newPrimaryColor[2] + 12,
+  ];
+  customColorScheme.primaryLighter = newPrimaryLighter;
+
+  const newPrimaryLightest = [
+    newPrimaryColor[0] - 15,
+    newPrimaryColor[1] + 7,
+    newPrimaryColor[2] + 21,
+  ];
+  customColorScheme.primaryLightest = newPrimaryLightest;
+
+  const newSecondary = [
+    newPrimaryColor[0] - 20,
+    newPrimaryColor[1] - 3,
+    newPrimaryColor[2] + 16,
+  ];
+  customColorScheme.secondary = newSecondary;
+
+  const newAccent = [
+    newPrimaryColor[0] - 180,
+    Math.floor(Math.random() * 10) + 90, // saturation between 90% and 100%, light between
+    Math.floor(Math.random() * 20) + 40, // light between 40% and 60%
+  ];
+  customColorScheme.accent = newAccent;
+
+  const newDisplayWindow = [newPrimaryColor[0] - 15, 100, 87];
+  customColorScheme.displayWindow = newDisplayWindow;
+
+  console.log(customColorScheme);
+  return customColorScheme;
+}
+
+setColors(createCustomPalette());
 
 function blinkDisplay(numString) {
   displayNum.value = " ";
