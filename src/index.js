@@ -54,15 +54,18 @@ headTag.appendChild(styleTag);
 let myColorScheme = {
   // hardcoded to start but this will come from localStorage
 
-  // primary scheme
-  primaryLightest: [185, 40, 71],
-  primaryLighter: [195, 43, 62],
-  primary: [200, 33, 50],
-  primaryDarker: [205, 23, 36],
-  primaryDarkest: [215, 26, 27],
-  secondary: [100, 30, 66],
-  accent: [20, 100, 50],
-  displayWindow: [185, 100, 87],
+  // light mode backdrop scheme
+  backdropLightest: [7, 35, 82], // backdropLightest
+  backdropLighter: [17, 38, 78], // backdropLighter
+  backdrop: [22, 28, 72], // backdrop
+  // dark mode backdrop scheme
+  darkModeBackdrop: [22, 28, 22],
+  darkModeBackdropDarker: [27, 18, 16],
+  darkModeBackdropDarkest: [37, 21, 12],
+  // components
+  operatorButtons: [-98, 58, 32], // operatorButtons
+  calculatorShell: [142, 58, 32], // calculatorShell
+  displayWindow: [7, 35, 89], // displayWindow
 };
 
 function blinkDisplay(numString) {
@@ -91,13 +94,14 @@ function toggleDarkMode(elementsArray) {
 
 function setColors(customColors) {
   styleTag.innerText = `:root  {
-  --primary-lightest: hsl(${customColors.primaryLightest[0]}, ${customColors.primaryLightest[1]}%, ${customColors.primaryLightest[2]}%);
-  --primary-lighter: hsl(${customColors.primaryLighter[0]}, ${customColors.primaryLighter[1]}%, ${customColors.primaryLighter[2]}%);
-  --primary: hsl(${customColors.primary[0]}, ${customColors.primary[1]}%, ${customColors.primary[2]}%);
-  --primary-darker: hsl(${customColors.primaryDarker[0]}, ${customColors.primaryDarker[1]}%, ${customColors.primaryDarker[2]}%);
-  --primary-darkest: hsl(${customColors.primaryDarkest[0]}, ${customColors.primaryDarkest[1]}%, ${customColors.primaryDarkest[2]}%);
-  --secondary: hsl(${customColors.secondary[0]}, ${customColors.secondary[1]}%, ${customColors.secondary[2]}%);
-  --accent: hsl(${customColors.accent[0]}, ${customColors.accent[1]}%, ${customColors.accent[2]}%);
+  --backdrop-lightest: hsl(${customColors.backdropLightest[0]}, ${customColors.backdropLightest[1]}%, ${customColors.backdropLightest[2]}%);
+  --backdrop-lighter: hsl(${customColors.backdropLighter[0]}, ${customColors.backdropLighter[1]}%, ${customColors.backdropLighter[2]}%);
+  --backdrop: hsl(${customColors.backdrop[0]}, ${customColors.backdrop[1]}%, ${customColors.backdrop[2]}%);
+  --darkmode-backdrop: hsl(${customColors.darkModeBackdrop[0]}, ${customColors.darkModeBackdrop[1]}%, ${customColors.darkModeBackdrop[2]}%);
+  --darkmode-backdrop-darker: hsl(${customColors.darkModeBackdropDarker[0]}, ${customColors.darkModeBackdropDarker[1]}%, ${customColors.darkModeBackdropDarker[2]}%);;
+  --darkmode-backdrop-darkest: hsl(${customColors.darkModeBackdropDarkest[0]}, ${customColors.darkModeBackdropDarkest[1]}%, ${customColors.darkModeBackdropDarkest[2]}%);
+  --operator-buttons: hsl(${customColors.operatorButtons[0]}, ${customColors.operatorButtons[1]}%, ${customColors.operatorButtons[2]}%);
+  --calculator-shell: hsl(${customColors.calculatorShell[0]}, ${customColors.calculatorShell[1]}%, ${customColors.calculatorShell[2]}%);
   --display-window: hsl(${customColors.displayWindow[0]}, ${customColors.displayWindow[1]}%, ${customColors.displayWindow[2]}%);
 }`;
 }
@@ -105,59 +109,73 @@ function setColors(customColors) {
 function createCustomPalette() {
   // return a new colors object to be passed into setColors()
   const customColorScheme = {};
-  const newPrimaryColor = [
-    Math.floor(Math.random() * 360), // hue between 0 and 360deg, saturation between 60% and 80%, light between 40% and 60%
-    Math.floor(Math.random() * 20) + 60,
-    Math.floor(Math.random() * 20) + 40,
+  const newBackdropColor = [
+    Math.floor(Math.random() * 360), // hue between 0 and 360deg,
+    Math.floor(Math.random() * 10) + 20, // saturation between 20% and 30%,
+    Math.floor(Math.random() * 10) + 70, // light between 70% and 80%
   ];
-  customColorScheme.primary = newPrimaryColor;
+  customColorScheme.backdrop = newBackdropColor;
 
-  // now, set other colors based on these new primary color values
+  // now, set other colors based on these new backdrop color values
 
-  const newPrimaryDarker = [
-    newPrimaryColor[0] + 5,
-    newPrimaryColor[1] - 10,
-    newPrimaryColor[2] - 16,
+  const newBackdropLighter = [
+    newBackdropColor[0] - 5,
+    newBackdropColor[1] + 10,
+    newBackdropColor[2] + 6,
   ];
-  customColorScheme.primaryDarker = newPrimaryDarker;
+  customColorScheme.backdropLighter = newBackdropLighter;
 
-  const newPrimaryDarkest = [
-    newPrimaryColor[0] + 15,
-    newPrimaryColor[1] - 7,
-    newPrimaryColor[2] - 23,
+  const newBackdropLightest = [
+    newBackdropColor[0] - 15,
+    newBackdropColor[1] + 7,
+    newBackdropColor[2] + 10,
   ];
-  customColorScheme.primaryDarkest = newPrimaryDarkest;
+  customColorScheme.backdropLightest = newBackdropLightest;
 
-  const newPrimaryLighter = [
-    newPrimaryColor[0] - 5,
-    newPrimaryColor[1] + 10,
-    newPrimaryColor[2] + 12,
+  const newDarkModeBackdrop = [
+    newBackdropColor[0],
+    newBackdropColor[1],
+    newBackdropColor[2] - 50,
   ];
-  customColorScheme.primaryLighter = newPrimaryLighter;
+  customColorScheme.darkModeBackdrop = newDarkModeBackdrop;
 
-  const newPrimaryLightest = [
-    newPrimaryColor[0] - 15,
-    newPrimaryColor[1] + 7,
-    newPrimaryColor[2] + 21,
+  const newDarkModeBackdropDarker = [
+    newDarkModeBackdrop[0] + 5,
+    newDarkModeBackdrop[1] - 10,
+    newDarkModeBackdrop[2] - 6,
   ];
-  customColorScheme.primaryLightest = newPrimaryLightest;
+  customColorScheme.darkModeBackdropDarker = newDarkModeBackdropDarker;
 
-  const newSecondary = [
-    newPrimaryColor[0] - 20,
-    newPrimaryColor[1] - 3,
-    newPrimaryColor[2] + 16,
+  const newDarkModeBackdropDarkest = [
+    newDarkModeBackdrop[0] + 15,
+    newDarkModeBackdrop[1] - 7,
+    newDarkModeBackdrop[2] - 10,
   ];
-  customColorScheme.secondary = newSecondary;
+  customColorScheme.darkModeBackdropDarkest = newDarkModeBackdropDarkest;
 
-  const newAccent = [
-    newPrimaryColor[0] - 180,
-    Math.floor(Math.random() * 10) + 60, // saturation between 60% and 70%
-    Math.floor(Math.random() * 20) + 40, // light between 40% and 60%
+  const newShell = [
+    newBackdropColor[0] + 120,
+    newBackdropColor[1] - 10,
+    newBackdropColor[2] - 40,
   ];
-  customColorScheme.accent = newAccent;
+  customColorScheme.calculatorShell = newShell;
 
-  const newDisplayWindow = [newPrimaryColor[0] - 15, 100, 87];
+  const newDisplayWindow = [
+    newBackdropLightest[0],
+    newBackdropLightest[1],
+    newBackdropLightest[2] + 7,
+  ];
   customColorScheme.displayWindow = newDisplayWindow;
+
+  const newOperatorButtons = [
+    newBackdropColor[0] - 120,
+    newBackdropColor[1] + 30,
+    newBackdropColor[2] - 40,
+  ];
+  customColorScheme.operatorButtons = newOperatorButtons;
+
+  console.log(customColorScheme);
+
   return customColorScheme;
 }
 

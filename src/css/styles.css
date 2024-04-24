@@ -5,13 +5,11 @@
   --dark-gray: hsl(0, 0%, 66%);
 
   /*
-  --primary-lightest: hsl(185, 40%, 71%);
-  --primary-lighter: hsl(195, 43%, 62%);
-  --primary: hsl(200, 33%, 50%);
-  --primary-darker: hsl(205, 23%, 36%);
-  --primary-darkest: hsl(215, 26%, 27%);
-  --secondary: hsl(100, 30%, 66%);
-  --accent: hsl(20, 100%, 50%);
+  --backdrop-lightest: hsl(185, 40%, 71%);
+  --backdrop-lighter: hsl(195, 43%, 62%);
+  --backdrop: hsl(200, 33%, 50%);
+  --operator-buttons: hsl(100, 30%, 66%);
+  --calculator-shell: hsl(20, 100%, 50%);
 
   --display-window: hsl(185, 100%, 87%);
   --display-dark-mode: hsl(120, 73%, 75%);
@@ -76,6 +74,7 @@ body {
 .btn__exponent {
   font-family: "Oranienbaum", serif;
   font-size: 1.5rem;
+  font-weight: 900;
 }
 
 .btn__exponent,
@@ -93,12 +92,11 @@ body {
   align-items: center;
   background: linear-gradient(
     45deg,
-    var(--white),
-    var(--primary-lightest),
-    var(--primary-lighter),
-    var(--primary),
-    var(--primary-darker),
-    var(--primary-darkest)
+    var(--backdrop-lightest),
+    var(--backdrop-lighter),
+    var(--backdrop),
+    var(--backdrop-lighter),
+    var(--backdrop-lightest)
   );
   display: flex;
   min-height: 100vh;
@@ -106,15 +104,25 @@ body {
 }
 
 .main-container.dark {
-  background: var(--almost-black);
+  /* background: var(--almost-black); */
+  background: linear-gradient(
+    45deg,
+    var(--almost-black),
+    var(--darkmode-backdrop-darkest),
+    var(--darkmode-backdrop-darker),
+    var(--darkmode-backdrop),
+    var(--darkmode-backdrop-darker),
+    var(--darkmode-backdrop-darkest),
+    var(--almost-black)
+  );
 }
 
 .calculator-shell {
-  /* background-color: var(--secondary); */
-  background-color: var(--accent);
+  background-color: var(--calculator-shell);
   border-radius: 1rem;
   box-shadow: 0 0 1.5em #000;
   max-width: 600px;
+  padding: 0.5em;
   position: relative;
 }
 
@@ -145,6 +153,7 @@ body {
 .display-window {
   align-items: flex-end;
   background-color: var(--display-window);
+  /* background-color: var(--backdrop-lightest); */
   border-radius: 1rem 1rem 0 0;
   display: flex;
   justify-content: flex-end;
@@ -160,14 +169,13 @@ body {
 
 .keypad {
   gap: 0.25em;
-  padding: 0.5em;
 }
 
 .btn {
   align-items: center;
   background-color: var(--white);
-  border: 1px solid var(--primary-darkest);
-  color: var(--primary-darkest);
+  border: 1px solid var(--operator-buttons);
+  color: var(--operator-buttons);
   border-radius: 0.3em;
   display: flex;
   height: 75px;
@@ -184,9 +192,9 @@ body {
 .btn__operator,
 .btn__clear {
   align-self: flex-start;
-  /* background-color: var(--primary); */
-  /* background-color: var(--accent); */
-  background-color: var(--secondary);
+  /* background-color: var(--backdrop); */
+  /* background-color: var(--calculator-shell); */
+  background-color: var(--operator-buttons);
   color: var(--white);
   border: 1px solid var(--white);
   padding-bottom: 0.52em;
@@ -205,7 +213,7 @@ body {
 }
 
 .btn.key-pressed {
-  background-color: var(--accent);
+  background-color: var(--calculator-shell);
 }
 
 .btn.dark.key-pressed {
@@ -217,7 +225,7 @@ body {
 .btn.btn__operator.key-pressed,
 .btn.btn__clear.key-pressed {
   background-color: var(--white);
-  color: var(--accent);
+  color: var(--calculator-shell);
 }
 
 .btn.btn__operator.dark.key-pressed,
@@ -229,12 +237,12 @@ body {
 
 /* .btn__equals,
 .btn__clear {
-  color: var(--accent);
+  color: var(--calculator-shell);
 } */
 
 .btn.btn__operator.btn__equals.dark,
 .btn.btn__clear.dark {
-  color: var(--primary);
+  color: var(--backdrop);
 }
 
 .btn.btn__operator.btn__equals.dark.key-pressed {
