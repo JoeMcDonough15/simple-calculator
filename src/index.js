@@ -12,12 +12,13 @@ const SUBTRACTION = "-";
 const EQUALS_OPERATORS = "=Enter";
 
 // //////// DOM Elements ////////
-const mainContainer = document.getElementById("main-container");
+const mainBackground = document.getElementById("main-background");
 const calculatorShell = document.getElementById("calculator-shell");
 const displayWindow = document.getElementById("display-window");
+const displayNum = document.getElementById("display-text");
 const allButtons = Array.from(document.querySelectorAll(".btn"));
 const darkModeElements = [
-  mainContainer,
+  mainBackground,
   calculatorShell,
   displayWindow,
   allButtons,
@@ -46,7 +47,6 @@ const eulerRaisedButton = document.getElementById("euler-raised-button");
 const tanButton = document.getElementById("tan");
 const sinButton = document.getElementById("sin");
 const cosButton = document.getElementById("cos");
-const displayNum = document.getElementById("display-text");
 const headTag = Array.from(document.getElementsByTagName("head"))[0];
 const styleTag = document.createElement("style");
 headTag.appendChild(styleTag);
@@ -69,10 +69,33 @@ let myColorScheme = {
   displayWindow: [7, 35, 89], // displayWindow
 };
 
+function reduceTextSize(numString) {
+  if (numString.length > 17) {
+    displayNum.classList.add("smaller-text");
+    displayNum.classList.remove("small-text");
+  } else if (numString.length > 11) {
+    displayNum.classList.add("small-text");
+    displayNum.classList.remove("smaller-text");
+  } else {
+    displayNum.classList.remove("small-text");
+    displayNum.classList.remove("smaller-text");
+  }
+}
+
+function fixDecimals(numString) {
+  const num = Number(numString);
+  const newNumString = Number(num.toFixed(11)).toString();
+  return newNumString;
+}
+
 function blinkDisplay(numString) {
-  displayNum.value = " ";
+  if (numString.includes(".")) {
+    numString = fixDecimals(numString);
+  }
+  reduceTextSize(numString);
+  displayNum.innerText = " ";
   setTimeout(() => {
-    displayNum.value = numString;
+    displayNum.innerText = numString;
   }, 30);
 }
 
