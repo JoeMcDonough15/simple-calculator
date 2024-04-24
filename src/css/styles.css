@@ -294,11 +294,11 @@ div.main-container {
   transition: transform 0.2s;
 }
 
-.main-container.dark .btn__dark-mode-toggle {
+main.main-background.dark .btn__dark-mode-toggle {
   background-image: url("../assets/day-mode.png");
 }
 
-.main-container.dark .btn__color-scheme-toggle {
+main.main-background.dark .btn__color-scheme-toggle {
   background-image: url("../assets/color-wheel-dark.png");
 }
 

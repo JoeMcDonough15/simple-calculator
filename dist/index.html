@@ -17,109 +17,108 @@
     <script src="
 https://cdn.jsdelivr.net/npm/mathjs@11.11.1/lib/browser/math.min.js
 "></script>
-
   <link rel="icon" href="calculator.ico"><script defer src="bundle.js"></script></head>
 
   <body>
-    <main id="main-container" class="main-container">
+    <main id="main-background" class="main-background">
+      <div class="main-container">
       <div id="calculator-shell" class="calculator-shell col">
-        <div id="display-window" class="display-window">
-          <input id="display-text" class="display-text" value="0" />
-        <div class="control-panel">  </div>
-          <div
-            id="generate-color-scheme"
-            class="btn__color-scheme-toggle">
+          <div id="display-window" class="display-window">
+            <p id="display-text" class="display-text">0</p>
           </div>
-          <div
-            id="toggle-dark-mode"
-            class="btn__dark-mode-toggle">
+          <div class="control-panel">
+            <div
+                id="generate-color-scheme"
+                class="btn__color-scheme-toggle"
+            ></div>
+            <div id="toggle-dark-mode" class="btn__dark-mode-toggle"></div>
           </div>
-        </div>
-        <div class="keypad col">
-          <div class="row row__one">
-            <div id="clear-button" class="btn btn__clear">C</div>
-            <div id="num_1" class="btn btn__num">1</div>
-            <div id="num_2" class="btn btn__num">2</div>
-            <div id="num_3" class="btn btn__num">3</div>
-            <div id="add" class="btn btn__operator">+</div>
-          </div>
-          <div class="row row__two">
-            <div class="row row__txt-btns">
-              <div
-                id="inverse-fraction-button"
-                class="btn btn__text btn__special-text btn__inverse"
-              >
-                <span class="btn__inverse__numerator">1</span> /
-                <span class="btn__inverse__denominator">x</span>
+          <div class="keypad col">
+            <div class="row row__one">
+              <div id="clear-button" class="btn btn__clear">C</div>
+              <div id="num_1" class="btn btn__num">1</div>
+              <div id="num_2" class="btn btn__num">2</div>
+              <div id="num_3" class="btn btn__num">3</div>
+              <div id="add" class="btn btn__operator">+</div>
+            </div>
+            <div class="row row__two">
+              <div class="row row__txt-btns">
+                <div
+                  id="inverse-fraction-button"
+                  class="btn btn__text btn__special-text btn__inverse"
+                >
+                  <span class="btn__inverse__numerator">1</span> /
+                  <span class="btn__inverse__denominator">x</span>
+                </div>
+                <div id="euler-button" class="btn btn__text btn__special-text">
+                  e
+                </div>
+                <div id="euler-raised-button" class="btn btn__exponent">
+                  e<span class="exponent__text">n</span>
+                </div>
               </div>
-              <div id="euler-button" class="btn btn__text btn__special-text">
-                e
+
+              <div id="num_4" class="btn btn__num">4</div>
+              <div id="num_5" class="btn btn__num">5</div>
+              <div id="num_6" class="btn btn__num">6</div>
+              <div id="subtract" class="btn btn__operator minus-sign">-</div>
+            </div>
+            <div class="row row__three">
+              <div class="row row__txt-btns">
+                <div id="square-button" class="btn btn__exponent">
+                  x<span class="exponent__text">2</span>
+                </div>
+                <div id="cube-button" class="btn btn__exponent">
+                  x<span class="exponent__text">3</span>
+                </div>
+                <div id="custom-exponent-button" class="btn btn__exponent">
+                  x<span class="exponent__text">n</span>
+                </div>
               </div>
-              <div id="euler-raised-button" class="btn btn__exponent">
-                e<span class="exponent__text">n</span>
-              </div>
+
+              <div id="num_7" class="btn btn__num">7</div>
+              <div id="num_8" class="btn btn__num">8</div>
+              <div id="num_9" class="btn btn__num">9</div>
+              <div id="multiply" class="btn btn__operator">x</div>
             </div>
 
-            <div id="num_4" class="btn btn__num">4</div>
-            <div id="num_5" class="btn btn__num">5</div>
-            <div id="num_6" class="btn btn__num">6</div>
-            <div id="subtract" class="btn btn__operator minus-sign">-</div>
-          </div>
-          <div class="row row__three">
-            <div class="row row__txt-btns">
-              <div id="square-button" class="btn btn__exponent">
-                x<span class="exponent__text">2</span>
+            <div class="row row__four">
+              <div class="row row__txt-btns">
+                <div
+                  id="factorial-button"
+                  class="btn btn__text btn__special-text"
+                >
+                  x!
+                </div>
+                <div id="pi-button" class="btn btn__text btn__special-text">
+                  π
+                </div>
+                <div class="btn btn__text"></div>
               </div>
-              <div id="cube-button" class="btn btn__exponent">
-                x<span class="exponent__text">3</span>
-              </div>
-              <div id="custom-exponent-button" class="btn btn__exponent">
-                x<span class="exponent__text">n</span>
-              </div>
+
+              <div class="btn btn__num">.</div>
+              <div id="num_0" class="btn btn__num">0</div>
+              <div id="toggle-negative" class="btn btn__text">+/-</div>
+              <div id="divide" class="btn btn__operator">÷</div>
             </div>
-
-            <div id="num_7" class="btn btn__num">7</div>
-            <div id="num_8" class="btn btn__num">8</div>
-            <div id="num_9" class="btn btn__num">9</div>
-            <div id="multiply" class="btn btn__operator">x</div>
-          </div>
-
-          <div class="row row__four">
-            <div class="row row__txt-btns">
-              <div
-                id="factorial-button"
-                class="btn btn__text btn__special-text"
-              >
-                x!
+            <div class="row row__final">
+              <div class="row row__txt-btns">
+                <div id="sin" class="btn btn__text btn__special-text btn__trig">
+                  sin
+                </div>
+                <div id="cos" class="btn btn__text btn__special-text btn__trig">
+                  cos
+                </div>
+                <div id="tan" class="btn btn__text btn__special-text btn__trig">
+                  tan
+                </div>
               </div>
-              <div id="pi-button" class="btn btn__text btn__special-text">
-                π
-              </div>
-              <div class="btn btn__text"></div>
+
+              <div id="percentage-button" class="btn btn__text">%</div>
+              <div id="open-parenthesis" class="btn btn__text">(</div>
+              <div id="close-parenthesis" class="btn btn__text">)</div>
+              <div id="equals" class="btn btn__operator btn__equals">=</div>
             </div>
-
-            <div class="btn btn__num">.</div>
-            <div id="num_0" class="btn btn__num">0</div>
-            <div id="toggle-negative" class="btn btn__text">+/-</div>
-            <div id="divide" class="btn btn__operator">÷</div>
-          </div>
-          <div class="row row__final">
-            <div class="row row__txt-btns">
-              <div id="sin" class="btn btn__text btn__special-text btn__trig">
-                sin
-              </div>
-              <div id="cos" class="btn btn__text btn__special-text btn__trig">
-                cos
-              </div>
-              <div id="tan" class="btn btn__text btn__special-text btn__trig">
-                tan
-              </div>
-            </div>
-
-            <div id="percentage-button" class="btn btn__text">%</div>
-            <div id="open-parenthesis" class="btn btn__text">(</div>
-            <div id="close-parenthesis" class="btn btn__text">)</div>
-            <div id="equals" class="btn btn__operator btn__equals">=</div>
           </div>
         </div>
       </div>
