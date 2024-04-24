@@ -55,15 +55,16 @@ let myColorScheme = {
   // hardcoded to start but this will come from localStorage
 
   // light mode backdrop scheme
-  backdropLightest: [7, 35, 82], // backdropLightest
-  backdropLighter: [17, 38, 78], // backdropLighter
-  backdrop: [22, 28, 72], // backdrop
+  backdropLightest: [7, 48, 82], // backdropLightest
+  backdropLighter: [17, 48, 78], // backdropLighter
+  backdrop: [22, 48, 72], // backdrop
   // dark mode backdrop scheme
   darkModeBackdrop: [22, 28, 22],
   darkModeBackdropDarker: [27, 18, 16],
   darkModeBackdropDarkest: [37, 21, 12],
   // components
   operatorButtons: [-98, 58, 32], // operatorButtons
+  darkModeOperatorButtons: [-98, 58, 20],
   calculatorShell: [142, 58, 32], // calculatorShell
   displayWindow: [7, 35, 89], // displayWindow
 };
@@ -101,6 +102,7 @@ function setColors(customColors) {
   --darkmode-backdrop-darker: hsl(${customColors.darkModeBackdropDarker[0]}, ${customColors.darkModeBackdropDarker[1]}%, ${customColors.darkModeBackdropDarker[2]}%);;
   --darkmode-backdrop-darkest: hsl(${customColors.darkModeBackdropDarkest[0]}, ${customColors.darkModeBackdropDarkest[1]}%, ${customColors.darkModeBackdropDarkest[2]}%);
   --operator-buttons: hsl(${customColors.operatorButtons[0]}, ${customColors.operatorButtons[1]}%, ${customColors.operatorButtons[2]}%);
+  --darkmode-operator-buttons: hsl(${customColors.darkModeOperatorButtons[0]}, ${customColors.darkModeOperatorButtons[1]}%, ${customColors.darkModeOperatorButtons[2]}%);
   --calculator-shell: hsl(${customColors.calculatorShell[0]}, ${customColors.calculatorShell[1]}%, ${customColors.calculatorShell[2]}%);
   --display-window: hsl(${customColors.displayWindow[0]}, ${customColors.displayWindow[1]}%, ${customColors.displayWindow[2]}%);
 }`;
@@ -111,7 +113,7 @@ function createCustomPalette() {
   const customColorScheme = {};
   const newBackdropColor = [
     Math.floor(Math.random() * 360), // hue between 0 and 360deg,
-    Math.floor(Math.random() * 10) + 20, // saturation between 20% and 30%,
+    Math.floor(Math.random() * 10) + 40, // saturation between 40% and 50%,
     Math.floor(Math.random() * 10) + 70, // light between 70% and 80%
   ];
   customColorScheme.backdrop = newBackdropColor;
@@ -120,14 +122,14 @@ function createCustomPalette() {
 
   const newBackdropLighter = [
     newBackdropColor[0] - 5,
-    newBackdropColor[1] + 10,
+    newBackdropColor[1],
     newBackdropColor[2] + 6,
   ];
   customColorScheme.backdropLighter = newBackdropLighter;
 
   const newBackdropLightest = [
     newBackdropColor[0] - 15,
-    newBackdropColor[1] + 7,
+    newBackdropColor[1],
     newBackdropColor[2] + 10,
   ];
   customColorScheme.backdropLightest = newBackdropLightest;
@@ -155,7 +157,7 @@ function createCustomPalette() {
 
   const newShell = [
     newBackdropColor[0] + 120,
-    newBackdropColor[1] - 10,
+    newBackdropColor[1] - 20,
     newBackdropColor[2] - 40,
   ];
   customColorScheme.calculatorShell = newShell;
@@ -173,6 +175,13 @@ function createCustomPalette() {
     newBackdropColor[2] - 40,
   ];
   customColorScheme.operatorButtons = newOperatorButtons;
+
+  const newDarkModeOperatorButtons = [
+    newBackdropColor[0] - 120,
+    newBackdropColor[1] + 30,
+    newBackdropColor[2] - 60,
+  ];
+  customColorScheme.darkModeOperatorButtons = newDarkModeOperatorButtons;
 
   console.log(customColorScheme);
 
