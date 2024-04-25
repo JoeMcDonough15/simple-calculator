@@ -1,4 +1,5 @@
 import Calculator from "./calculator.js";
+import addCommasToNumString from "./addCommasToNumString.js";
 import "./css/styles.css";
 
 // //////// Constants ////////
@@ -65,7 +66,7 @@ let myColorScheme = {
   // components
   operatorButtons: [-98, 58, 32], // operatorButtons
   darkModeOperatorButtons: [-98, 58, 20],
-  calculatorShell: [142, 58, 32], // calculatorShell
+  calculatorShell: [142, 68, 32], // calculatorShell
   displayWindow: [7, 35, 89], // displayWindow
 };
 
@@ -82,16 +83,36 @@ function reduceTextSize(numString) {
   }
 }
 
+function removeCommasFromNumString(numString) {
+  let commalessNumString = "";
+  for (let i = 0; i < numString.length; i++) {
+    if (numString[i] === ",") {
+      continue;
+    }
+    commalessNumString += numString[i];
+  }
+  return commalessNumString;
+}
+
 function fixDecimals(numString) {
+  if (numString.includes(",")) {
+    numString = removeCommasFromNumString(numString);
+    console.log("numString with commas removed: ", numString);
+  }
+  console.log("num in fixDecimals: ", numString);
   const num = Number(numString);
+  console.log("number wrapped num in fixedDecimals: ", num);
   const newNumString = Number(num.toFixed(11)).toString();
+  console.log("final numString to return in fixedDecimals: ", newNumString);
   return newNumString;
 }
 
-function blinkDisplay(numString) {
-  if (numString.includes(".")) {
+function blinkDisplay(numString, decimalsShouldBeFixed = true) {
+  if (decimalsShouldBeFixed && numString.includes(".")) {
+    console.log("fixing decimals");
     numString = fixDecimals(numString);
   }
+  numString = addCommasToNumString(numString);
   reduceTextSize(numString);
   displayNum.innerText = " ";
   setTimeout(() => {
@@ -104,6 +125,11 @@ function buttonAnimation(button) {
   setTimeout(() => {
     button.classList.remove("key-pressed");
   }, 150);
+}
+
+function animateButtonAndBlinkDisplay(buttonToAnimate, decimalsShouldBeFixed) {
+  buttonAnimation(buttonToAnimate);
+  blinkDisplay(myCalculator.numToDisplay, decimalsShouldBeFixed);
 }
 
 function toggleDarkMode(elementsArray) {
@@ -180,7 +206,7 @@ function createCustomPalette() {
 
   const newShell = [
     newBackdropColor[0] + 120,
-    newBackdropColor[1] - 20,
+    newBackdropColor[1] + 20,
     newBackdropColor[2] - 40,
   ];
   customColorScheme.calculatorShell = newShell;
@@ -206,8 +232,6 @@ function createCustomPalette() {
   ];
   customColorScheme.darkModeOperatorButtons = newDarkModeOperatorButtons;
 
-  console.log(customColorScheme);
-
   return customColorScheme;
 }
 
@@ -216,11 +240,6 @@ function rotateColorWheel() {
   setTimeout(() => {
     generateColorSchemeButton.classList.remove("spin-wheel");
   }, 500);
-}
-
-function animateButtonAndBlinkDisplay(buttonToAnimate) {
-  buttonAnimation(buttonToAnimate);
-  blinkDisplay(myCalculator.numToDisplay);
 }
 
 ////// Event Listeners ////////
@@ -250,7 +269,8 @@ numberButtons.forEach((button) => {
     } else {
       clearButton.innerText = "C";
     }
-    animateButtonAndBlinkDisplay(e.target);
+    const decimalsShouldBeFixed = false;
+    animateButtonAndBlinkDisplay(e.target, decimalsShouldBeFixed);
   });
 });
 

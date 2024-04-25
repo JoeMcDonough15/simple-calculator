@@ -157,7 +157,10 @@ class Calculator {
     let lastNum;
     while (index >= 0) {
       if (this.isOperator(equationString[index])) {
-        if (this.isOperator(equationString[index - 1])) {
+        if (index > 0 && equationString[index - 1] === "e") {
+          index -= 2;
+          continue;
+        } else if (index > 0 && this.isOperator(equationString[index - 1])) {
           lastNum = equationString.slice(index - 1);
         } else {
           lastNum = equationString.slice(index);
@@ -166,7 +169,6 @@ class Calculator {
       }
       index -= 1;
     }
-    return lastNum;
   }
 
   grabLastStringInStack() {
