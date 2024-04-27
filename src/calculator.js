@@ -29,7 +29,7 @@ class Calculator {
   constructor() {
     this.equationStack = ["+0"];
     this.currentNumString = "";
-    this.numToDisplay = "0";
+    this.numToDisplay = "";
     this.currentEquationStringModified = false;
     this.overwriteCurrentNumString = false;
     this.clearAll = false;
@@ -156,7 +156,10 @@ class Calculator {
     let index = equationString.length - 1;
     let lastNum;
     while (index >= 0) {
-      if (this.isOperator(equationString[index])) {
+      if (
+        this.isOperator(equationString[index]) &&
+        index < equationString.length - 1
+      ) {
         if (index > 0 && equationString[index - 1] === "e") {
           index -= 2;
           continue;
@@ -188,10 +191,12 @@ class Calculator {
       }
     }
     const firstChar = numString[0];
-    if (numString.length === 1 && this.isOperator(firstChar)) {
-      numString = "0";
-    } else if (this.isOperator(firstChar)) {
+    const lastChar = numString[numString.length - 1];
+    if (this.isOperator(firstChar)) {
       numString = numString.slice(1);
+    }
+    if (this.isOperator(lastChar)) {
+      numString = numString.slice(0, numString.length - 1);
     }
     this.numToDisplay = numString;
   }
@@ -410,7 +415,7 @@ class Calculator {
       this.currentNumString = "";
     }
     this.determineClearLogic();
-    this.updateNumToDisplay("0");
+    this.updateNumToDisplay("+0");
   }
 
   determineClearLogic() {
@@ -438,24 +443,24 @@ class Calculator {
 
   determineCorrectNumStringToUpdate() {
     if (this.isValidNumString()) {
-      return this.currentNumString;
-    } else if (
-      !this.isValidNumString() &&
-      this.equationStack.length === 1 &&
-      this.equationStack[0] === "+0"
-    ) {
-      return "+0";
+      return {
+        stringName: "currentNumString",
+        stringValue: this.currentNumString,
+      };
     } else {
       const lastNumFromStack = this.grabLastNum(this.grabLastStringInStack());
-      this.removeLastNumFromStack(lastNumFromStack);
-      return lastNumFromStack;
+      return {
+        stringName: "lastNumFromStack",
+        stringValue: lastNumFromStack,
+      };
     }
   }
 
-  removeLastNumFromStack(lastNumStringFromStack) {
+  removeLastNumFromStack() {
+    const lastNumFromStack = this.grabLastNum(this.grabLastStringInStack());
     this.equationStack[this.equationStack.length - 1] = this.cutFromNumString(
       this.grabLastStringInStack(),
-      lastNumStringFromStack.length
+      lastNumFromStack.length
     );
     if (this.grabLastStringInStack() === "") {
       this.equationStack[this.equationStack.length - 1] = "+0";
@@ -463,13 +468,41 @@ class Calculator {
   }
 
   updateNumStringInPlace(operationToPerform) {
-    this.currentNumString = this.determineCorrectNumStringToUpdate();
-    const operator = this.grabOperatorOfCurrentNumString();
-    const num = this.numStringAsNumber();
-    const newNumString = operationToPerform(num).toString();
-    this.currentNumString = operator + newNumString;
+    const numStringObject = this.determineCorrectNumStringToUpdate();
+    let numStringValue = numStringObject.stringValue;
+    if (this.isOperator(numStringValue[numStringValue.length - 1])) {
+      let operatorAtEndOfString = numStringValue[numStringValue.length - 1];
+      numStringValue = numStringValue.slice(0, numStringValue.length - 1);
+      numStringValue = this.performOperationOnNumString(
+        numStringValue,
+        operationToPerform
+      );
+      numStringValue = numStringValue + operatorAtEndOfString;
+    } else {
+      numStringValue = this.performOperationOnNumString(
+        numStringValue,
+        operationToPerform
+      );
+    }
+    if (numStringObject.stringName === "lastNumFromStack") {
+      this.removeLastNumFromStack();
+      this.equationStack[this.equationStack.length - 1] += numStringValue;
+    } else {
+      this.currentNumString = numStringValue;
+      this.overwriteCurrentNumString = true;
+    }
     this.updateNumToDisplay();
-    this.overwriteCurrentNumString = true;
+  }
+
+  performOperationOnNumString(numString, operationToPerform) {
+    const operator = numString[0];
+    const num = this.numStringAsNumber(numString);
+    if (num === 0 && operationToPerform === this.handleInverseFraction) {
+      return numString;
+    }
+    let newNumString = operationToPerform(num).toString();
+    newNumString = operator + newNumString;
+    return newNumString;
   }
 
   // helper functions

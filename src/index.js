@@ -97,19 +97,14 @@ function removeCommasFromNumString(numString) {
 function fixDecimals(numString) {
   if (numString.includes(",")) {
     numString = removeCommasFromNumString(numString);
-    console.log("numString with commas removed: ", numString);
   }
-  console.log("num in fixDecimals: ", numString);
   const num = Number(numString);
-  console.log("number wrapped num in fixedDecimals: ", num);
   const newNumString = Number(num.toFixed(11)).toString();
-  console.log("final numString to return in fixedDecimals: ", newNumString);
   return newNumString;
 }
 
 function blinkDisplay(numString, decimalsShouldBeFixed = true) {
   if (decimalsShouldBeFixed && numString.includes(".")) {
-    console.log("fixing decimals");
     numString = fixDecimals(numString);
   }
   numString = addCommasToNumString(numString);
@@ -383,6 +378,8 @@ cosButton.addEventListener("click", (e) => {
 });
 
 const myCalculator = new Calculator();
+myCalculator.updateNumToDisplay();
+blinkDisplay(myCalculator.numToDisplay);
 setColors(myColorScheme);
 
 ////// Keyup Event Listeners //////

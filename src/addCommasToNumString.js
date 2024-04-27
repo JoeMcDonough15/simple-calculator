@@ -29,7 +29,7 @@ const addCommasToNumString = (numString) => {
     num = Math.floor(num / 1000);
     numCommas--;
   }
-  fixedNum = `${num}` + fixedNum + decimalValue;
+  fixedNum = `${num}${fixedNum}${decimalValue}`;
   return fixedNum;
 };
 
