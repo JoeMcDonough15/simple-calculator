@@ -1,5 +1,6 @@
 import Calculator from "./calculator.js";
 import addCommasToNumString from "./addCommasToNumString.js";
+import ColorScheme from "./colorScheme.js";
 import "./css/styles.css";
 
 // //////// Constants ////////
@@ -51,24 +52,6 @@ const cosButton = document.getElementById("cos");
 const headTag = Array.from(document.getElementsByTagName("head"))[0];
 const styleTag = document.createElement("style");
 headTag.appendChild(styleTag);
-
-let myColorScheme = {
-  // hardcoded to start but this will come from localStorage
-
-  // light mode backdrop scheme
-  backdropLightest: [7, 48, 82], // backdropLightest
-  backdropLighter: [17, 48, 78], // backdropLighter
-  backdrop: [22, 48, 72], // backdrop
-  // dark mode backdrop scheme
-  darkModeBackdrop: [22, 28, 22],
-  darkModeBackdropDarker: [27, 18, 16],
-  darkModeBackdropDarkest: [37, 21, 12],
-  // components
-  operatorButtons: [-98, 58, 32], // operatorButtons
-  darkModeOperatorButtons: [-98, 58, 20],
-  calculatorShell: [142, 68, 32], // calculatorShell
-  displayWindow: [7, 35, 89], // displayWindow
-};
 
 function reduceTextSize(numString) {
   if (numString.length > 17) {
@@ -147,87 +130,12 @@ function setColors(customColors) {
   --darkmode-backdrop-darkest: hsl(${customColors.darkModeBackdropDarkest[0]}, ${customColors.darkModeBackdropDarkest[1]}%, ${customColors.darkModeBackdropDarkest[2]}%);
   --operator-buttons: hsl(${customColors.operatorButtons[0]}, ${customColors.operatorButtons[1]}%, ${customColors.operatorButtons[2]}%);
   --darkmode-operator-buttons: hsl(${customColors.darkModeOperatorButtons[0]}, ${customColors.darkModeOperatorButtons[1]}%, ${customColors.darkModeOperatorButtons[2]}%);
+  --calculator-shell-lightest: hsl(${customColors.calculatorShellLightest[0]}, ${customColors.calculatorShellLightest[1]}%, ${customColors.calculatorShellLightest[2]}%);
+  --calculator-shell-lighter: hsl(${customColors.calculatorShellLighter[0]}, ${customColors.calculatorShellLighter[1]}%, ${customColors.calculatorShellLighter[2]}%);
   --calculator-shell: hsl(${customColors.calculatorShell[0]}, ${customColors.calculatorShell[1]}%, ${customColors.calculatorShell[2]}%);
+  --calculator-shell-darker: hsl(${customColors.calculatorShellDarker[0]}, ${customColors.calculatorShellDarker[1]}%, ${customColors.calculatorShellDarker[2]}%); 
   --display-window: hsl(${customColors.displayWindow[0]}, ${customColors.displayWindow[1]}%, ${customColors.displayWindow[2]}%);
 }`;
-}
-
-function createCustomPalette() {
-  // return a new colors object to be passed into setColors()
-  const customColorScheme = {};
-  const newBackdropColor = [
-    Math.floor(Math.random() * 360), // hue between 0 and 360deg,
-    Math.floor(Math.random() * 10) + 40, // saturation between 40% and 50%,
-    Math.floor(Math.random() * 10) + 70, // light between 70% and 80%
-  ];
-  customColorScheme.backdrop = newBackdropColor;
-
-  // now, set other colors based on these new backdrop color values
-
-  const newBackdropLighter = [
-    newBackdropColor[0] - 5,
-    newBackdropColor[1],
-    newBackdropColor[2] + 6,
-  ];
-  customColorScheme.backdropLighter = newBackdropLighter;
-
-  const newBackdropLightest = [
-    newBackdropColor[0] - 15,
-    newBackdropColor[1],
-    newBackdropColor[2] + 10,
-  ];
-  customColorScheme.backdropLightest = newBackdropLightest;
-
-  const newDarkModeBackdrop = [
-    newBackdropColor[0],
-    newBackdropColor[1],
-    newBackdropColor[2] - 50,
-  ];
-  customColorScheme.darkModeBackdrop = newDarkModeBackdrop;
-
-  const newDarkModeBackdropDarker = [
-    newDarkModeBackdrop[0] + 5,
-    newDarkModeBackdrop[1] - 10,
-    newDarkModeBackdrop[2] - 6,
-  ];
-  customColorScheme.darkModeBackdropDarker = newDarkModeBackdropDarker;
-
-  const newDarkModeBackdropDarkest = [
-    newDarkModeBackdrop[0] + 15,
-    newDarkModeBackdrop[1] - 7,
-    newDarkModeBackdrop[2] - 10,
-  ];
-  customColorScheme.darkModeBackdropDarkest = newDarkModeBackdropDarkest;
-
-  const newShell = [
-    newBackdropColor[0] + 120,
-    newBackdropColor[1] + 20,
-    newBackdropColor[2] - 40,
-  ];
-  customColorScheme.calculatorShell = newShell;
-
-  const newDisplayWindow = [
-    newBackdropLightest[0],
-    newBackdropLightest[1],
-    newBackdropLightest[2] + 7,
-  ];
-  customColorScheme.displayWindow = newDisplayWindow;
-
-  const newOperatorButtons = [
-    newBackdropColor[0] - 120,
-    newBackdropColor[1] + 30,
-    newBackdropColor[2] - 40,
-  ];
-  customColorScheme.operatorButtons = newOperatorButtons;
-
-  const newDarkModeOperatorButtons = [
-    newBackdropColor[0] - 120,
-    newBackdropColor[1] + 30,
-    newBackdropColor[2] - 60,
-  ];
-  customColorScheme.darkModeOperatorButtons = newDarkModeOperatorButtons;
-
-  return customColorScheme;
 }
 
 function rotateColorWheel() {
@@ -249,10 +157,9 @@ toggleDarkModeButton.addEventListener("click", () => {
 
 generateColorSchemeButton.addEventListener("click", () => {
   rotateColorWheel();
-  setColors(createCustomPalette());
+  myColorScheme.createCustomPalette();
+  setColors(myColorScheme.colors);
 });
-
-// setColors(createCustomPalette());
 
 // Number Buttons //
 
@@ -380,7 +287,8 @@ cosButton.addEventListener("click", (e) => {
 const myCalculator = new Calculator();
 myCalculator.updateNumToDisplay();
 blinkDisplay(myCalculator.numToDisplay);
-setColors(myColorScheme);
+const myColorScheme = new ColorScheme();
+setColors(myColorScheme.colors);
 
 ////// Keyup Event Listeners //////
 

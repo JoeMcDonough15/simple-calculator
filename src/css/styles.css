@@ -117,7 +117,13 @@ div.main-container {
 }
 
 .calculator-shell {
-  background-color: var(--calculator-shell);
+  background: linear-gradient(
+    180deg,
+    var(--calculator-shell-lightest),
+    var(--calculator-shell-lighter),
+    var(--calculator-shell),
+    var(--calculator-shell-darker)
+  );
   border-radius: 1rem;
   box-shadow: 0.5em 0.5em 1.5em #000;
   padding: 1.5em 0.85em;
