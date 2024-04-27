@@ -230,7 +230,10 @@ class Calculator {
   }
 
   handleSquared(num) {
-    const squaredNumString = math.pow(num, 2);
+    let squaredNumString = math.pow(num, 2);
+    if (num < 0) {
+      squaredNumString = 0 - squaredNumString;
+    }
     return squaredNumString;
   }
 
@@ -404,6 +407,9 @@ class Calculator {
       answer = math.chain(num1).divide(num2).done();
     } else if (EXPONENTS.includes(currentOperator)) {
       answer = math.pow(num1, num2);
+      if (num1 < 0 && num2 % 2 === 0) {
+        answer = 0 - answer;
+      }
     }
     return answer;
   }

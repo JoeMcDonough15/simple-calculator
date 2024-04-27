@@ -12,14 +12,19 @@ const concatenateNextGroup = (numString, nextGroupNum) => {
 
 const addCommasToNumString = (numString) => {
   let decimalValue = "";
+  let possibleNegative = "";
   if (numString.includes(".")) {
     const indexOfDecimal = numString.indexOf(".");
     decimalValue += numString.slice(indexOfDecimal);
     numString = numString.slice(0, indexOfDecimal);
   }
   let num = Number(numString);
+  if (num < 0) {
+    possibleNegative += "-";
+    num = 0 - num;
+  }
   let numCommas = Math.floor(Math.log10(num) / 3);
-  if (numCommas === 0) {
+  if (num === 0 || numCommas === 0) {
     return numString + decimalValue;
   }
   let fixedNum = "";
@@ -29,7 +34,7 @@ const addCommasToNumString = (numString) => {
     num = Math.floor(num / 1000);
     numCommas--;
   }
-  fixedNum = `${num}${fixedNum}${decimalValue}`;
+  fixedNum = `${possibleNegative}${num}${fixedNum}${decimalValue}`;
   return fixedNum;
 };
 
