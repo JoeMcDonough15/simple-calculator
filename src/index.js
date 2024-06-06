@@ -90,7 +90,14 @@ function blinkDisplay(numString, decimalsShouldBeFixed = true) {
   if (decimalsShouldBeFixed && numString.includes(".")) {
     numString = fixDecimals(numString);
   }
-  numString = addCommasToNumString(numString);
+  if (
+    numString !== "Error" &&
+    numString !== "Infinity" &&
+    numString !== "-Infinity"
+  ) {
+    numString = addCommasToNumString(numString);
+  }
+
   reduceTextSize(numString);
   displayNum.innerText = " ";
   setTimeout(() => {

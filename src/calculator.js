@@ -152,7 +152,21 @@ class Calculator {
     }
   }
 
+  checkForInfinity(equationString) {
+    let infinityAndOperator = "";
+    if (equationString.slice(equationString.length - 9) === "-Infinity") {
+      infinityAndOperator = equationString.slice(equationString.length - 10);
+    } else if (equationString.slice(equationString.length - 8) === "Infinity") {
+      infinityAndOperator = equationString.slice(equationString.length - 9);
+    }
+    return infinityAndOperator;
+  }
+
   grabLastNum(equationString) {
+    const infinityAndOperator = this.checkForInfinity(equationString);
+    if (infinityAndOperator) {
+      return infinityAndOperator;
+    }
     let index = equationString.length - 1;
     let lastNum;
     while (index >= 0) {
@@ -160,10 +174,13 @@ class Calculator {
         this.isOperator(equationString[index]) &&
         index < equationString.length - 1
       ) {
+        // we're looking at an operator and we're before the last character of the string
         if (index > 0 && equationString[index - 1] === "e") {
+          // index must be above 0 in order to look behind us, and we want to get to the next operator that's before any any exponential notation: '+9e+1234' so in this case, skip to before the 'e' and continue iterating backwards to look for the next operator
           index -= 2;
           continue;
         } else if (index > 0 && this.isOperator(equationString[index - 1])) {
+          // to account for +-5 for instance.  Negative numbers would have two operators before the num we want to grab
           lastNum = equationString.slice(index - 1);
         } else {
           lastNum = equationString.slice(index);
@@ -197,6 +214,10 @@ class Calculator {
     }
     if (this.isOperator(lastChar)) {
       numString = numString.slice(0, numString.length - 1);
+    }
+    if (numString === "NaN") {
+      console.log("numString inside updateNumToDisplay: ", numString);
+      numString = "Error";
     }
     this.numToDisplay = numString;
   }
