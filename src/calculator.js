@@ -524,9 +524,6 @@ class Calculator {
   performOperationOnNumString(numString, operationToPerform) {
     const operator = numString[0];
     const num = this.numStringAsNumber(numString);
-    if (num === 0 && operationToPerform === this.handleInverseFraction) {
-      return numString;
-    }
     let newNumString = operationToPerform(num).toString();
     newNumString = operator + newNumString;
     return newNumString;
