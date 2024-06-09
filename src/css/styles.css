@@ -161,7 +161,7 @@ div.main-container {
   border-radius: 0.3rem;
   display: flex;
   flex-direction: column;
-  /* height: 77.3px; */
+  height: 77.3px;
   justify-content: center;
   overflow: scroll;
   padding: 0.3rem 0.3rem 0;
@@ -493,7 +493,7 @@ main.main-background.dark .btn__color-scheme-toggle {
   } */
 
   .display-window {
-    /* height: 48.3px; */
+    height: 48.3px;
   }
 
   .display-text {
