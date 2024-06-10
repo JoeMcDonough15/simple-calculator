@@ -19,7 +19,6 @@
 
 body {
   font-family: "Digital-7", sans-serif;
-  font-size: 1.5rem;
 }
 
 /* typography */
@@ -38,7 +37,7 @@ body {
 .btn__num,
 .btn__operator,
 .btn__clear {
-  font-size: 2.5rem;
+  font-size: min(4.166vw, 40px);
 }
 
 .btn__operator,
@@ -47,15 +46,10 @@ body {
   font-weight: 900;
 }
 
-/* .btn.btn__operator.minus-sign {
-  border-radius: 12px;
-  font-size: 4.5rem;
-} */
-
 .btn__text,
 .btn__exponent {
   font-family: "Oranienbaum", serif;
-  font-size: 1.5rem;
+  font-size: clamp(16px, 2.5vw, 28px);
   font-weight: 900;
 }
 
@@ -64,8 +58,9 @@ body {
   font-style: italic;
 }
 
+.btn__inverse__numerator,
 .exponent__text {
-  font-size: 0.75rem;
+  font-size: clamp(8px, 1.46vw, 12px);
 }
 
 .small-text {
@@ -183,10 +178,12 @@ div.main-container {
   color: var(--operator-buttons);
   border-radius: 0.3em;
   display: flex;
-  height: 75px;
+  height: 8.6505vw;
   justify-content: center;
+  max-height: 75px;
+  max-width: 75px;
   padding: 0.4em;
-  width: 75px;
+  width: 8.6505vw;
 }
 
 .btn.dark {
@@ -203,7 +200,6 @@ div.main-container {
   background-color: var(--operator-buttons);
   color: var(--white);
   border: 1px solid var(--white);
-  padding-bottom: 0.52em;
 }
 
 .btn.btn__operator.dark,
@@ -248,28 +244,34 @@ div.main-container {
 
 .exponent__text {
   position: absolute;
-  top: 30%;
-  right: 28%;
+  bottom: 50.802%;
+  left: 62.478%;
 }
 
-.btn__inverse {
-  font-size: 1rem;
+.btn__inverse__numerator,
+.btn__inverse__denominator {
+  position: relative;
 }
 
 .btn__inverse__numerator {
-  font-size: 0.75rem;
   bottom: 8px;
-  position: relative;
 }
 
 .btn__inverse__denominator {
-  position: relative;
   top: 8px;
 }
 
 .btn.btn__clear,
 .row__txt-btns {
   width: 42%;
+}
+
+.btn.btn__clear {
+  max-width: none;
+}
+
+.row__text-btn {
+  width: 29.312%;
 }
 
 .control-panel {
@@ -445,8 +447,6 @@ main.main-background.dark .btn__color-scheme-toggle {
   }
 }
 
-/* tablet styles */
-
 /* Landscape mode mobile styles */
 
 @media (max-height: 500px) and (orientation: landscape) {
@@ -455,8 +455,7 @@ main.main-background.dark .btn__color-scheme-toggle {
   }
 
   .calculator-shell {
-    padding: 0.6em 0.5em;
-    padding: 1em 0.5em;
+    padding: 0.7em;
   }
 
   .control-panel {
@@ -464,9 +463,11 @@ main.main-background.dark .btn__color-scheme-toggle {
   }
 
   .btn {
-    font-size: 1.3rem;
-    height: 40px;
-    width: 13.2%;
+    font-size: 1rem;
+    height: 5.247vw;
+    max-height: 35px;
+    max-width: 66px;
+    width: 9.895vw;
   }
 
   .row__txt-btns .btn {
@@ -475,7 +476,6 @@ main.main-background.dark .btn__color-scheme-toggle {
 
   .btn__inverse__numerator {
     bottom: 5px;
-    font-size: 0.5rem;
   }
 
   .btn__inverse__denominator {
@@ -483,14 +483,10 @@ main.main-background.dark .btn__color-scheme-toggle {
     top: 5px;
   }
 
-  .exponent__text {
-    font-size: 0.6rem;
+  .exponent__text,
+  .btn__inverse__numerator {
+    font-size: clamp(8px, 2.133vh, 10px);
   }
-
-  /* .btn.btn__operator.minus-sign {
-    border-radius: 0.3rem;
-    font-size: 2rem;
-  } */
 
   .display-window {
     height: 48.3px;
@@ -524,6 +520,10 @@ main.main-background.dark .btn__color-scheme-toggle {
 
   .calculator-shell {
     padding: 1.5em 0.5em 1.75em;
+  }
+
+  .display-window {
+    height: 67px;
   }
 
   .control-panel {
