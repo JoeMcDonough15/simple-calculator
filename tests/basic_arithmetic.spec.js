@@ -22,7 +22,6 @@ test("Add Two Numbers", async ({ page }) => {
   await page.locator("[id=equals]").click();
   // Assert that the display text says 4
   await expect(page.locator("[id=display-text]")).toHaveText("4");
-  await page.close();
 });
 
 test("Subtract Two Numbers", async ({ page }) => {
