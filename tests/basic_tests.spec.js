@@ -9,9 +9,25 @@ test.afterEach(async ({ page }) => {
 });
 
 // * Entering Numbers
-test.describe("Calculator should be able to accept numbers as input and reflect them accurately in display window", () => {
+test.describe
+  .only("Calculator should be able to accept numbers as input and reflect them accurately in display window", () => {
   // * 5 should be able to be entered
+  test("Enter a one digit number", async ({ page }) => {
+    // Press 5
+    await page.locator("id=num_5").click();
+    // Assert that the display shows 5
+    await expect(page.locator("id=display-text")).toHaveText("5");
+  });
   // * 28 should be able to be entered
+  test("Enter a two digit number", async ({ page }) => {
+    await page.pause();
+    // Press 2
+    await page.locator("id=num_2").click();
+    // Press 8
+    await page.locator("id=num_8").click();
+    // Assert that the display shows 28
+    await expect(page.locator("id=display-text")).toHaveText("28");
+  });
   // * 294,345 should be able to be entered with comma in the correct place
   // * 75.39 should be able to be entered with decimal in the correct place
   // * 0.. should resolve to just 0. without an extra decimal appearing
