@@ -1,2 +1,3 @@
 .mailmap
 dist/
+node_modules/
