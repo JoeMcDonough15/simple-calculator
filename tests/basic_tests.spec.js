@@ -8,7 +8,7 @@ test.afterEach(async ({ page }) => {
   await page.close();
 });
 
-// * Entering Numbers
+// * Entering Numbers Test Block
 test.describe
   .only("Calculator should be able to accept numbers as input and reflect them accurately in display window", () => {
   // * 5 should be able to be entered
@@ -67,7 +67,6 @@ test.describe
   test("Enter a number with multiple decimal points, and ensure there is only one", async ({
     page,
   }) => {
-    await page.pause();
     // Press 0
     await page.locator("id=num_0").click();
     // Press . twice
@@ -80,10 +79,20 @@ test.describe
     await expect(page.locator("#display-text")).toHaveText("0.3");
   });
   // * -35 should be able to be entered
+  test.only("Enter a negative number", async ({ page }) => {
+    // Press 3
+    await page.locator("id=num_3").click();
+    // Press 5
+    await page.locator("id=num_5").click();
+    // Press +/-
+    await page.locator("id=toggle-negative").click();
+    // Assert that the display shows -35
+    await expect(page.locator("id=display-text")).toHaveText("-35");
+  });
   // * 00006 should be able to be entered and appear as just 6
 });
 
-// * Simple Arithmetic
+// * Simple Arithmetic Test Block
 test.describe("Calculator should be able to perform arithmetic on two numbers", () => {
   test("Add Two Numbers", async ({ page }) => {
     // * 2 + 2 = 4
