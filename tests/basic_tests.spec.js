@@ -9,8 +9,7 @@ test.afterEach(async ({ page }) => {
 });
 
 // * Entering Numbers Test Block
-test.describe
-  .only("Calculator should be able to accept numbers as input and reflect them accurately in display window", () => {
+test.describe("Calculator should be able to accept numbers as input and reflect them accurately in display window", () => {
   // * 5 should be able to be entered
   test("Enter a one digit number", async ({ page }) => {
     // Press 5
@@ -18,6 +17,7 @@ test.describe
     // Assert that the display shows 5
     await expect(page.locator("id=display-text")).toHaveText("5");
   });
+
   // * 28 should be able to be entered
   test("Enter a two digit number", async ({ page }) => {
     // Press 2
@@ -27,6 +27,7 @@ test.describe
     // Assert that the display shows 28
     await expect(page.locator("id=display-text")).toHaveText("28");
   });
+
   // * 294,345 should be able to be entered with comma in the correct place
   test("Enter a 6 digit number and verify that the comma is added and in the right place", async ({
     page,
@@ -46,6 +47,7 @@ test.describe
     // Assert that the display shows 294,345
     await expect(page.locator("id=display-text")).toHaveText("294,345");
   });
+
   // * 75.39 should be able to be entered with decimal in the correct place
   test("Enter a decimal and verify the decimal point is in the correct place", async ({
     page,
@@ -63,6 +65,7 @@ test.describe
     // Assert that the display text shows 75.39
     await expect(page.locator("id=display-text")).toHaveText("75.39");
   });
+
   // * 0..3 should resolve to just 0.3 without an extra decimal appearing
   test("Enter a number with multiple decimal points, and ensure there is only one", async ({
     page,
@@ -70,7 +73,7 @@ test.describe
     // Press 0
     await page.locator("id=num_0").click();
     // Press . twice
-    for (const _ of [0, 1]) {
+    for (const _ of new Array(2)) {
       await page.getByText(".").click();
     }
     // Press 3
@@ -78,8 +81,9 @@ test.describe
     // Assert that the display shows 0.3
     await expect(page.locator("#display-text")).toHaveText("0.3");
   });
+
   // * -35 should be able to be entered
-  test.only("Enter a negative number", async ({ page }) => {
+  test("Enter a negative number", async ({ page }) => {
     // Press 3
     await page.locator("id=num_3").click();
     // Press 5
@@ -89,7 +93,20 @@ test.describe
     // Assert that the display shows -35
     await expect(page.locator("id=display-text")).toHaveText("-35");
   });
+
   // * 00006 should be able to be entered and appear as just 6
+  test("Enter a number with leading 0's and ensure they are removed from display", async ({
+    page,
+  }) => {
+    // Press 0, a total of 4 times
+    for (const _ of new Array(4)) {
+      await page.locator("#num_0").click();
+    }
+    // Press 6
+    await page.locator("#num_6").click();
+    // Assert that the display shows 6
+    await expect(page.locator("#display-text")).toHaveText("6");
+  });
 });
 
 // * Simple Arithmetic Test Block
