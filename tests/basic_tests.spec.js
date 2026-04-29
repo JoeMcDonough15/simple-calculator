@@ -63,7 +63,22 @@ test.describe
     // Assert that the display text shows 75.39
     await expect(page.locator("id=display-text")).toHaveText("75.39");
   });
-  // * 0.. should resolve to just 0. without an extra decimal appearing
+  // * 0..3 should resolve to just 0.3 without an extra decimal appearing
+  test("Enter a number with multiple decimal points, and ensure there is only one", async ({
+    page,
+  }) => {
+    await page.pause();
+    // Press 0
+    await page.locator("id=num_0").click();
+    // Press . twice
+    for (const _ of [0, 1]) {
+      await page.getByText(".").click();
+    }
+    // Press 3
+    await page.locator("id=num_3").click();
+    // Assert that the display shows 0.3
+    await expect(page.locator("#display-text")).toHaveText("0.3");
+  });
   // * -35 should be able to be entered
   // * 00006 should be able to be entered and appear as just 6
 });
