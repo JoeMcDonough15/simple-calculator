@@ -20,7 +20,6 @@ test.describe
   });
   // * 28 should be able to be entered
   test("Enter a two digit number", async ({ page }) => {
-    await page.pause();
     // Press 2
     await page.locator("id=num_2").click();
     // Press 8
@@ -29,7 +28,41 @@ test.describe
     await expect(page.locator("id=display-text")).toHaveText("28");
   });
   // * 294,345 should be able to be entered with comma in the correct place
+  test("Enter a 6 digit number and verify that the comma is added and in the right place", async ({
+    page,
+  }) => {
+    // Press 2
+    await page.locator("id=num_2").click();
+    // Press 9
+    await page.locator("id=num_9").click();
+    // Press 4
+    await page.locator("id=num_4").click();
+    // Press 3
+    await page.locator("id=num_3").click();
+    // Press 4
+    await page.locator("id=num_4").click();
+    // Press 5
+    await page.locator("id=num_5").click();
+    // Assert that the display shows 294,345
+    await expect(page.locator("id=display-text")).toHaveText("294,345");
+  });
   // * 75.39 should be able to be entered with decimal in the correct place
+  test("Enter a decimal and verify the decimal point is in the correct place", async ({
+    page,
+  }) => {
+    // Press 7
+    await page.locator("id=num_7").click();
+    // Press 5
+    await page.locator("id=num_5").click();
+    // Press .
+    await page.getByText(".").click();
+    // Press 3
+    await page.locator("id=num_3").click();
+    // Press 9
+    await page.locator("id=num_9").click();
+    // Assert that the display text shows 75.39
+    await expect(page.locator("id=display-text")).toHaveText("75.39");
+  });
   // * 0.. should resolve to just 0. without an extra decimal appearing
   // * -35 should be able to be entered
   // * 00006 should be able to be entered and appear as just 6
