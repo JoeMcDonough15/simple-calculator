@@ -149,6 +149,20 @@ test.describe("Calculator should be able to accept numbers as input and reflect 
     // Assert that the display shows 2.71828182846
     await expect(page.locator("#display-text")).toHaveText("2.71828182846");
   });
+
+  // * Clearing numbers
+  test("Enter a number and then press clear", async ({ page }) => {
+    // Press 8
+    await page.locator("#num_8").click();
+    // Press 1
+    await page.locator("#num_1").click();
+    // Press 0
+    await page.locator("#num_0").click();
+    // Press clear
+    await page.locator("#clear-button").click();
+    // Assert that the display shows 0
+    await page.locator("#display-text").click();
+  });
 });
 
 // ? Simple Arithmetic Test Block
