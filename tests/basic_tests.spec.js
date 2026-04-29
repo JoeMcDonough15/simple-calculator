@@ -8,7 +8,7 @@ test.afterEach(async ({ page }) => {
   await page.close();
 });
 
-// * Entering Numbers Test Block
+// ? Entering Numbers Test Block
 test.describe("Calculator should be able to accept numbers as input and reflect them accurately in display window", () => {
   // * 5 should be able to be entered
   test("Enter a one digit number", async ({ page }) => {
@@ -107,9 +107,51 @@ test.describe("Calculator should be able to accept numbers as input and reflect 
     // Assert that the display shows 6
     await expect(page.locator("#display-text")).toHaveText("6");
   });
+
+  // * Entering % values, expressed as decimals
+  test("Enter a percentage and see it reflected in decimal form", async ({
+    page,
+  }) => {
+    // Press 5
+    await page.locator("#num_5").click();
+    // Press 0
+    await page.locator("#num_0").click();
+    // Press %
+    await page.locator("#percentage-button").click();
+    // Assert that the display shows 0.5
+    await expect(page.locator("#display-text")).toHaveText("0.5");
+  });
+
+  // * Entering numbers that are converted to denominator values, expressed as decimals
+  test("Enter a number and convert it to a denominator, expressed in decimal form", async ({
+    page,
+  }) => {
+    // Press 3
+    await page.locator("#num_3").click();
+    // Press 1/x
+    await page.locator("#inverse-fraction-button").click();
+    // Assert that the display shows 0.33333333333
+    await expect(page.locator("#display-text")).toHaveText("0.33333333333");
+  });
+
+  // * Entering pi
+  test("Enter pi with one button", async ({ page }) => {
+    // Press pi button
+    await page.locator("id=pi-button").click();
+    // Assert that the display shows 3.14159265359
+    await expect(page.locator("#display-text")).toHaveText("3.14159265359");
+  });
+
+  // * Entering Euler's number
+  test("Enter Euler's number with one button", async ({ page }) => {
+    // Press e button
+    await page.locator("id=euler-button").click();
+    // Assert that the display shows 2.71828182846
+    await expect(page.locator("#display-text")).toHaveText("2.71828182846");
+  });
 });
 
-// * Simple Arithmetic Test Block
+// ? Simple Arithmetic Test Block
 test.describe("Calculator should be able to perform arithmetic on two numbers", () => {
   test("Add Two Numbers", async ({ page }) => {
     // * 2 + 2 = 4
