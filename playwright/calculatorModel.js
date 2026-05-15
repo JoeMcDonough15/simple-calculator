@@ -46,7 +46,7 @@ class CalculatorModel {
     this.divide = page.locator("id=divide");
     this.equals = page.locator("id=equals");
     this.percent = page.locator("id=percentage-button");
-    this.decimal = page.getByText(".");
+    this.decimal = page.locator("id=decimal-point");
     this.openParenthesis = page.locator("id=open-parenthesis");
     this.closeParenthesis = page.locator("id=close-parenthesis");
     this.pi = page.locator("id=pi-button");
@@ -60,7 +60,6 @@ class CalculatorModel {
     this.sin = page.locator("id=sin");
     this.cos = page.locator("id=cos");
     this.tan = page.locator("id=tan");
-    this.clearButton = page.locator("id=clear-button");
     this.displayWindow = page.locator("id=display-text");
   }
 
@@ -71,12 +70,11 @@ class CalculatorModel {
     while (i < mathStr.length) {
       let nextButton;
       const currentChar = mathStr[i];
-      const nextChar = mathStr[i + 1];
+      const nextChar = mathStr[i + 1]; // we will need this for x^2, x^3, e^n, and +/- cases
 
       // * figure out which character we are dealing with so we know which button to click
-      // * adjust i accordingly: increment by 3 if it's sin, cos, tan, or +/-; by 2 if it's squared/cubed; and by 1 if it's anything else.
 
-      // * handle trig and +/- buttons here; in all of these cases, we would increment i by 3 and continue
+      // * handle trig and +/- buttons here; in all of these cases, we would increment i by 3
       if (
         currentChar === "s" ||
         currentChar === "c" ||
@@ -115,9 +113,7 @@ class CalculatorModel {
         //  handle all other buttons in the else block, using the CHAR_MAP
         // * 1) check CHAR_MAP to get the correct key name
         nextButton = CHAR_MAP[currentChar];
-        // * 2) match that correct key name against the keys that belong to this object using a loop over Object.keys() (O(1) time since Object.keys() returns an array of constant length)
-
-        // * 3) increment i by 1
+        // * 2) increment i by 1
         i++;
       }
 
@@ -125,10 +121,6 @@ class CalculatorModel {
       await this[nextButton].click();
     }
   };
-
-  // async instance method that uses the display window selector and returns a promise that resolves to that value displayed
-  // in the window
-  checkDisplay = async () => {};
 }
 
 export default CalculatorModel;
