@@ -10,7 +10,7 @@ const CHAR_MAP = {
   7: "num_7",
   8: "num_8",
   9: "num_9",
-  "+": "plus", // TODO write logic for if we are actually hitting the +/- button instead of the + button
+  "+": "plus", // logic handles if we are actually hitting the +/- button instead of the + button
   "-": "minus",
   "*": "times",
   "÷": "divide",
@@ -19,11 +19,11 @@ const CHAR_MAP = {
   ".": "decimal",
   "(": "openParenthesis",
   ")": "closeParenthesis",
+  "^": "customExponent", // logic handles x^2, x^3, and e^ edge cases
   π: "pi", // option + p
   "!": "factorial",
   "/": "inverseFraction",
-  e: "euler", // TODO write logic for if e is followed by ^
-  // TODO write logic for x^2, x^3, or x^n since those will not be targed in the CHAR_MAP
+  e: "euler",
 };
 
 class CalculatorModel {
@@ -72,36 +72,9 @@ class CalculatorModel {
       let nextButton;
       const currentChar = mathStr[i];
       const nextChar = mathStr[i + 1];
-      // * handle special characters that are outside the CHAR_MAP, i.e. x^2, x^3, x^n sin, cos, tan, or +/-
 
       // * figure out which character we are dealing with so we know which button to click
-      // * adjust i accordingly: increment by 1 if it's a custom exponent, by 2 if it's squared/cubed, and by 3 if it's sin, cos, tan, or +/-
-
-      // * handle exponents here
-      if (currentChar === "^") {
-        if (
-          // if the next character is a 2 or 3 and the character that follows that next character is not a digit
-          (nextChar === "2" || nextChar === "3") &&
-          !DIGITS.includes(mathStr[i + 2])
-        ) {
-          // that means we are either squaring or cubing
-          nextChar === "2"
-            ? (nextButton = "numSquared")
-            : (nextButton = "numCubed");
-
-          // click the next button that we have now assigned
-          await this[nextButton].click();
-
-          // and then increment i by 2 since ^2 or ^3 are both two character long strings
-          i += 2;
-          // finally, continue to next iteration so we do not click the button a second time or increment i again
-          continue;
-        } else {
-          // if the current character is ^ and the above statement is not true, then that means it is a custom exponent and we should just assign the custom exponent button to nextButton
-          // do not continue in this case, as we will click the correct button and increment i by 1 at the bottom of the loop
-          nextButton = "customExponent";
-        }
-      }
+      // * adjust i accordingly: increment by 3 if it's sin, cos, tan, or +/-; by 2 if it's squared/cubed; and by 1 if it's anything else.
 
       // * handle trig and +/- buttons here; in all of these cases, we would increment i by 3 and continue
       if (
@@ -110,7 +83,7 @@ class CalculatorModel {
         currentChar === "t" ||
         (currentChar === "+" && nextChar === "/")
       ) {
-        // use ternary logic to determine the nextButton
+        // * 1) use ternary logic to determine the nextButton
         currentChar === "+"
           ? (nextButton = "toggleNegative")
           : currentChar === "s"
@@ -118,21 +91,38 @@ class CalculatorModel {
             : currentChar === "c"
               ? (nextButton = "cos")
               : (nextButton = "tan");
-        // click the button
-        await this[nextButton].click();
-        // increment by 3 since sin, cos, tan, and +/- are all 3 characters long
+        // * 2) increment i by 3 since sin, cos, tan, and +/- are all 3 characters long
         i += 3;
-        // continue to next iteration so we do not click again or increment i again at bottom of loop
-        continue;
       }
 
-      // * check CHAR_MAP to get the correct key name
-      // * match that correct key name against the keys that belong to this object
+      // * handle x^2, x^3, and e^n here
+      else if (
+        // if the current character is ^, the next character is a 2 or 3, and the character that follows that next character is not a digit
+        (currentChar === "^" &&
+          (nextChar === "2" || nextChar === "3") &&
+          !DIGITS.includes(mathStr[i + 2])) || // or if the current character is e and the next character is ^
+        (currentChar === "e" && nextChar === "^")
+      ) {
+        // * 1) that means we are either squaring, cubing, or raising e^n so assign nextButton to the correct name using ternary logic
+        nextChar === "2"
+          ? (nextButton = "numSquared")
+          : nextChar === "3"
+            ? (nextButton = "numCubed")
+            : (nextButton = "eulerRaised");
+        // * 2) and then increment i by 2 since ^2, ^3, and e^ are all two character long strings
+        i += 2;
+      } else {
+        //  handle all other buttons in the else block, using the CHAR_MAP
+        // * 1) check CHAR_MAP to get the correct key name
+        nextButton = CHAR_MAP[currentChar];
+        // * 2) match that correct key name against the keys that belong to this object using a loop over Object.keys() (O(1) time since Object.keys() returns an array of constant length)
 
-      // * invoke the async .click() method on the correct selector
+        // * 3) increment i by 1
+        i++;
+      }
+
+      // * click the appropriate button no matter which one was selected above
       await this[nextButton].click();
-      // * increment i by 1
-      i++;
     }
   };
 
