@@ -1,3 +1,4 @@
+const DIGITS = "0123456789";
 const CHAR_MAP = {
   0: "num_0",
   1: "num_1",
@@ -63,14 +64,81 @@ class CalculatorModel {
     this.displayWindow = page.locator("id=display-text");
   }
 
-  performCalculation = async () => {
-    // async instance method that iterates over test string and clicks appropriate buttons to perform test
+  // async instance method that iterates over test string and clicks appropriate buttons to perform test
+  performCalculation = async (mathStr) => {
+    // using a while loop so I can use await inside the loop and so that I can increment the loop index dynamically
+    let i = 0;
+    while (i < mathStr.length) {
+      let nextButton;
+      const currentChar = mathStr[i];
+      const nextChar = mathStr[i + 1];
+      // * handle special characters that are outside the CHAR_MAP, i.e. x^2, x^3, x^n sin, cos, tan, or +/-
+
+      // * figure out which character we are dealing with so we know which button to click
+      // * adjust i accordingly: increment by 1 if it's a custom exponent, by 2 if it's squared/cubed, and by 3 if it's sin, cos, tan, or +/-
+
+      // * handle exponents here
+      if (currentChar === "^") {
+        if (
+          // if the next character is a 2 or 3 and the character that follows that next character is not a digit
+          (nextChar === "2" || nextChar === "3") &&
+          !DIGITS.includes(mathStr[i + 2])
+        ) {
+          // that means we are either squaring or cubing
+          nextChar === "2"
+            ? (nextButton = "numSquared")
+            : (nextButton = "numCubed");
+
+          // click the next button that we have now assigned
+          await this[nextButton].click();
+
+          // and then increment i by 2 since ^2 or ^3 are both two character long strings
+          i += 2;
+          // finally, continue to next iteration so we do not click the button a second time or increment i again
+          continue;
+        } else {
+          // if the current character is ^ and the above statement is not true, then that means it is a custom exponent and we should just assign the custom exponent button to nextButton
+          // do not continue in this case, as we will click the correct button and increment i by 1 at the bottom of the loop
+          nextButton = "customExponent";
+        }
+      }
+
+      // * handle trig and +/- buttons here; in all of these cases, we would increment i by 3 and continue
+      if (
+        currentChar === "s" ||
+        currentChar === "c" ||
+        currentChar === "t" ||
+        (currentChar === "+" && nextChar === "/")
+      ) {
+        // use ternary logic to determine the nextButton
+        currentChar === "+"
+          ? (nextButton = "toggleNegative")
+          : currentChar === "s"
+            ? (nextButton = "sin")
+            : currentChar === "c"
+              ? (nextButton = "cos")
+              : (nextButton = "tan");
+        // click the button
+        await this[nextButton].click();
+        // increment by 3 since sin, cos, tan, and +/- are all 3 characters long
+        i += 3;
+        // continue to next iteration so we do not click again or increment i again at bottom of loop
+        continue;
+      }
+
+      // * check CHAR_MAP to get the correct key name
+      // * match that correct key name against the keys that belong to this object
+
+      // * invoke the async .click() method on the correct selector
+      await this[nextButton].click();
+      // * increment i by 1
+      i++;
+    }
   };
 
-  checkDisplay = async () => {
-    // async instance method that uses the display window selector and returns a promise that resolves to that value displayed
-    // in the window
-  };
+  // async instance method that uses the display window selector and returns a promise that resolves to that value displayed
+  // in the window
+  checkDisplay = async () => {};
 }
 
 export default CalculatorModel;
