@@ -27,7 +27,7 @@ test.describe("Execute all tests in testData", () => {
   }
 });
 
-test.describe.skip("Manual tests", () => {
+test.describe("Manual tests", () => {
   test("Clear a number after entering it", async () => {
     await page.locator("id=num_1").click();
     await page.locator("id=clear-button").click();
