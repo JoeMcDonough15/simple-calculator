@@ -22,15 +22,11 @@ test.describe("Execute all tests in testData", () => {
     test(testObj.testName, async () => {
       const calculator = new CalculatorModel(page);
       await calculator.performCalculation(testObj.problem);
-      expect(calculator.displayWindow).toHaveText(testObj.solution);
+      if (testObj.testName.includes("Clear button text should change")) {
+        expect(calculator.clear).toHaveText(testObj.solution);
+      } else {
+        expect(calculator.displayWindow).toHaveText(testObj.solution);
+      }
     });
   }
-});
-
-test.describe("Manual tests", () => {
-  test("Clear a number after entering it", async () => {
-    await page.locator("id=num_1").click();
-    await page.locator("id=clear-button").click();
-    await expect(page.locator("id=display-text")).toHaveText("0");
-  });
 });

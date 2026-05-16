@@ -20,7 +20,7 @@ const CHAR_MAP = {
   "(": "openParenthesis",
   ")": "closeParenthesis",
   "^": "customExponent", // logic handles x^2, x^3, and e^ edge cases
-  π: "pi", // option + p
+  π: "pi",
   "!": "factorial",
   "/": "inverseFraction",
   e: "euler",
@@ -60,6 +60,7 @@ class CalculatorModel {
     this.sin = page.locator("id=sin");
     this.cos = page.locator("id=cos");
     this.tan = page.locator("id=tan");
+    this.clear = page.locator("id=clear-button");
     this.displayWindow = page.locator("id=display-text");
   }
 
@@ -70,12 +71,18 @@ class CalculatorModel {
     while (i < mathStr.length) {
       let nextButton;
       const currentChar = mathStr[i];
-      const nextChar = mathStr[i + 1]; // we will need this for x^2, x^3, e^n, and +/- cases
+      const nextChar = mathStr[i + 1]; // we will need this for clear, x^2, x^3, e^n, and +/- cases
 
-      // * figure out which character we are dealing with so we know which button to click
+      // * handle clear button here; incrementing i by 5 since clear is a 5 letter string
+      if (currentChar === "c" && nextChar === "l") {
+        // * 1) target the clear button and assign that to nextButton
+        nextButton = "clear";
+        // * 2) increment i by 5 since clear is a 5 character long string
+        i += 5;
+      }
 
       // * handle trig and +/- buttons here; in all of these cases, we would increment i by 3
-      if (
+      else if (
         currentChar === "s" ||
         currentChar === "c" ||
         currentChar === "t" ||
@@ -89,7 +96,7 @@ class CalculatorModel {
             : currentChar === "c"
               ? (nextButton = "cos")
               : (nextButton = "tan");
-        // * 2) increment i by 3 since sin, cos, tan, and +/- are all 3 characters long
+        // * 2) increment i by 3 since sin, cos, tan, and +/- are all 3 character long strings
         i += 3;
       }
 
@@ -110,14 +117,14 @@ class CalculatorModel {
         // * 2) and then increment i by 2 since ^2, ^3, and e^ are all two character long strings
         i += 2;
       } else {
-        //  handle all other buttons in the else block, using the CHAR_MAP
+        // *  handle all other buttons in the else block, using the CHAR_MAP
         // * 1) check CHAR_MAP to get the correct key name
         nextButton = CHAR_MAP[currentChar];
         // * 2) increment i by 1
         i++;
       }
 
-      // * click the appropriate button no matter which one was selected above
+      // * click the appropriate button that was assigned to nextButton
       await this[nextButton].click();
     }
   };
