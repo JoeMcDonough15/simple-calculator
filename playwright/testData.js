@@ -232,29 +232,29 @@ const testData = [
     solution: "-0.40780235901",
   },
   {
-    testName: "Dividing by 0 problem 1 @isolate",
+    testName: "Dividing by 0 problem 1",
     problem: "8*(5+6^4)-5÷0=",
     solution: "-Infinity",
   },
   {
-    testName: "Dividing by 0 problem 2 @isolate",
+    testName: "Dividing by 0 problem 2",
     problem: "8*(2+3÷0)*5=",
     solution: "Infinity",
   },
   {
-    testName: "Clear a number after entering it @isolate",
+    testName: "Clear a number after entering it",
     problem: "1clear",
     solution: "0",
   },
   {
     testName:
-      "Clear button text should change to A/C if math is held in memory @isolate",
+      "Clear button text should change to A/C if math is held in memory",
     problem: "1+2+3+4+5clear",
     solution: "A/C",
   },
   {
     testName:
-      "Clear button text should change back to C if clear is pressed a second time @isolate",
+      "Clear button text should change back to C if clear is pressed a second time",
     problem: "1+2+3+4+5clearclear",
     solution: "C",
   },
