@@ -19,13 +19,6 @@ const EQUALS_OPERATORS = "=";
 //////// Calculator Class ////////
 
 class Calculator {
-  equationStack;
-  currentNumString;
-  numToDisplay;
-  currentEquationStringModified;
-  overwriteCurrentNumString;
-  clearAll;
-
   constructor() {
     this.equationStack = ["+0"];
     this.currentNumString = "";
@@ -44,7 +37,7 @@ class Calculator {
     this.ensureCurrentNumStringHasOperator();
     this.currentNumString = this.concatOrReplace(
       this.currentNumString,
-      givenNum
+      givenNum,
     );
     this.updateNumToDisplay();
   }
@@ -298,7 +291,7 @@ class Calculator {
     const lastOperator = lastNumStringInStack[lastNumStringInStack.length - 1];
     this.equationStack[this.equationStack.length - 1] = this.cutFromNumString(
       lastNumStringInStack,
-      1
+      1,
     );
     return lastOperator;
   }
@@ -331,7 +324,7 @@ class Calculator {
       this.retrieveAndRemoveLastOperator();
     this.currentNumString = this.replaceOperator(
       newParenthesisSolution,
-      operatorBeforeParenthesisSolution
+      operatorBeforeParenthesisSolution,
     );
     this.overwriteCurrentNumString = true;
     return true;
@@ -386,7 +379,7 @@ class Calculator {
     if (TRIG_OPERATORS.includes(this.grabOperatorOfCurrentNumString())) {
       const trigSolution = this.solveTrig(
         this.numStringAsNumber(),
-        this.grabOperatorOfCurrentNumString()
+        this.grabOperatorOfCurrentNumString(),
       );
       this.currentNumString =
         this.retrieveAndRemoveLastOperator() + trigSolution.toString();
@@ -402,7 +395,7 @@ class Calculator {
       const lastOperator = lastNumString[0];
       equationString = this.cutFromNumString(
         equationString,
-        lastNumString.length
+        lastNumString.length,
       );
       this.equationStack[this.equationStack.length - 1] = equationString; // cut out the last num from the equation string inside this.equationStack since we're dealing with it below
       const num1 = this.numStringAsNumber(lastNumString);
@@ -487,7 +480,7 @@ class Calculator {
     const lastNumFromStack = this.grabLastNum(this.grabLastStringInStack());
     this.equationStack[this.equationStack.length - 1] = this.cutFromNumString(
       this.grabLastStringInStack(),
-      lastNumFromStack.length
+      lastNumFromStack.length,
     );
     if (this.grabLastStringInStack() === "") {
       this.equationStack[this.equationStack.length - 1] = "+0";
@@ -502,13 +495,13 @@ class Calculator {
       numStringValue = numStringValue.slice(0, numStringValue.length - 1);
       numStringValue = this.performOperationOnNumString(
         numStringValue,
-        operationToPerform
+        operationToPerform,
       );
       numStringValue = numStringValue + operatorAtEndOfString;
     } else {
       numStringValue = this.performOperationOnNumString(
         numStringValue,
-        operationToPerform
+        operationToPerform,
       );
     }
     if (numStringObject.stringName === "lastNumFromStack") {

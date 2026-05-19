@@ -1,6 +1,4 @@
 class ColorScheme {
-  colors;
-
   constructor() {
     this.colors = {
       // hardcoded to start but this will come from localStorage
