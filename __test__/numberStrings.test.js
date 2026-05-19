@@ -1,4 +1,5 @@
 import Calculator from "../src/calculator";
+import addCommasToNumString from "../src/addCommasToNumString";
 
 describe("Distinguish between digits and operators", () => {
   const calculator = new Calculator();
@@ -125,5 +126,25 @@ describe("Number string helper functions", () => {
     expect(numString.length === 7);
     numString = calculator.cutFromNumString(numString, 4);
     expect(numString.length === 3);
+  });
+
+  describe("Adding commas to a number string", () => {
+    test("Add commas to a large number", () => {
+      const numStringWithoutCommas = "2345334253425";
+      const numStringWithCommas = addCommasToNumString(numStringWithoutCommas);
+      expect(numStringWithCommas).toBe("2,345,334,253,425");
+    });
+
+    test("Do not add commas to a small number", () => {
+      expect(addCommasToNumString("9")).toBe("9");
+    });
+
+    test("Add commas to negative number", () => {
+      expect(addCommasToNumString("-234544")).toBe("-234,544");
+    });
+
+    test("Add commas to number with a decimal point", () => {
+      expect(addCommasToNumString("23454.234")).toBe("23,454.234");
+    });
   });
 });
