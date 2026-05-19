@@ -1,5 +1,6 @@
 import Calculator from "../src/calculator";
 
+// This is how the calculator will instantiate in index.js - no value will be passed
 const calculator = new Calculator();
 
 describe("Ensure calculator has all necessary properties and methods when instantiated", () => {
