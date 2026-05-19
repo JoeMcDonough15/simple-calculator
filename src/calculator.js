@@ -19,9 +19,9 @@ const EQUALS_OPERATORS = "=";
 //////// Calculator Class ////////
 
 class Calculator {
-  constructor(givenNumString) {
+  constructor() {
     this.equationStack = ["+0"];
-    this.currentNumString = givenNumString || "";
+    this.currentNumString = "";
     this.numToDisplay = "";
     this.currentEquationStringModified = false;
     this.overwriteCurrentNumString = false;

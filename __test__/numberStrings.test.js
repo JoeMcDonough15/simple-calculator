@@ -1,33 +1,33 @@
 import Calculator from "../src/calculator";
 
 describe("Distinguish between digits and operators", () => {
+  const calculator = new Calculator();
   test("Check for digits", () => {
-    const calculator = new Calculator();
     expect(calculator.isDigit("6")).toBeTruthy();
     expect(calculator.isDigit("*")).toBeFalsy();
   });
 
   test("Check for operators", () => {
-    const calculator = new Calculator();
     expect(calculator.isOperator("-")).toBeTruthy();
     expect(calculator.isOperator("5")).toBeFalsy();
   });
 });
 
 describe("Building number strings with operators", () => {
+  const calculator = new Calculator();
   test("Ensure that a number was given the default + operator if one was not provided", () => {
-    const calculator = new Calculator("45");
+    calculator.currentNumString = "45";
     calculator.ensureCurrentNumStringHasOperator();
     expect(calculator.grabOperatorOfCurrentNumString()).toBe("+");
   });
 
   test("Should be able to retrieve operator from current number string", () => {
-    const calculator = new Calculator("*7");
+    calculator.currentNumString = "*7";
     expect(calculator.grabOperatorOfCurrentNumString()).toBe("*");
   });
 
   test("Should be able to change the operator of a passed in number string", () => {
-    const calculator = new Calculator("*7");
+    calculator.currentNumString = "*7";
     calculator.currentNumString = calculator.replaceOperator(
       calculator.currentNumString,
       "÷",
@@ -37,40 +37,38 @@ describe("Building number strings with operators", () => {
 });
 
 describe("Valid number string tests", () => {
-  test("Ensure that a number string is invalid at instantiation by default", () => {
-    const calculator = new Calculator();
-    // calculator.currentNumString is empty (falsy) at instantiation time by default
+  const calculator = new Calculator();
+  test("Ensure that the calculator's current number string is invalid at instantiation", () => {
     expect(calculator.isValidNumString()).toBeFalsy();
   });
 
-  test("Ensure that a number string is valid when valid digit is passed in to constructor", () => {
-    // calculator is given a value at instantiation
-    const calculator = new Calculator("5");
+  test("Ensure that a number string is valid", () => {
+    calculator.currentNumString = "5";
     expect(calculator.isValidNumString()).toBeTruthy();
   });
 
   test("Numbers with operators in front are valid number strings", () => {
-    const calculator = new Calculator("+5");
+    calculator.currentNumString = "+5";
     expect(calculator.isValidNumString()).toBeTruthy();
   });
 
   test("Operators without digits are invalid number strings", () => {
-    const calculator = new Calculator("+");
+    calculator.currentNumString = "+";
     expect(calculator.isValidNumString()).toBeFalsy();
   });
 
   test("Negative numbers are valid number strings", () => {
-    const calculator = new Calculator("-23");
+    calculator.currentNumString = "-23";
     expect(calculator.isValidNumString()).toBeTruthy();
   });
 
   test("Negative numbers with operators in front of them are valid number strings.", () => {
-    const calculator = new Calculator("*-5");
+    calculator.currentNumString = "*-5";
     expect(calculator.isValidNumString()).toBeTruthy();
   });
 
   test("Decimal values are valid number strings", () => {
-    const calculator = new Calculator("0.34545");
+    calculator.currentNumString = "0.34545";
     expect(calculator.isValidNumString()).toBeTruthy();
   });
 });
