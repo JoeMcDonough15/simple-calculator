@@ -1,6 +1,8 @@
 import Calculator from "../src/calculator";
 import addCommasToNumString from "../src/addCommasToNumString";
 
+// TODO concatOrReplace
+
 describe("Distinguish between digits and operators", () => {
   const calculator = new Calculator();
   test("Check for digits", () => {
