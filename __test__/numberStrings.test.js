@@ -71,4 +71,59 @@ describe("Valid number string tests", () => {
     calculator.currentNumString = "0.34545";
     expect(calculator.isValidNumString()).toBeTruthy();
   });
+
+  test("Validate a number string when empty", () => {
+    calculator.currentNumString = "";
+    calculator.validateCurrentNumString();
+    expect(calculator.currentNumString).toBe("+0");
+  });
+
+  test("Validate a number string when it is only a multiplication or division operator", () => {
+    calculator.currentNumString = "*";
+    calculator.validateCurrentNumString();
+    expect(calculator.currentNumString).toBe("*1"); // will not cause any math to be incorrect
+    calculator.currentNumString = "÷";
+    calculator.validateCurrentNumString();
+    expect(calculator.currentNumString).toBe("÷1");
+  });
+
+  test("Validate a number string when it is only an addition or subtraction operator", () => {
+    calculator.currentNumString = "+";
+    calculator.validateCurrentNumString();
+    expect(calculator.currentNumString).toBe("+0");
+    calculator.currentNumString = "-";
+    calculator.validateCurrentNumString();
+    expect(calculator.currentNumString).toBe("-0");
+  });
+});
+
+describe("Converting number strings to numbers", () => {
+  const calculator = new Calculator();
+  test("Return a number string's number equivalent", () => {
+    const numStringAsNum = calculator.numStringAsNumber("+234");
+    expect(numStringAsNum).not.toBeNaN();
+    expect(numStringAsNum).toEqual(234);
+  });
+
+  test("Return a negative number string's number equivalent", () => {
+    const negativeStringAsNum = calculator.numStringAsNumber("*-234"); // operator and negative sign
+    expect(negativeStringAsNum).not.toBeNaN();
+    expect(negativeStringAsNum).toEqual(-234);
+  });
+
+  test("Should default to calculator.currentNumString if no arg passed", () => {
+    calculator.currentNumString = "÷245"; // should default to calculator.currentNumString
+    expect(calculator.numStringAsNumber()).not.toBeNaN();
+    expect(calculator.numStringAsNumber()).toEqual(245);
+  });
+});
+
+describe("Number string helper functions", () => {
+  const calculator = new Calculator();
+  test("Cut from the end of a number string by desired length", () => {
+    let numString = "2345653";
+    expect(numString.length === 7);
+    numString = calculator.cutFromNumString(numString, 4);
+    expect(numString.length === 3);
+  });
 });

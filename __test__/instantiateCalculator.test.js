@@ -14,15 +14,24 @@ describe("Ensure calculator has all necessary properties and methods when instan
   });
 
   test("Calculator should have necessary methods when instantiated", () => {
+    expect(calculator).toHaveProperty("isOperator");
+    expect(calculator).toHaveProperty("isValidNumString");
+    expect(calculator).toHaveProperty("ensureCurrentNumStringHasOperator");
+    expect(calculator).toHaveProperty("validateCurrentNumString");
+    expect(calculator).toHaveProperty("grabOperatorOfCurrentNumString");
+    expect(calculator).toHaveProperty("cutFromNumString");
+    expect(calculator).toHaveProperty("isDigit");
+    expect(calculator).toHaveProperty("determineStoredOperator");
+    expect(calculator).toHaveProperty("replaceOperator");
+    expect(calculator).toHaveProperty("numStringAsNumber");
+    // *                                                     * //
     expect(calculator).toHaveProperty("handleNums");
     expect(calculator).toHaveProperty("previousOperatorAlreadyStored");
     expect(calculator).toHaveProperty("handleOperators");
     expect(calculator).toHaveProperty("concatOrReplace");
-    expect(calculator).toHaveProperty("ensureCurrentNumStringHasOperator"); // *
     expect(calculator).toHaveProperty("checkForInfinity");
     expect(calculator).toHaveProperty("grabLastNum");
     expect(calculator).toHaveProperty("grabLastStringInStack");
-    expect(calculator).toHaveProperty("isOperator"); // *
     expect(calculator).toHaveProperty("updateNumToDisplay");
     expect(calculator).toHaveProperty("handlePercentage");
     expect(calculator).toHaveProperty("handlePi");
@@ -52,14 +61,6 @@ describe("Ensure calculator has all necessary properties and methods when instan
     expect(calculator).toHaveProperty("removeLastNumFromStack");
     expect(calculator).toHaveProperty("updateNumStringInPlace");
     expect(calculator).toHaveProperty("performOperationOnNumString");
-    expect(calculator).toHaveProperty("isValidNumString"); // *
-    expect(calculator).toHaveProperty("validateCurrentNumString");
-    expect(calculator).toHaveProperty("grabOperatorOfCurrentNumString"); // *
-    expect(calculator).toHaveProperty("cutFromNumString");
-    expect(calculator).toHaveProperty("isDigit"); // *
     expect(calculator).toHaveProperty("isHigherOrder");
-    expect(calculator).toHaveProperty("determineStoredOperator");
-    expect(calculator).toHaveProperty("replaceOperator"); // *
-    expect(calculator).toHaveProperty("numStringAsNumber");
   });
 });
