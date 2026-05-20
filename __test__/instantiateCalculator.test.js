@@ -37,10 +37,9 @@ describe("Ensure calculator has all necessary properties and methods when instan
     expect(calculator).toHaveProperty("handleNums");
     expect(calculator).toHaveProperty("updateNumToDisplay");
 
-    // *                                                     * //
-
     // calculations.test.js
     expect(calculator).toHaveProperty("checkForInfinity");
+    // *                                                     * //
     expect(calculator).toHaveProperty("grabLastNum");
     expect(calculator).toHaveProperty("removeLastNumFromStack");
     expect(calculator).toHaveProperty("grabLastStringInStack");

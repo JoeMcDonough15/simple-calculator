@@ -23,7 +23,25 @@ describe("Check to see if Infinity is at the end of an equation string", () => {
   });
 });
 
-// TODO grabLastNum
+describe("Grab last number and its operator from an equation string", () => {
+  test("Retrieve the last number from the equation string ", () => {
+    const equationString = "*8+3";
+    const lastNum = calculator.grabLastNum(equationString);
+    expect(lastNum).toBe("+3");
+  });
+
+  test("Retrieve the last number from the equation string when it is expressed in exponential notation", () => {
+    const equationString = "+6÷3+9e+1234";
+    const lastNum = calculator.grabLastNum(equationString);
+    expect(lastNum).toBe("+9e+1234");
+  });
+
+  test("Retrieve the last number from the equation string when it is a negative number", () => {
+    const equationString = "+7*-5";
+    const lastNum = calculator.grabLastNum(equationString);
+    expect(lastNum).toBe("*-5");
+  });
+});
 
 // TODO grabLastStringInStack
 
