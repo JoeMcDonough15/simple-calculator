@@ -1,8 +1,6 @@
 import Calculator from "../src/calculator";
 import addCommasToNumString from "../src/addCommasToNumString";
 
-// TODO concatOrReplace
-
 describe("Distinguish between digits and operators", () => {
   const calculator = new Calculator();
   test("Check for digits", () => {
@@ -121,6 +119,50 @@ describe("Converting number strings to numbers", () => {
   });
 });
 
+describe.only("Clearing number strings", () => {
+  const calculator = new Calculator();
+  test("If current number string is valid and the equation string has been modified, preserve the operator of the cleared number", () => {
+    calculator.currentNumString = "+5";
+    calculator.currentEquationStringModified = true;
+    calculator.clearCurrentNumString();
+    expect(calculator.currentNumString).toBe("+");
+  });
+
+  test("If current number string is not a valid number string, reset it entirely when clearing", () => {
+    calculator.currentNumString = "+";
+    calculator.currentEquationStringModified = true;
+    calculator.clearCurrentNumString();
+    expect(calculator.currentNumString).toHaveLength(0);
+  });
+
+  test("If current number string is valid but the equation string has not yet been modified, do not preserve the operator of the cleared number", () => {
+    calculator.currentNumString = "+5";
+    calculator.currentEquationStringModified = false;
+    calculator.clearCurrentNumString();
+    expect(calculator.currentNumString).toHaveLength(0);
+  });
+
+  test("Should be able to switch the functionality of clear to all-clear", () => {
+    calculator.switchToAllClear();
+    expect(calculator.clearAll).toBeTruthy();
+  });
+
+  test("Should be able to switch the functionality of all-clear back to clear", () => {
+    calculator.switchToClear();
+    expect(calculator.clearAll).toBeFalsy();
+  });
+
+  test("All clear logic should clear the current number string as well as anything in memory", () => {
+    calculator.equationStack = ["+23", "+45", "+34+76"];
+    calculator.currentNumString = "*234";
+    calculator.allClear();
+    expect(calculator.equationStack).toHaveLength(1);
+    expect(calculator.equationStack[0]).toBe("+0");
+    expect(calculator.currentNumString).toHaveLength(0);
+    expect(calculator.currentEquationStringModified).toBeFalsy();
+  });
+});
+
 describe("Number string helper functions", () => {
   const calculator = new Calculator();
   test("Cut from the end of a number string by desired length", () => {
@@ -147,6 +189,50 @@ describe("Number string helper functions", () => {
 
     test("Add commas to number with a decimal point", () => {
       expect(addCommasToNumString("23454.234")).toBe("23,454.234");
+    });
+  });
+
+  describe("Should be able to concatenate to a number string or replace it if needed", () => {
+    test("Numbers should concatenate to string to build multiple place values", () => {
+      let numString = "+4";
+      const nextChar = "2";
+      numString = calculator.concatOrReplace(numString, nextChar);
+      expect(numString).toBe("+42");
+    });
+
+    test("Disallow more than one decimal point when building a number string", () => {
+      let numString = "+3.";
+      const nextChar = ".";
+      numString = calculator.concatOrReplace(numString, nextChar);
+      expect(numString).toBe("+3.");
+    });
+
+    test("Zero should not be overwritten if concatenating a decimal point to 0", () => {
+      let numString = "+0";
+      const nextChar = ".";
+      numString = calculator.concatOrReplace(numString, nextChar);
+      expect(numString).toBe("+0.");
+    });
+
+    test("Zero should be inserted if number string is an operator followed by a decimal point", () => {
+      let numString = "+";
+      const nextChar = ".";
+      numString = calculator.concatOrReplace(numString, nextChar);
+      expect(numString).toBe("+0.");
+    });
+
+    test("Multiple leading zeroes should be replaced", () => {
+      let numString = "+0";
+      const nextChar = "5";
+      numString = calculator.concatOrReplace(numString, nextChar);
+      expect(numString).toBe("+5");
+    });
+
+    test("Multiple zeroes after a non zero should be concatenated, not replaced", () => {
+      let numString = "+50";
+      const nextChar = "0";
+      numString = calculator.concatOrReplace(numString, nextChar);
+      expect(numString).toBe("+500");
     });
   });
 });

@@ -14,21 +14,26 @@ describe("Ensure calculator has all necessary properties and methods when instan
   });
 
   test("Calculator should have necessary methods when instantiated", () => {
+    expect(calculator).toHaveProperty("isDigit");
     expect(calculator).toHaveProperty("isOperator");
     expect(calculator).toHaveProperty("isValidNumString");
     expect(calculator).toHaveProperty("ensureCurrentNumStringHasOperator");
     expect(calculator).toHaveProperty("validateCurrentNumString");
     expect(calculator).toHaveProperty("grabOperatorOfCurrentNumString");
     expect(calculator).toHaveProperty("cutFromNumString");
-    expect(calculator).toHaveProperty("isDigit");
     expect(calculator).toHaveProperty("determineStoredOperator");
     expect(calculator).toHaveProperty("replaceOperator");
     expect(calculator).toHaveProperty("numStringAsNumber");
+    expect(calculator).toHaveProperty("concatOrReplace");
+    expect(calculator).toHaveProperty("clearCurrentNumString");
+    expect(calculator).toHaveProperty("switchToAllClear");
+    expect(calculator).toHaveProperty("switchToClear");
+    expect(calculator).toHaveProperty("allClear");
+    expect(calculator).toHaveProperty("determineClearLogic");
     // *                                                     * //
     expect(calculator).toHaveProperty("handleNums");
     expect(calculator).toHaveProperty("previousOperatorAlreadyStored");
     expect(calculator).toHaveProperty("handleOperators");
-    expect(calculator).toHaveProperty("concatOrReplace");
     expect(calculator).toHaveProperty("checkForInfinity");
     expect(calculator).toHaveProperty("grabLastNum");
     expect(calculator).toHaveProperty("grabLastStringInStack");
@@ -52,11 +57,6 @@ describe("Ensure calculator has all necessary properties and methods when instan
     expect(calculator).toHaveProperty("solveTrig");
     expect(calculator).toHaveProperty("reduceEquationString");
     expect(calculator).toHaveProperty("calculate");
-    expect(calculator).toHaveProperty("clearCurrentNumString");
-    expect(calculator).toHaveProperty("determineClearLogic");
-    expect(calculator).toHaveProperty("switchToAllClear");
-    expect(calculator).toHaveProperty("switchToClear");
-    expect(calculator).toHaveProperty("allClear");
     expect(calculator).toHaveProperty("determineCorrectNumStringToUpdate");
     expect(calculator).toHaveProperty("removeLastNumFromStack");
     expect(calculator).toHaveProperty("updateNumStringInPlace");

@@ -126,6 +126,8 @@ class Calculator {
       (numString.length === 2 && numString[1] === "0" && newNum === ".") ||
       (numString.length === 1 && newNum === ".")
     ) {
+      // keep the operator and zero in tact (first condition of or statement), or even insert zero if needed (second condition of or statement)
+      // "+0" then "." or  "+" then "." ==> "+0."
       numString = `${numString[0]}0.`;
     } else if (numString.length === 2 && numString[1] === "0") {
       // keep the operator in tact but disallow leading 0's i.e. +000005 could never happen; would just be +5
