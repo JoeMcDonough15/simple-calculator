@@ -285,11 +285,31 @@ describe("Displaying number strings", () => {
   });
 });
 
-describe("Entering numbers", () => {
+describe("Entering positive numbers", () => {
   test("Enter a 3 digit number", () => {
     calculator.handleNums("5");
     calculator.handleNums("9");
     calculator.handleNums("2");
     expect(calculator.currentNumString).toBe("+592");
+  });
+
+  test("Enter a decimal", () => {
+    calculator.handleNums("0");
+    calculator.handleNums(".");
+    calculator.handleNums("2");
+    expect(calculator.currentNumString).toBe("+0.2");
+  });
+
+  test("Enter a large number", () => {
+    calculator.handleNums("9");
+    calculator.handleNums("9");
+    calculator.handleNums("9");
+    calculator.handleNums("9");
+    calculator.handleNums("9");
+    calculator.handleNums("9");
+    calculator.handleNums("9");
+    calculator.handleNums("9");
+    calculator.handleNums("9");
+    expect(calculator.currentNumString).toBe("+999999999");
   });
 });
