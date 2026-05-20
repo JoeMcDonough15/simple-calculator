@@ -43,6 +43,9 @@ describe("Grab last number and its operator from an equation string", () => {
   });
 });
 
-// TODO grabLastStringInStack
+test("Retrieve the last equation string from an equation stack", () => {
+  calculator.equationStack = ["+3+4", "+6+2-8+-9"];
+  expect(calculator.grabLastStringInStack()).toBe("+6+2-8+-9");
+});
 
 // TODO previousOperatorAlreadyStored
