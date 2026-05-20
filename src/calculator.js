@@ -1,3 +1,18 @@
+import {
+  chain,
+  add,
+  subtract,
+  divide,
+  multiply,
+  pow,
+  tan,
+  sin,
+  cos,
+  factorial,
+  e,
+  pi,
+} from "mathjs";
+
 //////// Constants ////////
 
 const NUMS = "0123456789.";
@@ -219,13 +234,13 @@ class Calculator {
   /// Call Back Functions for non number/operator characters //////
 
   handlePercentage(num) {
-    const percentAsDecimal = math.chain(num).divide(100);
+    const percentAsDecimal = chain(num).divide(100);
     return percentAsDecimal;
   }
 
   handlePi() {
     const operator = this.grabOperatorOfCurrentNumString();
-    const pi = math.pi.toString();
+    const pi = pi.toString();
     this.currentNumString = operator + pi;
     this.updateNumToDisplay();
     this.overwriteCurrentNumString = true;
@@ -233,7 +248,7 @@ class Calculator {
 
   handleEuler() {
     const operator = this.grabOperatorOfCurrentNumString();
-    const euler = math.e.toString();
+    const euler = e.toString();
     this.currentNumString = operator + euler;
     this.updateNumToDisplay();
     this.overwriteCurrentNumString = true;
@@ -245,7 +260,7 @@ class Calculator {
   }
 
   handleSquared(num) {
-    let squaredNumString = math.pow(num, 2);
+    let squaredNumString = pow(num, 2);
     if (num < 0) {
       squaredNumString = 0 - squaredNumString;
     }
@@ -253,17 +268,17 @@ class Calculator {
   }
 
   handleCubed(num) {
-    const cubedNumString = math.pow(num, 3);
+    const cubedNumString = pow(num, 3);
     return cubedNumString;
   }
 
   handleFactorial(num) {
-    const factorialString = math.factorial(num);
+    const factorialString = factorial(num);
     return factorialString;
   }
 
   handleInverseFraction(num) {
-    const inverseFractionAsDecimal = math.chain(100).divide(num).divide(100);
+    const inverseFractionAsDecimal = chain(100).divide(num).divide(100);
     return inverseFractionAsDecimal;
   }
 
@@ -338,7 +353,7 @@ class Calculator {
       return num;
     }
     if (num < 0) {
-      return math.abs(num);
+      return abs(num);
     } else {
       return 0 - num;
     }
@@ -362,14 +377,15 @@ class Calculator {
     this.overwriteCurrentNumString = true;
   }
 
-  solveTrig(angleTheta, trigOperator) {
+  solveTrig(angleInRadians, trigOperator) {
     let trigSolution;
+    const angleInDegrees = (angleInRadians * pi) / 180; // convert angle in radians to angle in degrees
     if (TAN_OPERATORS.includes(trigOperator)) {
-      trigSolution = math.tan(angleTheta);
+      trigSolution = tan(angleInDegrees);
     } else if (SIN_OPERATORS.includes(trigOperator)) {
-      trigSolution = math.sin(angleTheta);
+      trigSolution = sin(angleInDegrees);
     } else if (COS_OPERATORS.includes(trigOperator)) {
-      trigSolution = math.cos(angleTheta);
+      trigSolution = cos(angleInDegrees);
     }
     return trigSolution;
   }
@@ -413,15 +429,15 @@ class Calculator {
   calculate(num1, currentOperator, num2) {
     let answer;
     if (ADDITION.includes(currentOperator)) {
-      answer = math.chain(num1).add(num2).done();
+      answer = chain(num1).add(num2);
     } else if (SUBTRACTION.includes(currentOperator)) {
-      answer = math.chain(num1).subtract(num2).done();
+      answer = chain(num1).subtract(num2);
     } else if (MULTIPLIERS.includes(currentOperator)) {
-      answer = math.chain(num1).multiply(num2).done();
+      answer = chain(num1).multiply(num2);
     } else if (DIVISION.includes(currentOperator)) {
-      answer = math.chain(num1).divide(num2).done();
+      answer = chain(num1).divide(num2);
     } else if (EXPONENTS.includes(currentOperator)) {
-      answer = math.pow(num1, num2);
+      answer = pow(num1, num2);
       if (num1 < 0 && num2 % 2 === 0) {
         answer = 0 - answer;
       }

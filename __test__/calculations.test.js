@@ -69,6 +69,38 @@ describe("Remove the last number from the last string in an equation stack", () 
   });
 });
 
+describe.only("Tests for handling operators", () => {
+  test("Should disallow the current number string from being overwritten", () => {
+    calculator.overwriteCurrentNumString = true;
+    calculator.handleOperators("+");
+    expect(calculator.overwriteCurrentNumString).toBeFalsy();
+  });
+
+  test("Should store last operator if a trig operator follows", () => {
+    calculator.equationStack = ["+4"];
+    calculator.handleOperators("*");
+    calculator.handleOperators("t");
+    expect(calculator.equationStack).toEqual(["+4*"]);
+  });
+
+  test("Should return if a non trig operator follows a trig operator", () => {
+    calculator.equationStack = ["+4"];
+    calculator.handleOperators("*");
+    calculator.handleOperators("t"); // will store the multiplication sign
+    calculator.handleOperators("÷"); // should return without doing anything
+    expect(calculator.equationStack).toEqual(["+4*"]);
+  });
+
+  test("Should replace a trig operator with another trig operator if entered in succession", () => {
+    calculator.handleOperators("t");
+    calculator.handleOperators("c"); // should replace tan
+    calculator.handleNums("9");
+    calculator.handleNums("0");
+    calculator.handleOperators("+");
+    expect(calculator.numToDisplay).toBe("6.123233995736766e-17"); // cos of 90 degrees; ignore tan; this answer would be rounded down to zero in index.js fixDecimals()
+  });
+});
+
 test("Retrieve the last equation string from an equation stack", () => {
   calculator.equationStack = ["+3+4", "+6+2-8+-9"];
   expect(calculator.grabLastStringInStack()).toBe("+6+2-8+-9");
