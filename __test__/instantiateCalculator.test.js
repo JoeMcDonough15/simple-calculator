@@ -1,7 +1,10 @@
 import Calculator from "../src/calculator";
 
-// This is how the calculator will instantiate in index.js - no value will be passed
-const calculator = new Calculator();
+let calculator;
+
+beforeEach(() => {
+  calculator = new Calculator();
+});
 
 describe("Ensure calculator has all necessary properties and methods when instantiated", () => {
   test("Calculator should have necessary properties when instantiated, initialized to the correct values", () => {

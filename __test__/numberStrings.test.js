@@ -1,8 +1,15 @@
 import Calculator from "../src/calculator";
 import addCommasToNumString from "../src/addCommasToNumString";
 
+let calculator;
+
+beforeEach(() => {
+  calculator = new Calculator();
+});
+
+// ! Unit Tests
+
 describe("Distinguish between digits and operators", () => {
-  const calculator = new Calculator();
   test("Check for digits", () => {
     expect(calculator.isDigit("6")).toBeTruthy();
     expect(calculator.isDigit("*")).toBeFalsy();
@@ -15,7 +22,6 @@ describe("Distinguish between digits and operators", () => {
 });
 
 describe("Building number strings with operators", () => {
-  const calculator = new Calculator();
   test("Ensure that a number was given the default + operator if one was not provided", () => {
     calculator.currentNumString = "45";
     calculator.ensureCurrentNumStringHasOperator();
@@ -38,7 +44,6 @@ describe("Building number strings with operators", () => {
 });
 
 describe("Valid number string tests", () => {
-  const calculator = new Calculator();
   test("Ensure that the calculator's current number string is invalid at instantiation", () => {
     expect(calculator.isValidNumString()).toBeFalsy();
   });
@@ -99,7 +104,6 @@ describe("Valid number string tests", () => {
 });
 
 describe("Converting number strings to numbers", () => {
-  const calculator = new Calculator();
   test("Return a number string's number equivalent", () => {
     const numStringAsNum = calculator.numStringAsNumber("+234");
     expect(numStringAsNum).not.toBeNaN();
@@ -119,8 +123,7 @@ describe("Converting number strings to numbers", () => {
   });
 });
 
-describe.only("Clearing number strings", () => {
-  const calculator = new Calculator();
+describe("Clearing number strings", () => {
   test("If current number string is valid and the equation string has been modified, preserve the operator of the cleared number", () => {
     calculator.currentNumString = "+5";
     calculator.currentEquationStringModified = true;
@@ -152,6 +155,23 @@ describe.only("Clearing number strings", () => {
     expect(calculator.clearAll).toBeFalsy();
   });
 
+  test("After clearing a number string, switch to all clear if there is more in memory to clear in the current equation string", () => {
+    calculator.equationStack = ["+23*"];
+    calculator.determineClearLogic();
+    expect(calculator.clearAll).toBeTruthy();
+  });
+
+  test("After clearing a number string, switch to all clear if there is more in memory to clear in the equation stack", () => {
+    calculator.equationStack = ["+23", "+45", "+34+76"];
+    calculator.determineClearLogic();
+    expect(calculator.clearAll).toBeTruthy();
+  });
+
+  test("After clearing a number string, do not switch to all clear if there is nothing in memory besides +0", () => {
+    calculator.determineClearLogic();
+    expect(calculator.clearAll).toBeFalsy();
+  });
+
   test("All clear logic should clear the current number string as well as anything in memory", () => {
     calculator.equationStack = ["+23", "+45", "+34+76"];
     calculator.currentNumString = "*234";
@@ -164,7 +184,6 @@ describe.only("Clearing number strings", () => {
 });
 
 describe("Number string helper functions", () => {
-  const calculator = new Calculator();
   test("Cut from the end of a number string by desired length", () => {
     let numString = "2345653";
     expect(numString.length === 7);
@@ -234,5 +253,16 @@ describe("Number string helper functions", () => {
       numString = calculator.concatOrReplace(numString, nextChar);
       expect(numString).toBe("+500");
     });
+  });
+});
+
+// ! Integration Tests
+
+describe.only("Use handleNums to test number string methods in integration", () => {
+  test("Enter a 3 digit number", () => {
+    calculator.handleNums("5");
+    calculator.handleNums("9");
+    calculator.handleNums("2");
+    expect(calculator.currentNumString).toBe("+592");
   });
 });
