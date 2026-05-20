@@ -34,6 +34,8 @@ describe("Ensure calculator has all necessary properties and methods when instan
     expect(calculator).toHaveProperty("allClear");
     expect(calculator).toHaveProperty("determineClearLogic");
     expect(calculator).toHaveProperty("handleNums");
+    expect(calculator).toHaveProperty("updateNumToDisplay");
+
     // *                                                     * //
 
     expect(calculator).toHaveProperty("previousOperatorAlreadyStored");
@@ -41,7 +43,6 @@ describe("Ensure calculator has all necessary properties and methods when instan
     expect(calculator).toHaveProperty("checkForInfinity");
     expect(calculator).toHaveProperty("grabLastNum");
     expect(calculator).toHaveProperty("grabLastStringInStack");
-    expect(calculator).toHaveProperty("updateNumToDisplay");
     expect(calculator).toHaveProperty("handlePercentage");
     expect(calculator).toHaveProperty("handlePi");
     expect(calculator).toHaveProperty("handleEuler");

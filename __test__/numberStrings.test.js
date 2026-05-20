@@ -256,9 +256,36 @@ describe("Number string helper functions", () => {
   });
 });
 
-// ! Integration Tests
+describe("Displaying number strings", () => {
+  test("Display a valid number string", () => {
+    calculator.updateNumToDisplay("5");
+    expect(calculator.numToDisplay).toBe("5");
+  });
 
-describe.only("Use handleNums to test number string methods in integration", () => {
+  test("Display stored current number string when no number is passed in", () => {
+    calculator.currentNumString = "6";
+    calculator.updateNumToDisplay();
+    expect(calculator.numToDisplay).toBe("6");
+  });
+
+  test("Display the last number string from the last string in the stack if no number is passed in and currentNumString is not valid", () => {
+    calculator.equationStack = ["-4+7"];
+    calculator.updateNumToDisplay();
+    expect(calculator.numToDisplay).toBe("7");
+  });
+
+  test("Display a number string only after removing operators from the front and back of it", () => {
+    calculator.updateNumToDisplay("+8*");
+    expect(calculator.numToDisplay).toBe("8");
+  });
+
+  test("Display 'Error' when number string is NaN converted to string", () => {
+    calculator.updateNumToDisplay(NaN.toString());
+    expect(calculator.numToDisplay).toBe("Error");
+  });
+});
+
+describe("Entering numbers", () => {
   test("Enter a 3 digit number", () => {
     calculator.handleNums("5");
     calculator.handleNums("9");

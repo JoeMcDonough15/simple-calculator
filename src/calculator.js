@@ -211,7 +211,6 @@ class Calculator {
       numString = numString.slice(0, numString.length - 1);
     }
     if (numString === "NaN") {
-      console.log("numString inside updateNumToDisplay: ", numString);
       numString = "Error";
     }
     this.numToDisplay = numString;
