@@ -55,6 +55,20 @@ describe("Determine whether the last character at the end of the last equation s
   });
 });
 
+describe("Remove the last number from the last string in an equation stack", () => {
+  test("Remove the last number leaving other numbers in tact", () => {
+    calculator.equationStack = ["+3+8", "+5÷7"];
+    calculator.removeLastNumFromStack();
+    expect(calculator.equationStack).toEqual(["+3+8", "+5"]);
+  });
+
+  test("Remove the last number leaving and if other numbers remain, fill with default value", () => {
+    calculator.equationStack = ["+3+8", "+5"];
+    calculator.removeLastNumFromStack();
+    expect(calculator.equationStack).toEqual(["+3+8", "+0"]);
+  });
+});
+
 test("Retrieve the last equation string from an equation stack", () => {
   calculator.equationStack = ["+3+4", "+6+2-8+-9"];
   expect(calculator.grabLastStringInStack()).toBe("+6+2-8+-9");

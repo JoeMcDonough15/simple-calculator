@@ -42,22 +42,22 @@ describe("Ensure calculator has all necessary properties and methods when instan
     expect(calculator).toHaveProperty("grabLastNum");
     expect(calculator).toHaveProperty("grabLastStringInStack");
     expect(calculator).toHaveProperty("previousOperatorAlreadyStored");
+    expect(calculator).toHaveProperty("removeLastNumFromStack");
 
     // *                                                     * //
 
-    expect(calculator).toHaveProperty("removeLastNumFromStack");
-
-    expect(calculator).toHaveProperty("determineAndStorePreviousOperator");
     expect(calculator).toHaveProperty("handleOperators");
-    expect(calculator).toHaveProperty("storeCurrentNumStringAndOperator");
-    expect(calculator).toHaveProperty("storeOperatorOnly");
-    expect(calculator).toHaveProperty("retrieveAndRemoveLastOperator");
     expect(calculator).toHaveProperty("calculate");
     expect(calculator).toHaveProperty("handleEquals");
     expect(calculator).toHaveProperty("reduceEquationString");
 
     // Order of operations
     expect(calculator).toHaveProperty("isHigherOrder");
+    expect(calculator).toHaveProperty("determineStoredOperator");
+    expect(calculator).toHaveProperty("determineAndStorePreviousOperator");
+    expect(calculator).toHaveProperty("storeCurrentNumStringAndOperator");
+    expect(calculator).toHaveProperty("storeOperatorOnly");
+    expect(calculator).toHaveProperty("retrieveAndRemoveLastOperator");
     expect(calculator).toHaveProperty("handleOpenParenthesis");
     expect(calculator).toHaveProperty("handleCloseParenthesis");
     expect(calculator).toHaveProperty("solveTrig");
