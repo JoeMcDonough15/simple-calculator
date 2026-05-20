@@ -17,6 +17,7 @@ describe("Ensure calculator has all necessary properties and methods when instan
   });
 
   test("Calculator should have necessary methods when instantiated", () => {
+    // numberStrings.test.js
     expect(calculator).toHaveProperty("isDigit");
     expect(calculator).toHaveProperty("isOperator");
     expect(calculator).toHaveProperty("isValidNumString");
@@ -38,11 +39,29 @@ describe("Ensure calculator has all necessary properties and methods when instan
 
     // *                                                     * //
 
-    expect(calculator).toHaveProperty("previousOperatorAlreadyStored");
-    expect(calculator).toHaveProperty("handleOperators");
+    // calculations.test.js
     expect(calculator).toHaveProperty("checkForInfinity");
     expect(calculator).toHaveProperty("grabLastNum");
+    expect(calculator).toHaveProperty("removeLastNumFromStack");
     expect(calculator).toHaveProperty("grabLastStringInStack");
+    expect(calculator).toHaveProperty("previousOperatorAlreadyStored");
+    expect(calculator).toHaveProperty("determineAndStorePreviousOperator");
+    expect(calculator).toHaveProperty("handleOperators");
+    expect(calculator).toHaveProperty("storeCurrentNumStringAndOperator");
+    expect(calculator).toHaveProperty("storeOperatorOnly");
+    expect(calculator).toHaveProperty("retrieveAndRemoveLastOperator");
+    expect(calculator).toHaveProperty("calculate");
+    expect(calculator).toHaveProperty("handleEquals");
+    expect(calculator).toHaveProperty("reduceEquationString");
+
+    // Order of operations
+    expect(calculator).toHaveProperty("isHigherOrder");
+    expect(calculator).toHaveProperty("handleOpenParenthesis");
+    expect(calculator).toHaveProperty("handleCloseParenthesis");
+    expect(calculator).toHaveProperty("solveTrig");
+
+    // Updating numStrings in place
+    expect(calculator).toHaveProperty("determineCorrectNumStringToUpdate");
     expect(calculator).toHaveProperty("handlePercentage");
     expect(calculator).toHaveProperty("handlePi");
     expect(calculator).toHaveProperty("handleEuler");
@@ -51,21 +70,8 @@ describe("Ensure calculator has all necessary properties and methods when instan
     expect(calculator).toHaveProperty("handleCubed");
     expect(calculator).toHaveProperty("handleFactorial");
     expect(calculator).toHaveProperty("handleInverseFraction");
-    expect(calculator).toHaveProperty("determineAndStorePreviousOperator");
-    expect(calculator).toHaveProperty("storeCurrentNumStringAndOperator");
-    expect(calculator).toHaveProperty("storeOperatorOnly");
-    expect(calculator).toHaveProperty("retrieveAndRemoveLastOperator");
-    expect(calculator).toHaveProperty("handleOpenParenthesis");
-    expect(calculator).toHaveProperty("handleCloseParenthesis");
     expect(calculator).toHaveProperty("makePosOrNeg");
-    expect(calculator).toHaveProperty("handleEquals");
-    expect(calculator).toHaveProperty("solveTrig");
-    expect(calculator).toHaveProperty("reduceEquationString");
-    expect(calculator).toHaveProperty("calculate");
-    expect(calculator).toHaveProperty("determineCorrectNumStringToUpdate");
-    expect(calculator).toHaveProperty("removeLastNumFromStack");
-    expect(calculator).toHaveProperty("updateNumStringInPlace");
     expect(calculator).toHaveProperty("performOperationOnNumString");
-    expect(calculator).toHaveProperty("isHigherOrder");
+    expect(calculator).toHaveProperty("updateNumStringInPlace");
   });
 });
