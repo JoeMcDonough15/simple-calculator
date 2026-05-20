@@ -43,9 +43,19 @@ describe("Grab last number and its operator from an equation string", () => {
   });
 });
 
+describe("Determine whether the last character at the end of the last equation string is a stored operator", () => {
+  test("Return true if an operator has been stored", () => {
+    calculator.equationStack = ["+6-8", "+2*"];
+    expect(calculator.previousOperatorAlreadyStored()).toBeTruthy();
+  });
+
+  test("Return false if an operator has not been stored", () => {
+    calculator.equationStack = ["+6-8", "+2*2"];
+    expect(calculator.previousOperatorAlreadyStored()).toBeFalsy();
+  });
+});
+
 test("Retrieve the last equation string from an equation stack", () => {
   calculator.equationStack = ["+3+4", "+6+2-8+-9"];
   expect(calculator.grabLastStringInStack()).toBe("+6+2-8+-9");
 });
-
-// TODO previousOperatorAlreadyStored

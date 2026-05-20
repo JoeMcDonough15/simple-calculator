@@ -41,11 +41,12 @@ describe("Ensure calculator has all necessary properties and methods when instan
     expect(calculator).toHaveProperty("checkForInfinity");
     expect(calculator).toHaveProperty("grabLastNum");
     expect(calculator).toHaveProperty("grabLastStringInStack");
+    expect(calculator).toHaveProperty("previousOperatorAlreadyStored");
 
     // *                                                     * //
 
     expect(calculator).toHaveProperty("removeLastNumFromStack");
-    expect(calculator).toHaveProperty("previousOperatorAlreadyStored");
+
     expect(calculator).toHaveProperty("determineAndStorePreviousOperator");
     expect(calculator).toHaveProperty("handleOperators");
     expect(calculator).toHaveProperty("storeCurrentNumStringAndOperator");
