@@ -33,8 +33,9 @@ describe("Ensure calculator has all necessary properties and methods when instan
     expect(calculator).toHaveProperty("switchToClear");
     expect(calculator).toHaveProperty("allClear");
     expect(calculator).toHaveProperty("determineClearLogic");
-    // *                                                     * //
     expect(calculator).toHaveProperty("handleNums");
+    // *                                                     * //
+
     expect(calculator).toHaveProperty("previousOperatorAlreadyStored");
     expect(calculator).toHaveProperty("handleOperators");
     expect(calculator).toHaveProperty("checkForInfinity");
