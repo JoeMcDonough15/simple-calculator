@@ -248,7 +248,7 @@ describe("Should be able to determine if the next operator (second arg) is of hi
   });
 });
 
-describe.only("Should be able to handle parenthetical math", () => {
+describe("Should be able to handle parenthetical math", () => {
   test("Should be able to open parenthesis and see a new equation string added to the equationStack and + stored to previous equation string", () => {
     calculator.handleOpenParenthesis();
     expect(calculator.equationStack).toHaveLength(2);
@@ -309,4 +309,31 @@ describe.only("Should be able to handle parenthetical math", () => {
     expect(calculator.currentNumString).toEqual("*2");
   });
   // *  * //
+});
+
+describe("Simple calculations", () => {
+  test("Should be able to add two numbers", () => {
+    const solution = calculator.calculate(5, "+", 3);
+    expect(solution.value).toEqual(8); // mathjs chain method returns an object with one key called 'value', whose value is the number of the math solution.  i.e. {'value': 8}  When this object is turned into a string, it is the stringified number to the solution; i.e. {'value': 8}.toString() ==> "8"
+  });
+
+  test("Should be able to subtract two numbers", () => {
+    const solution = calculator.calculate(5, "-", 3);
+    expect(solution.value).toEqual(2);
+  });
+
+  test("Should be able to multiply two numbers", () => {
+    const solution = calculator.calculate(5, "*", 3);
+    expect(solution.value).toEqual(15);
+  });
+
+  test("Should be able to divide two numbers", () => {
+    const solution = calculator.calculate(15, "÷", 3);
+    expect(solution.value).toEqual(5);
+  });
+
+  test("Should raise numbers to custom exponents", () => {
+    const solution = calculator.calculate(5, "^", 2);
+    expect(solution).toEqual(25); // not using mathjs chain here so no need for value
+  });
 });

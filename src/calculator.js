@@ -440,10 +440,8 @@ class Calculator {
       answer = chain(num1).divide(num2);
     } else if (EXPONENTS.includes(currentOperator)) {
       answer = pow(num1, num2);
-      if (num1 < 0 && num2 % 2 === 0) {
-        answer = 0 - answer;
-      }
     }
+
     return answer;
   }
 
