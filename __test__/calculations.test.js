@@ -69,7 +69,27 @@ describe("Remove the last number from the last string in an equation stack", () 
   });
 });
 
-describe.only("Tests for handling operators", () => {
+describe("Storing operators", () => {
+  test("If the current number string is empty and the current equation string has not been modified, the stored operator should be a + so if parenthesis are opened their total is added to 0, not multiplied by 0", () => {
+    const storedOperator = calculator.determineStoredOperator();
+    expect(storedOperator).toBe("+");
+  });
+
+  test("If the current number string consists of only an operator, that operator should be stored", () => {
+    calculator.currentNumString = "÷";
+    const storedOperator = calculator.determineStoredOperator();
+    expect(storedOperator).toBe("÷");
+  });
+
+  test("If the current equation string has been modified, the stored operator should default to multiplication", () => {
+    // (a + b) (c + d) total inside the first set of parenthesis should be multiplied by total inside the second set
+    calculator.currentEquationStringModified = true;
+    const storedOperator = calculator.determineStoredOperator();
+    expect(storedOperator).toBe("*");
+  });
+});
+
+describe("Tests for handling operators", () => {
   test("Should disallow the current number string from being overwritten", () => {
     calculator.overwriteCurrentNumString = true;
     calculator.handleOperators("+");

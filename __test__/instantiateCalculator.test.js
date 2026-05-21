@@ -43,6 +43,7 @@ describe("Ensure calculator has all necessary properties and methods when instan
     expect(calculator).toHaveProperty("grabLastStringInStack");
     expect(calculator).toHaveProperty("previousOperatorAlreadyStored");
     expect(calculator).toHaveProperty("removeLastNumFromStack");
+    expect(calculator).toHaveProperty("determineStoredOperator");
 
     // *                                                     * //
 
@@ -53,7 +54,7 @@ describe("Ensure calculator has all necessary properties and methods when instan
 
     // Order of operations
     expect(calculator).toHaveProperty("isHigherOrder");
-    expect(calculator).toHaveProperty("determineStoredOperator");
+
     expect(calculator).toHaveProperty("determineAndStorePreviousOperator");
     expect(calculator).toHaveProperty("storeCurrentNumStringAndOperator");
     expect(calculator).toHaveProperty("storeOperatorOnly");
