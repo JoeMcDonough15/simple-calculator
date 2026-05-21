@@ -247,3 +247,66 @@ describe("Should be able to determine if the next operator (second arg) is of hi
     expect(calculator.isHigherOrder("^", "÷")).toBeFalsy();
   });
 });
+
+describe.only("Should be able to handle parenthetical math", () => {
+  test("Should be able to open parenthesis and see a new equation string added to the equationStack and + stored to previous equation string", () => {
+    calculator.handleOpenParenthesis();
+    expect(calculator.equationStack).toHaveLength(2);
+    expect(calculator.equationStack).toEqual(["+0+", "+0"]);
+  });
+
+  test("Should be able to maintain math from previous equation string and store correct operator before pushing new equation string to equation stack", () => {
+    calculator.equationStack = ["+8"];
+    calculator.currentEquationStringModified = true;
+    calculator.handleOpenParenthesis();
+    expect(calculator.equationStack).toHaveLength(2);
+    expect(calculator.equationStack).toEqual(["+8*", "+0"]);
+    expect(calculator.currentEquationStringModified).toBeFalsy(); // should reset to false when new set opens
+  });
+
+  test("Should be able to nest parenthesis, adding a new equation string to equation stack each time a new set opens", () => {
+    for (let i = 0; i < 5; i++) {
+      calculator.handleOpenParenthesis();
+    }
+    expect(calculator.equationStack).toHaveLength(6);
+  });
+
+  test("Should prohibit closing parenthesis if no set is open", () => {
+    const closeParenthesis = calculator.handleCloseParenthesis();
+    expect(closeParenthesis).toBeFalsy();
+  });
+
+  test("Should validate an empty current number string when closing parenthesis by converting it to +0 before solving parenthesis", () => {
+    calculator.equationStack = ["+8*", "+6-4"];
+    calculator.currentNumString = "";
+    calculator.handleCloseParenthesis();
+    expect(calculator.currentNumString).toBe("*2"); // the solution to the +6-4 concatenated after * from the previous equation string
+  });
+
+  test("Should validate a current number string consisting of an operator of higher order of operation when closing parenthesis by concatenating a 1", () => {
+    calculator.currentNumString = "÷"; // will convert to ÷1 so math is not affected by invalid number string
+    calculator.equationStack = ["+8*", "+6-4"];
+    calculator.handleCloseParenthesis();
+    expect(calculator.currentNumString).toBe("*2"); // the solution to the +6-4 concatenated after * from the previous equation string
+  });
+
+  test("Should remove the last equation string from the equation stack and last operator from previous equatoin string on successful parenthesis closure", () => {
+    calculator.equationStack = ["+8*", "+6-4"];
+    calculator.handleCloseParenthesis();
+    expect(calculator.equationStack).toHaveLength(1);
+  });
+
+  test("Should place correct stored operator in front of solved parenthetical math", () => {
+    calculator.equationStack = ["+8*", "+6-4"];
+    calculator.handleCloseParenthesis();
+    expect(calculator.currentNumString).toEqual("*2");
+  });
+
+  test("Should wait to aggregate parenthetical math with previous equation string until receiving next operator input", () => {
+    calculator.equationStack = ["+8*", "+6-4"];
+    calculator.handleCloseParenthesis();
+    expect(calculator.equationStack).toEqual(["+8"]);
+    expect(calculator.currentNumString).toEqual("*2");
+  });
+  // *  * //
+});

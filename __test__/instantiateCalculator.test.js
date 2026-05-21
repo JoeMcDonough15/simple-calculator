@@ -50,6 +50,8 @@ describe("Ensure calculator has all necessary properties and methods when instan
     expect(calculator).toHaveProperty("retrieveAndRemoveLastOperator");
     expect(calculator).toHaveProperty("solveTrig");
     expect(calculator).toHaveProperty("isHigherOrder");
+    expect(calculator).toHaveProperty("handleOpenParenthesis");
+    expect(calculator).toHaveProperty("handleCloseParenthesis");
 
     // *                                                     * //
 
@@ -57,9 +59,6 @@ describe("Ensure calculator has all necessary properties and methods when instan
     expect(calculator).toHaveProperty("calculate");
     expect(calculator).toHaveProperty("handleEquals");
     expect(calculator).toHaveProperty("reduceEquationString");
-
-    expect(calculator).toHaveProperty("handleOpenParenthesis");
-    expect(calculator).toHaveProperty("handleCloseParenthesis");
 
     // Updating numStrings in place
     expect(calculator).toHaveProperty("determineCorrectNumStringToUpdate");
