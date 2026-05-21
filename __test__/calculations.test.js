@@ -351,3 +351,13 @@ describe("Simple calculations", () => {
     expect(solution).toEqual(0.25);
   });
 });
+
+describe.only("Reducing an equation string while accounting for order of operations", () => {
+  test("Should solve trigonometry on the current number string before trying to reduce the equation string at the top of the equation stack", () => {
+    calculator.equationStack = ["+0+5*"]; // (determineAndStoreOperator() already ran and stored a * after "+0+5" at calculator.equationStack[0])
+    calculator.currentNumString = "t45"; // tan(45) --> *1 after the stored * gets concatenated to the front of the solved trig
+    calculator.reduceEquationString("*"); // should solve +5*1 and set currentNumString to that product
+    expect(calculator.currentNumString).toBe("+4.999999999999999"); // this number would be rounded to +5 for the display window
+    expect(calculator.equationStack).toEqual(["+0+4.999999999999999"]); // since next operator is *, the currentNumString has to be held in memory
+  });
+});

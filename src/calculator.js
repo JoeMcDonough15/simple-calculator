@@ -394,24 +394,6 @@ class Calculator {
 
   //////  Calculator Functionality //////
 
-  // 5 * tan(45) +
-
-  // 1. equationStack = [ "+0+5*" ] | currentNumString = "t45" | nextOperator = "*"
-
-  // 2. (after trig solves) ==> equationStack = ["+0+5"] currentNumString = "*1" | nextOperator = "*"
-
-  // * Loop begins
-
-  // 3. equationString = "+0+5" | equationStack = ["+0+5"] | currentNumString = "*1" | currentOperator = "*" | nextOperator = "*" | lastNumString = "+5"
-
-  // 4. (after cutting the lastNumString off equationString) ==> equationString = "+0" | equationStack = ["+0+5"] | currentNumString = "*1" | nextOperator = "*" | lastNumString = "+5"
-
-  // 5. (after solving with calculate) ==> equationString = "+0" or "" | currentNumString = "+5" | nextOperator = "*" | currentOperator = "+" | equationStack = [ "+0"] or [""]
-
-  // * Loop concludes
-
-  // 6. After while loop concludes, currentNumString gets concatted to the equationString at the top of equationStack ==> equationStack = ["+0+5"] | currentNumString = "+5" | nextOperator = "*" |
-
   reduceEquationString(nextOperator) {
     if (TRIG_OPERATORS.includes(this.grabOperatorOfCurrentNumString())) {
       const trigSolution = this.solveTrig(
