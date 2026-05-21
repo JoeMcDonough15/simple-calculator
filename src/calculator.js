@@ -377,17 +377,17 @@ class Calculator {
     this.overwriteCurrentNumString = true;
   }
 
-  solveTrig(givenAngle, trigOperator) {
+  solveTrig(angleInDegrees, trigOperator) {
     let trigSolution;
-    const angleInDegrees = (givenAngle * pi) / 180; // convert angle from JavaScript default radians input to an angle in degrees
+    const angleInRadians = (angleInDegrees * pi) / 180; // convert input from degrees to radians, so that it is valid input to the mathjs trig functions
     if (TAN_OPERATORS.includes(trigOperator)) {
-      // edge case to handle 90 or 270 because JavaScript floating point precision will not reach Infinity
-      if (givenAngle === 90 || givenAngle === 270) return Infinity;
-      trigSolution = tan(angleInDegrees);
+      // edge case to handle 90º or 270º because JavaScript floating point precision will not reach Infinity
+      if (angleInDegrees === 90 || angleInDegrees === 270) return Infinity;
+      trigSolution = tan(angleInRadians);
     } else if (SIN_OPERATORS.includes(trigOperator)) {
-      trigSolution = sin(angleInDegrees);
+      trigSolution = sin(angleInRadians);
     } else if (COS_OPERATORS.includes(trigOperator)) {
-      trigSolution = cos(angleInDegrees);
+      trigSolution = cos(angleInRadians);
     }
     return trigSolution;
   }
