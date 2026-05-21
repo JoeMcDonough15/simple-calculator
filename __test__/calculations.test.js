@@ -229,3 +229,21 @@ describe("Should be able to solve trigonometry problems", () => {
     expect(solution).toEqual(-0.7071067811865475);
   });
 });
+
+describe("Should be able to determine if the next operator (second arg) is of higher order of operation than the current operator (first arg)", () => {
+  test("Should consider multiplication to be of higher order than addition", () => {
+    expect(calculator.isHigherOrder("+", "*")).toBeTruthy();
+  });
+  test("Should consider subtraction to not be of higher order than division", () => {
+    expect(calculator.isHigherOrder("÷", "-")).toBeFalsy();
+  });
+  test("Should consider exponent to be of higher order than multiplication", () => {
+    expect(calculator.isHigherOrder("*", "^")).toBeTruthy();
+  });
+  test("Should consider exponent to be of higher order than subtraction", () => {
+    expect(calculator.isHigherOrder("-", "^")).toBeTruthy();
+  });
+  test("Should consider division to not be of higher order than exponent", () => {
+    expect(calculator.isHigherOrder("^", "÷")).toBeFalsy();
+  });
+});
