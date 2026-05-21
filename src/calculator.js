@@ -394,6 +394,24 @@ class Calculator {
 
   //////  Calculator Functionality //////
 
+  // 5 * tan(45) +
+
+  // 1. equationStack = [ "+0+5*" ] | currentNumString = "t45" | nextOperator = "*"
+
+  // 2. (after trig solves) ==> equationStack = ["+0+5"] currentNumString = "*1" | nextOperator = "*"
+
+  // * Loop begins
+
+  // 3. equationString = "+0+5" | equationStack = ["+0+5"] | currentNumString = "*1" | currentOperator = "*" | nextOperator = "*" | lastNumString = "+5"
+
+  // 4. (after cutting the lastNumString off equationString) ==> equationString = "+0" | equationStack = ["+0+5"] | currentNumString = "*1" | nextOperator = "*" | lastNumString = "+5"
+
+  // 5. (after solving with calculate) ==> equationString = "+0" or "" | currentNumString = "+5" | nextOperator = "*" | currentOperator = "+" | equationStack = [ "+0"] or [""]
+
+  // * Loop concludes
+
+  // 6. After while loop concludes, currentNumString gets concatted to the equationString at the top of equationStack ==> equationStack = ["+0+5"] | currentNumString = "+5" | nextOperator = "*" |
+
   reduceEquationString(nextOperator) {
     if (TRIG_OPERATORS.includes(this.grabOperatorOfCurrentNumString())) {
       const trigSolution = this.solveTrig(
@@ -404,7 +422,7 @@ class Calculator {
         this.retrieveAndRemoveLastOperator() + trigSolution.toString();
     }
     let currentOperator = this.grabOperatorOfCurrentNumString();
-    let equationString = this.grabLastStringInStack();
+    let equationString = this.grabLastStringInStack(); // Now we have a copy of what was at the top of the equationStack before our while loop will run
     this.currentEquationStringModified = true;
     while (
       equationString.length !== 0 &&
@@ -412,16 +430,19 @@ class Calculator {
     ) {
       const lastNumString = this.grabLastNum(equationString); // this will be an operator and number, i.e. '+0'
       const lastOperator = lastNumString[0];
+      // cut off the last num and its operator from the equationString
       equationString = this.cutFromNumString(
         equationString,
         lastNumString.length,
       );
-      this.equationStack[this.equationStack.length - 1] = equationString; // cut out the last num from the equation string inside this.equationStack since we're dealing with it below
+      // Solve the math of lastNumString, operator in front of currentNumString, and currentNumString
       const num1 = this.numStringAsNumber(lastNumString);
       const num2 = this.numStringAsNumber(); // no arg defaults to this.currentNumString
       const solution = this.calculate(num1, currentOperator, num2);
       this.currentNumString = `${lastOperator}${solution.toString()}`;
       currentOperator = lastOperator;
+      // Since we solved something, replace the equationString at the top of the equationStack with that lastNumString and its operator cut off.
+      this.equationStack[this.equationStack.length - 1] = equationString;
     } // if we can't solve it yet, or if the last string in the stack is empty, concatenate currentNumString to the end of the last string in equationStack
     this.ensureCurrentNumStringHasOperator();
     this.equationStack[this.equationStack.length - 1] += this.currentNumString;
