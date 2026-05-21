@@ -308,7 +308,6 @@ describe("Should be able to handle parenthetical math", () => {
     expect(calculator.equationStack).toEqual(["+8"]);
     expect(calculator.currentNumString).toEqual("*2");
   });
-  // *  * //
 });
 
 describe("Simple calculations", () => {
@@ -335,5 +334,20 @@ describe("Simple calculations", () => {
   test("Should raise numbers to custom exponents", () => {
     const solution = calculator.calculate(5, "^", 2);
     expect(solution).toEqual(25); // not using mathjs chain here so no need for value
+  });
+
+  test("Should raise negative bases to exponents part I", () => {
+    const solution = calculator.calculate(-5, "^", 2);
+    expect(solution).toEqual(25);
+  });
+
+  test("Should raise negative bases to exponents part II", () => {
+    const solution = calculator.calculate(-5, "^", 3);
+    expect(solution).toEqual(-125);
+  });
+
+  test("Should raise bases to negative exponents", () => {
+    const solution = calculator.calculate(2, "^", -2);
+    expect(solution).toEqual(0.25);
   });
 });
