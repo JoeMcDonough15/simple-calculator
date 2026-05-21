@@ -57,23 +57,32 @@ describe("Remove the last number from the last string in an equation stack", () 
   });
 });
 
-describe.only("Storing operators", () => {
-  test("If the current number string is empty and the current equation string has not been modified, the stored operator should be a + so if parenthesis are opened their total is added to 0, not multiplied by 0", () => {
-    const storedOperator = calculator.determineStoredOperator();
-    expect(storedOperator).toBe("+");
-  });
+describe("Storing operators", () => {
+  describe("Should be able to determine which operator to store", () => {
+    test("If the current number string is empty and the current equation string has not been modified, the stored operator should be a + so if parenthesis are opened their total is added to 0, not multiplied by 0", () => {
+      const storedOperator = calculator.determineStoredOperator();
+      expect(storedOperator).toBe("+");
+    });
 
-  test("If the current number string consists of only an operator, that operator should be stored", () => {
-    calculator.currentNumString = "÷";
-    const storedOperator = calculator.determineStoredOperator();
-    expect(storedOperator).toBe("÷");
-  });
+    test("If the current number string consists of only an operator, that operator should be stored", () => {
+      calculator.currentNumString = "÷";
+      const storedOperator = calculator.determineStoredOperator();
+      expect(storedOperator).toBe("÷");
+    });
 
-  test("If the current equation string has been modified, the stored operator should default to multiplication", () => {
-    // (a + b) (c + d) total inside the first set of parenthesis should be multiplied by total inside the second set
-    calculator.currentEquationStringModified = true;
-    const storedOperator = calculator.determineStoredOperator();
-    expect(storedOperator).toBe("*");
+    test("If the current equation string has been modified, the stored operator should default to multiplication", () => {
+      // (a + b) (c + d) ==> total inside the first set of parenthesis should be multiplied by total inside the second set
+      calculator.currentEquationStringModified = true;
+      const storedOperator = calculator.determineStoredOperator();
+      expect(storedOperator).toBe("*");
+    });
+
+    test("If current number string is valid, stored operator should default to multiplication", () => {
+      // 5 (a + b) ==> 5 should be multiplied by total inside set of parenthesis
+      calculator.currentNumString = "+5";
+      const storedOperator = calculator.determineStoredOperator();
+      expect(storedOperator).toBe("*");
+    });
   });
 
   test("Should be able to concatenate an operator to the end of the current number string and store that new string", () => {
@@ -92,6 +101,44 @@ describe.only("Storing operators", () => {
     expect(calculator.equationStack[calculator.equationStack.length - 1]).toBe(
       "-5*",
     );
+  });
+
+  describe("Should be able to determine and store an operator in one function call", () => {
+    test("Store current number string along with determined operator to last equation string in an equation stack", () => {
+      calculator.equationStack = ["+5", "+3"];
+      calculator.currentNumString = "+6";
+      calculator.determineAndStorePreviousOperator();
+      expect(calculator.currentNumString).toBe("+6*");
+      expect(
+        calculator.equationStack[calculator.equationStack.length - 1],
+      ).toBe("+3+6*");
+    });
+
+    test("Store only the determined operator to last equation string in an equation stack", () => {
+      calculator.equationStack = ["+8", "-5"];
+      calculator.currentEquationStringModified = true;
+      calculator.currentNumString = "÷";
+      calculator.determineAndStorePreviousOperator();
+      expect(
+        calculator.equationStack[calculator.equationStack.length - 1],
+      ).toBe("-5÷");
+    });
+
+    test("Store a + when the current equation string has been modified and current number string is empty", () => {
+      calculator.determineAndStorePreviousOperator();
+      expect(
+        calculator.equationStack[calculator.equationStack.length - 1],
+      ).toBe("+0+");
+    });
+
+    test("Store an * when the current equation string has been modified and the current number string is empty", () => {
+      calculator.equationStack = ["+8"];
+      calculator.currentEquationStringModified = true;
+      calculator.determineAndStorePreviousOperator();
+      expect(
+        calculator.equationStack[calculator.equationStack.length - 1],
+      ).toBe("+8*");
+    });
   });
 
   describe("Determine whether the last character at the end of the last equation string is a stored operator", () => {

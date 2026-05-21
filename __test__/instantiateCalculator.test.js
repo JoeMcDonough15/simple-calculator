@@ -46,10 +46,10 @@ describe("Ensure calculator has all necessary properties and methods when instan
     expect(calculator).toHaveProperty("determineStoredOperator");
     expect(calculator).toHaveProperty("storeCurrentNumStringAndOperator");
     expect(calculator).toHaveProperty("storeOperatorOnly");
+    expect(calculator).toHaveProperty("determineAndStorePreviousOperator");
 
     // *                                                     * //
 
-    expect(calculator).toHaveProperty("determineAndStorePreviousOperator");
     expect(calculator).toHaveProperty("retrieveAndRemoveLastOperator");
 
     expect(calculator).toHaveProperty("handleOperators");
