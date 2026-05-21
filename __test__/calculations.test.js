@@ -87,6 +87,16 @@ describe("Storing operators", () => {
     const storedOperator = calculator.determineStoredOperator();
     expect(storedOperator).toBe("*");
   });
+
+  test("Should be able to concatenate an operator to the end of the current number string and store that new string", () => {
+    calculator.equationStack = ["+5", "+3"];
+    calculator.currentNumString = "+6";
+    calculator.storeCurrentNumStringAndOperator("*");
+    expect(calculator.currentNumString).toBe("+6*");
+    expect(calculator.equationStack[calculator.equationStack.length - 1]).toBe(
+      "+3+6*",
+    );
+  });
 });
 
 describe("Tests for handling operators", () => {
