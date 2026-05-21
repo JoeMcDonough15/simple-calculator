@@ -352,12 +352,54 @@ describe("Simple calculations", () => {
   });
 });
 
-describe.only("Reducing an equation string while accounting for order of operations", () => {
-  test("Should solve trigonometry on the current number string before trying to reduce the equation string at the top of the equation stack", () => {
+describe("Reducing an equation string from the back while accounting for order of operations", () => {
+  test("Should maintain running total when adding follows adding", () => {
+    calculator.equationStack = ["+4+6"];
+    calculator.currentNumString = "+1";
+    calculator.reduceEquationString("+");
+    expect(calculator.currentNumString).toBe("+11");
+    expect(calculator.numToDisplay).toBe("11");
+    expect(calculator.equationStack).toEqual(["+11"]);
+  });
+
+  test("Should maintain running total when subtracting follows subtracting", () => {
+    // since the string will be reduced from the back, an equationStack of [+24-8-5] and a currentNumString of -8 will solve like this:
+    // (24 - (8 - (5 - 8) ) ) ===> 5 minus 8, then 8 minus -3, then 24 minus 11 = +13
+    calculator.equationStack = ["+24-8-5"]; // pop off -5, then pop off -8, then pop off +24
+    calculator.currentNumString = "-8"; // 5 - 8 = -3, then put the mimnus operator from 5 in front of -3; 8 - -3 = 11, then put the minus operator from 8 in front of 11; 24 - 11 = 13, then put the addition operator from 24 in front of 13
+    calculator.reduceEquationString("-");
+    expect(calculator.currentNumString).toBe("+13");
+    expect(calculator.numToDisplay).toBe("13");
+    expect(calculator.equationStack).toEqual(["+13"]);
+  });
+
+  test("Should maintain running total when multiplication/division follows multiplication/division", () => {
+    // since the string will be reduced from the back, an equationString of ["+2*4*3"] and a currentNumString of "÷3" will solve like this:
+    // 2 * (4 * (3 ÷ 3) ) = 8
+    calculator.equationStack = ["+2*4*6"]; // pop off *3, then pop off *4, then pop off +2
+    calculator.currentNumString = "÷2"; // 6 ÷ 2 = 3, then put the times operator from 6 in front of 3; 4 * 3 = 12, then put the times operator from 4 in front of 12; 2 * 12 = 24, then put the addition operator from 2 in front of 24.
+    calculator.reduceEquationString("*");
+    expect(calculator.currentNumString).toBe("+24");
+    expect(calculator.numToDisplay).toBe("24");
+    expect(calculator.equationStack).toEqual(["+24"]);
+  });
+
+  test("Should pause running total when multiplication/division follows addition/subtraction", () => {
+    // 5 + 2 * ===> 5 + 2 has to wait, until the 2 is multiplied by x
+    calculator.equationStack = ["+5"];
+    calculator.currentNumString = "+2";
+    calculator.reduceEquationString("*");
+    expect(calculator.currentNumString).toBe("+2");
+    expect(calculator.numToDisplay).toBe("2");
+    expect(calculator.equationStack).toEqual(["+5+2"]);
+  });
+
+  test("Should solve trigonometry on the current number string before trying to reduce the equation string", () => {
     calculator.equationStack = ["+0+5*"]; // (determineAndStoreOperator() already ran and stored a * after "+0+5" at calculator.equationStack[0])
     calculator.currentNumString = "t45"; // tan(45) --> *1 after the stored * gets concatenated to the front of the solved trig
     calculator.reduceEquationString("*"); // should solve +5*1 and set currentNumString to that product
-    expect(calculator.currentNumString).toBe("+4.999999999999999"); // this number would be rounded to +5 for the display window
+    expect(calculator.currentNumString).toBe("+4.999999999999999");
+    expect(calculator.numToDisplay).toBe("4.999999999999999"); // this number would be rounded to 5 for the display window
     expect(calculator.equationStack).toEqual(["+0+4.999999999999999"]); // since next operator is *, the currentNumString has to be held in memory
   });
 });
