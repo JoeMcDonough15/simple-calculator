@@ -57,7 +57,7 @@ describe("Remove the last number from the last string in an equation stack", () 
   });
 });
 
-describe("Storing operators", () => {
+describe("Storing and retrieving operators", () => {
   describe("Should be able to determine which operator to store", () => {
     test("If the current number string is empty and the current equation string has not been modified, the stored operator should be a + so if parenthesis are opened their total is added to 0, not multiplied by 0", () => {
       const storedOperator = calculator.determineStoredOperator();
@@ -152,6 +152,13 @@ describe("Storing operators", () => {
       expect(calculator.previousOperatorAlreadyStored()).toBeFalsy();
     });
   });
+
+  test("Should be able to retrieve and remove the last stored operator", () => {
+    calculator.equationStack = ["+9*"];
+    const retrievedOperator = calculator.retrieveAndRemoveLastOperator();
+    expect(retrievedOperator).toBe("*");
+    expect(calculator.equationStack).toEqual(["+9"]);
+  });
 });
 
 describe("Tests for handling operators", () => {
@@ -189,4 +196,36 @@ describe("Tests for handling operators", () => {
 test("Retrieve the last equation string from an equation stack", () => {
   calculator.equationStack = ["+3+4", "+6+2-8+-9"];
   expect(calculator.grabLastStringInStack()).toBe("+6+2-8+-9");
+});
+
+describe("Should be able to solve trigonometry problems", () => {
+  test("Should be able to return the tangent of an angle", () => {
+    const solution = calculator.solveTrig(45, "t");
+    expect(solution).toEqual(0.9999999999999999); // will be rounded to 1 in fixDecimals()
+  });
+
+  test("Should return Infinity if solving tangent on a 90 degree angle", () => {
+    const solution = calculator.solveTrig(90, "T"); // capital T and lowercase t are valid
+    expect(solution).toEqual(Infinity);
+  });
+
+  test("Should return Infinity if solving tangent on a 270 degree angle", () => {
+    const solution = calculator.solveTrig(270, "T");
+    expect(solution).toEqual(Infinity);
+  });
+
+  test("Should be able to return the cosine of an angle", () => {
+    const solution = calculator.solveTrig(90, "c");
+    expect(solution).toEqual(6.123233995736766e-17); // will be rounded to 0 in fixDecimals()
+  });
+
+  test("Should be able to return the sine of an angle", () => {
+    const solution = calculator.solveTrig(45, "s");
+    expect(solution).toEqual(0.7071067811865475);
+  });
+
+  test("Should be able to perform trigonometry on negative angles", () => {
+    const solution = calculator.solveTrig(-45, "s");
+    expect(solution).toEqual(-0.7071067811865475);
+  });
 });
