@@ -43,18 +43,6 @@ describe("Grab last number and its operator from an equation string", () => {
   });
 });
 
-describe("Determine whether the last character at the end of the last equation string is a stored operator", () => {
-  test("Return true if an operator has been stored", () => {
-    calculator.equationStack = ["+6-8", "+2*"];
-    expect(calculator.previousOperatorAlreadyStored()).toBeTruthy();
-  });
-
-  test("Return false if an operator has not been stored", () => {
-    calculator.equationStack = ["+6-8", "+2*2"];
-    expect(calculator.previousOperatorAlreadyStored()).toBeFalsy();
-  });
-});
-
 describe("Remove the last number from the last string in an equation stack", () => {
   test("Remove the last number leaving other numbers in tact", () => {
     calculator.equationStack = ["+3+8", "+5÷7"];
@@ -69,7 +57,7 @@ describe("Remove the last number from the last string in an equation stack", () 
   });
 });
 
-describe("Storing operators", () => {
+describe.only("Storing operators", () => {
   test("If the current number string is empty and the current equation string has not been modified, the stored operator should be a + so if parenthesis are opened their total is added to 0, not multiplied by 0", () => {
     const storedOperator = calculator.determineStoredOperator();
     expect(storedOperator).toBe("+");
@@ -96,6 +84,26 @@ describe("Storing operators", () => {
     expect(calculator.equationStack[calculator.equationStack.length - 1]).toBe(
       "+3+6*",
     );
+  });
+
+  test("Should be able to store only an operator to the last equation string in an equation stack", () => {
+    calculator.equationStack = ["+8", "-5"];
+    calculator.storeOperatorOnly("*");
+    expect(calculator.equationStack[calculator.equationStack.length - 1]).toBe(
+      "-5*",
+    );
+  });
+
+  describe("Determine whether the last character at the end of the last equation string is a stored operator", () => {
+    test("Return true if an operator has been stored", () => {
+      calculator.equationStack = ["+6-8", "+2*"];
+      expect(calculator.previousOperatorAlreadyStored()).toBeTruthy();
+    });
+
+    test("Return false if an operator has not been stored", () => {
+      calculator.equationStack = ["+6-8", "+2*2"];
+      expect(calculator.previousOperatorAlreadyStored()).toBeFalsy();
+    });
   });
 });
 
