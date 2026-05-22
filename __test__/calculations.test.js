@@ -191,6 +191,36 @@ describe("Tests for handling operators", () => {
     calculator.handleOperators("+");
     expect(calculator.numToDisplay).toBe("6.123233995736766e-17"); // cos of 90 degrees; ignore tan; this answer would be rounded down to zero in index.js fixDecimals()
   });
+
+  test("Should tally what math it can to maintain running total when current number string is valid", () => {
+    expect(calculator.equationStack).toEqual(["+0"]);
+    calculator.currentNumString = "+5";
+    calculator.handleOperators("+");
+    expect(calculator.equationStack).toEqual(["+5"]);
+  });
+
+  test("Should wait for higher order of operations to complete before lower order of operations", () => {
+    // 5 + 4 *
+    calculator.equationStack = ["+5"];
+    calculator.currentNumString = "+4";
+    calculator.handleOperators("*");
+    expect(calculator.equationStack).toEqual(["+5+4"]); // +4 gets stored
+    expect(calculator.currentNumString).toBe("*"); // current number string gets reassigned to the operator pushed
+    expect(calculator.overwriteCurrentNumString).toBeFalsy(); // next num will concat to currentNumString, not overwrite
+  });
+
+  test("Should handle custom exponents", () => {
+    calculator.currentNumString = "+2";
+    calculator.handleOperators("^");
+    expect(calculator.equationStack).toEqual(["+0+2"]); // +2 gets stored due to highest order of operation ^
+    expect(calculator.currentNumString).toBe("^");
+    calculator.currentNumString += "4";
+    expect(calculator.currentNumString).toBe("^4");
+    calculator.handleOperators("="); // should now raise 2^4
+    expect(calculator.currentNumString).toBe("+16");
+    expect(calculator.equationStack).toEqual(["+0"]);
+    expect(calculator.overwriteCurrentNumString).toBeTruthy();
+  });
 });
 
 test("Retrieve the last equation string from an equation stack", () => {
@@ -404,7 +434,7 @@ describe("Reducing an equation string from the back while accounting for order o
   });
 });
 
-describe.only("Pressing equals should tally everything", () => {
+describe("Pressing equals should tally everything", () => {
   test("Parenthetical math should solve from the inner most parenthesis first", () => {
     // INNER MOST PARENTHESIS => 6 ÷ 2 = 3; 9 - 3 = 6; 0 - 6 = -6; MIDDLE PARENTHESIS => 8 * -6 = -48; 3 + -48 = -45; 0 + -45 = -45; OUTER PARENTHESIS => 2 * -45 = -90; 4 * -90 = -360; 0 - -360 = 360; OUTSIDE ALL PARENTHESIS => 6 * 360 = 2,160
     calculator.equationStack = ["+0+6*", "+0-4*2*", "+0+3+8*", "+0-9-6"];

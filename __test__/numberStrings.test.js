@@ -313,7 +313,7 @@ describe("Entering positive numbers", () => {
     expect(calculator.currentNumString).toBe("+999999999");
   });
 
-  test.only("Overwrite current number string when necessary but preserve its operator", () => {
+  test("Overwrite current number string when necessary but preserve its operator", () => {
     calculator.currentNumString = "÷6";
     calculator.overwriteCurrentNumString = true;
     calculator.handleNums("8");

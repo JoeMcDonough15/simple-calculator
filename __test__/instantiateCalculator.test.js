@@ -54,11 +54,10 @@ describe("Ensure calculator has all necessary properties and methods when instan
     expect(calculator).toHaveProperty("handleCloseParenthesis");
     expect(calculator).toHaveProperty("calculate");
     expect(calculator).toHaveProperty("reduceEquationString");
-
-    // *                                                     * //
-
     expect(calculator).toHaveProperty("handleEquals");
     expect(calculator).toHaveProperty("handleOperators");
+
+    // *                                                     * //
 
     // Updating numStrings in place
     expect(calculator).toHaveProperty("determineCorrectNumStringToUpdate");
