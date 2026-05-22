@@ -403,3 +403,45 @@ describe("Reducing an equation string from the back while accounting for order o
     expect(calculator.equationStack).toEqual(["+0+4.999999999999999"]); // since next operator is *, the currentNumString has to be held in memory
   });
 });
+
+describe.only("Pressing equals should tally everything", () => {
+  test("Parenthetical math should solve from the inner most parenthesis first", () => {
+    // INNER MOST PARENTHESIS => 6 ÷ 2 = 3; 9 - 3 = 6; 0 - 6 = -6; MIDDLE PARENTHESIS => 8 * -6 = -48; 3 + -48 = -45; 0 + -45 = -45; OUTER PARENTHESIS => 2 * -45 = -90; 4 * -90 = -360; 0 - -360 = 360; OUTSIDE ALL PARENTHESIS => 6 * 360 = 2,160
+    calculator.equationStack = ["+0+6*", "+0-4*2*", "+0+3+8*", "+0-9-6"];
+    calculator.currentNumString = "÷2";
+    calculator.handleEquals(); // +2,160
+    expect(calculator.currentNumString).toBe("+2160");
+  });
+  test("If current number string is not valid, it should be validated before solving remaining math", () => {
+    // PARENTHESIS => 2 ÷ 1 = 2; 0 - 2 = -2; OUTSIDE PARENTHESIS => 4 ÷ -2 = -2; 0 + -2 = -2;
+    calculator.equationStack = ["+0+4÷", "+0-2"];
+    calculator.currentNumString = "÷"; // will be validated to ÷1
+    calculator.handleEquals(); // -2
+    expect(calculator.currentNumString).toBe("+-2");
+  });
+  test("All math left in equation strings should be solved", () => {
+    // 2 + 3 = 5; 40 ÷ 5 = 8; 2 + 8 = 10; 4 * 10 = 40; 800 - 40 = 760;
+    calculator.equationStack = ["+800-4*2+40÷2"];
+    calculator.currentNumString = "+3";
+    calculator.handleEquals();
+    expect(calculator.currentNumString).toBe("+760");
+  });
+  test("Equation stack should show cleared state", () => {
+    // INNER PARENTHESIS => 5 * 4 = 20; 30 - 20 = 10; OUTER PARENTHESIS => 50 ÷ 10 = 5; 2 * 5 = 10; 800 ÷ 10 = 80; 0 - 80 = -80;  OUTSIDE PARENTHESIS =>  400 * -80 = -32,000; 1,200 ÷ -32,000 = -0.0375
+    calculator.equationStack = ["+1200÷400*", "+0-800÷2*50÷", "+30-5"];
+    calculator.currentNumString = "*4";
+    calculator.handleEquals();
+    expect(calculator.currentNumString).toBe("+-0.0375");
+    expect(calculator.equationStack).toEqual(["+0"]);
+  });
+  test("App defaults should be reset and solution to the math should be overwritten with next input", () => {
+    calculator.equationStack = ["+6"];
+    calculator.currentNumString = "-2";
+    calculator.handleEquals();
+    expect(calculator.currentEquationStringModified).toBeFalsy();
+    expect(calculator.clearAll).toBeFalsy();
+    expect(calculator.equationStack).toEqual(["+0"]);
+    expect(calculator.currentNumString).toBe("+4");
+    expect(calculator.overwriteCurrentNumString).toBeTruthy();
+  });
+});
