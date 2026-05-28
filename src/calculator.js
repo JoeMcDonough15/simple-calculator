@@ -240,16 +240,14 @@ class Calculator {
 
   handlePi() {
     const operator = this.grabOperatorOfCurrentNumString();
-    const pi = pi.toString();
-    this.currentNumString = operator + pi;
+    this.currentNumString = operator + pi.toString();
     this.updateNumToDisplay();
     this.overwriteCurrentNumString = true;
   }
 
   handleEuler() {
     const operator = this.grabOperatorOfCurrentNumString();
-    const euler = e.toString();
-    this.currentNumString = operator + euler;
+    this.currentNumString = operator + e.toString();
     this.updateNumToDisplay();
     this.overwriteCurrentNumString = true;
   }
@@ -379,7 +377,7 @@ class Calculator {
 
   solveTrig(angleInDegrees, trigOperator) {
     let trigSolution;
-    const angleInRadians = (angleInDegrees * pi) / 180; // convert input from degrees to radians, so that it is valid input to the mathjs trig functions
+    const angleInRadians = (angleInDegrees * PI) / 180; // convert input from degrees to radians, so that it is valid input to the mathjs trig functions
     if (TAN_OPERATORS.includes(trigOperator)) {
       // edge case to handle 90º or 270º because JavaScript floating point precision will not reach Infinity
       if (angleInDegrees === 90 || angleInDegrees === 270) return Infinity;

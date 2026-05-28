@@ -57,9 +57,8 @@ describe("Ensure calculator has all necessary properties and methods when instan
     expect(calculator).toHaveProperty("handleEquals");
     expect(calculator).toHaveProperty("handleOperators");
 
-    // *                                                     * //
-
     // Updating numStrings in place
+    // *                                                     * //
     expect(calculator).toHaveProperty("determineCorrectNumStringToUpdate");
     expect(calculator).toHaveProperty("handlePercentage");
     expect(calculator).toHaveProperty("handlePi");
