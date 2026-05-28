@@ -58,11 +58,12 @@ describe("Ensure calculator has all necessary properties and methods when instan
     expect(calculator).toHaveProperty("handleOperators");
 
     // Updating numStrings in place
+    expect(calculator).toHaveProperty("handlePi");
+    expect(calculator).toHaveProperty("handleEuler");
     // *                                                     * //
     expect(calculator).toHaveProperty("determineCorrectNumStringToUpdate");
     expect(calculator).toHaveProperty("handlePercentage");
-    expect(calculator).toHaveProperty("handlePi");
-    expect(calculator).toHaveProperty("handleEuler");
+
     expect(calculator).toHaveProperty("handleRaiseEuler");
     expect(calculator).toHaveProperty("handleSquared");
     expect(calculator).toHaveProperty("handleCubed");

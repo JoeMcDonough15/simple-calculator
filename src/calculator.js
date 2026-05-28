@@ -259,9 +259,6 @@ class Calculator {
 
   handleSquared(num) {
     let squaredNumString = pow(num, 2);
-    if (num < 0) {
-      squaredNumString = 0 - squaredNumString;
-    }
     return squaredNumString;
   }
 
