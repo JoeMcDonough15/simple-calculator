@@ -62,13 +62,11 @@ describe("Ensure calculator has all necessary properties and methods when instan
     expect(calculator).toHaveProperty("handleEuler");
     expect(calculator).toHaveProperty("handleSquared");
     expect(calculator).toHaveProperty("handleCubed");
+    expect(calculator).toHaveProperty("handleFactorial");
     // *                                                     * //
     expect(calculator).toHaveProperty("determineCorrectNumStringToUpdate");
     expect(calculator).toHaveProperty("handlePercentage");
-
     expect(calculator).toHaveProperty("handleRaiseEuler");
-
-    expect(calculator).toHaveProperty("handleFactorial");
     expect(calculator).toHaveProperty("handleInverseFraction");
     expect(calculator).toHaveProperty("makePosOrNeg");
     expect(calculator).toHaveProperty("performOperationOnNumString");

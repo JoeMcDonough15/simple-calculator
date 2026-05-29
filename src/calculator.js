@@ -11,6 +11,7 @@ import {
   factorial,
   e,
   pi,
+  abs,
 } from "mathjs";
 
 //////// Constants ////////
