@@ -31,3 +31,11 @@ test("Cube a positive number", () => {
 test("Cube a negative number", () => {
   expect(calculator.handleCubed(-2)).toEqual(-8);
 });
+
+test("Solve factorial on a number", () => {
+  expect(calculator.handleFactorial(3)).toEqual(6);
+});
+
+test("Solve factorial on a negative number", () => {
+  expect(calculator.handleFactorial(-3)).toEqual(NaN);
+});

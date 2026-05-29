@@ -268,6 +268,9 @@ class Calculator {
   }
 
   handleFactorial(num) {
+    if (num < 0) {
+      return NaN;
+    }
     const factorialString = factorial(num);
     return factorialString;
   }
